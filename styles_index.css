@@ -1,3 +1,61 @@
+/* Базовые настройки для всей страницы */
+body {
+    margin: 0;
+    padding: 2rem;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f5f5f5;
+    color: #1a1a1a;
+    line-height: 1.6;
+}
+
 h1 {
-  text-decoration: underline;
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+p {
+    max-width: 600px;
+    margin-bottom: 2rem;
+    color: #555;
+}
+
+/* Сетка для карточек */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+}
+
+/* Сама карточка-ссылка */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Эффект при наведении */
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Заголовок внутри карточки */
+.card-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+/* Описание */
+.card-desc {
+    font-size: 0.9rem;
+    color: #666;
 }
