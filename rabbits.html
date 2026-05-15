@@ -31,81 +31,67 @@
             border-radius: 50%;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             object-fit: cover;
-            animation: bounce 0.6s infinite alternate ease-in-out;
             transition: transform 0.1s;
         }
 
         .rabbit.dragging {
-            animation: none;
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-        }
-
-        @keyframes bounce {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-30px);
-            }
-        }
-
-        .info {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            color: #2d5a27;
-            background: rgba(255,255,255,0.7);
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            pointer-events: none;
         }
     </style>
 </head>
 <body>
-    <div class="info">🐇 Тяни кроликов мышкой!</div>
-
     <script>
         const rabbitImages = [
-            'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=150&h=150&fit=crop',
-            'https://images.unsplash.com/photo-1591561582301-7ce6588cc286?w=150&h=150&fit=crop',
-            'https://images.unsplash.com/photo-1535241749838-299277b6305f?w=150&h=150&fit=crop',
-            'https://images.unsplash.com/photo-1559223607-a43c746bf1a0?w=150&h=150&fit=crop',
-            'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=150&h=150&fit=crop',
-            'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=150&h=150&fit=crop'
+            'https://source.unsplash.com/150x150/?rabbit&sig=1',
+            'https://source.unsplash.com/150x150/?rabbit&sig=2',
+            'https://source.unsplash.com/150x150/?rabbit&sig=3',
+            'https://source.unsplash.com/150x150/?rabbit&sig=4',
+            'https://source.unsplash.com/150x150/?rabbit&sig=5',
+            'https://source.unsplash.com/150x150/?rabbit&sig=6'
         ];
 
-        const body = document.body;
+        const GRAVITY = 0.4;
+        const BOUNCE = 0.55;
+        const GROUND_OFFSET = 100;
 
-        rabbitImages.forEach((src, index) => {
+        const rabbits = [];
+
+        rabbitImages.forEach((src) => {
             const rabbit = document.createElement('img');
             rabbit.src = src;
             rabbit.classList.add('rabbit');
             rabbit.draggable = false;
 
             const x = Math.random() * (window.innerWidth - 120) + 10;
-            const y = Math.random() * (window.innerHeight - 150) + 10;
+            const y = Math.random() * (window.innerHeight - 200) + 10;
             rabbit.style.left = x + 'px';
             rabbit.style.top = y + 'px';
 
-            rabbit.style.animationDelay = (Math.random() * 0.5) + 's';
+            document.body.appendChild(rabbit);
 
-            body.appendChild(rabbit);
-            addDragCapability(rabbit);
+            const physics = {
+                element: rabbit,
+                vy: (Math.random() - 0.5) * 4,
+                dragging: false,
+                startX: 0,
+                startY: 0,
+                startLeft: 0,
+                startTop: 0
+            };
+
+            rabbits.push(physics);
+            addDragCapability(rabbit, physics);
         });
 
-        function addDragCapability(element) {
-            let startX, startY, startLeft, startTop;
-            let dragging = false;
-
+        function addDragCapability(element, phys) {
             element.addEventListener('mousedown', function(e) {
                 e.preventDefault();
-                dragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                startLeft = parseInt(element.style.left, 10) || 0;
-                startTop = parseInt(element.style.top, 10) || 0;
-
+                phys.dragging = true;
+                phys.startX = e.clientX;
+                phys.startY = e.clientY;
+                phys.startLeft = parseInt(element.style.left, 10) || 0;
+                phys.startTop = parseInt(element.style.top, 10) || 0;
+                phys.vy = 0;
                 element.classList.add('dragging');
 
                 document.addEventListener('mousemove', onMouseMove);
@@ -113,30 +99,66 @@
             });
 
             function onMouseMove(e) {
-                if (!dragging) return;
+                if (!phys.dragging) return;
                 e.preventDefault();
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                element.style.left = (startLeft + dx) + 'px';
-                element.style.top = (startTop + dy) + 'px';
+                const dx = e.clientX - phys.startX;
+                const dy = e.clientY - phys.startY;
+                element.style.left = (phys.startLeft + dx) + 'px';
+                element.style.top = (phys.startTop + dy) + 'px';
             }
 
             function onMouseUp(e) {
-                dragging = false;
+                phys.dragging = false;
                 element.classList.remove('dragging');
+                phys.vy = 0;
                 document.removeEventListener('mousemove', onMouseMove);
                 document.removeEventListener('mouseup', onMouseUp);
             }
 
             window.addEventListener('mouseleave', function() {
-                if (dragging) {
-                    dragging = false;
+                if (phys.dragging) {
+                    phys.dragging = false;
                     element.classList.remove('dragging');
+                    phys.vy = 0;
                     document.removeEventListener('mousemove', onMouseMove);
                     document.removeEventListener('mouseup', onMouseUp);
                 }
             });
         }
+
+        function updatePhysics() {
+            const ground = window.innerHeight - GROUND_OFFSET;
+
+            rabbits.forEach((phys) => {
+                if (phys.dragging) return;
+
+                const el = phys.element;
+                let top = parseFloat(el.style.top) || 0;
+                let left = parseFloat(el.style.left) || 0;
+
+                phys.vy += GRAVITY;
+                top += phys.vy;
+
+                if (top >= ground) {
+                    top = ground;
+                    phys.vy = -phys.vy * BOUNCE;
+                    if (Math.abs(phys.vy) < 0.8) {
+                        phys.vy = 0;
+                    }
+                }
+
+                if (top < 0) {
+                    top = 0;
+                    phys.vy = -phys.vy * BOUNCE;
+                }
+
+                el.style.top = top + 'px';
+            });
+
+            requestAnimationFrame(updatePhysics);
+        }
+
+        updatePhysics();
     </script>
 </body>
 </html>
