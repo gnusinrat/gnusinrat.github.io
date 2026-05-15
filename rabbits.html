@@ -37,9 +37,31 @@
         .rabbit.dragging {
             box-shadow: 0 8px 20px rgba(0,0,0,0.5);
         }
+
+        .toggle-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border: 2px solid #333;
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: background 0.2s;
+            user-select: none;
+        }
+
+        .toggle-btn:hover {
+            background: #eee;
+        }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" id="modeToggle">🐱 Включить кошек</button>
+
     <script>
         const rabbitImages = [
             'rabbit1.jpg',
@@ -49,13 +71,22 @@
             'rabbit5.jpg'
         ];
 
+        const catImages = [
+            'cat1.jpg',
+            'cat2.jpg',
+            'cat3.jpg',
+            'cat4.jpg',
+            'cat5.jpg'
+        ];
+
+        let isCatMode = false;
         const GRAVITY = 0.4;
         const BOUNCE = 0.55;
         const GROUND_OFFSET = 100;
 
         const rabbits = [];
 
-        rabbitImages.forEach((src) => {
+        rabbitImages.forEach((src, index) => {
             const rabbit = document.createElement('img');
             rabbit.src = src;
             rabbit.classList.add('rabbit');
@@ -158,6 +189,15 @@
         }
 
         updatePhysics();
+
+        const toggleBtn = document.getElementById('modeToggle');
+        toggleBtn.addEventListener('click', function() {
+            isCatMode = !isCatMode;
+            rabbits.forEach((phys, i) => {
+                phys.element.src = isCatMode ? catImages[i] : rabbitImages[i];
+            });
+            toggleBtn.textContent = isCatMode ? 'Включить кроликов' : 'Включить кошек';
+        });
     </script>
 </body>
 </html>
