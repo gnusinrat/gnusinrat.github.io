@@ -1276,7 +1276,7 @@
         const payload = {
           contents: [{ role: "user", parts: [{ text: prompt }] }],
         };
-        const apiKey = "AIzaSyD8zFAd5VufU47axeq6XLJpWL4L3uPhfxI"; // Вставьте свой API-ключ сюда
+        const apiKey = "NO"; // Вставьте свой API-ключ сюда
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
         try {
           const response = await fetch(apiUrl, {
@@ -1297,7 +1297,7 @@
         } catch (error) {
           console.error("Ошибка при запросе к Gemini API:", error);
           geminiPromptContainer.textContent =
-            "эта функция не работает я хз почему (oh_fiddlesticks)";
+            "эта функция сломана а также я уже убрал ключ из кода, проект заброшен и фикса пока-что не будет";
         }
       }
 
