@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Топы блюд и животных</title>
+    <style>
+        body {
+            margin: 2rem;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #222;
+            line-height: 1.6;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+        }
+
+        .top-section {
+            margin-bottom: 3rem;
+        }
+
+        .top-section h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 0.3rem;
+            margin-bottom: 1rem;
+        }
+
+        ol {
+            list-style: none;
+            counter-reset: rank;
+            padding-left: 0;
+            max-width: 500px;
+        }
+
+        ol li {
+            counter-increment: rank;
+            background: #fff;
+            margin-bottom: 0.7rem;
+            padding: 0.9rem 1.2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            transition: transform 0.1s;
+        }
+
+        ol li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        ol li::before {
+            content: counter(rank);
+            background: #333;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .note {
+            color: #777;
+            font-style: italic;
+            margin-top: -0.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мои топы</h1>
+
+    <div class="top-section">
+        <h2>🍽️ Топ блюд</h2>
+        <ol>
+            <li>Блинчики</li>
+            <li>Мамины вафли</li>
+            <li>Наггетсы</li>
+            <li>Пепперони пицца</li>
+        </ol>
+        <div class="note">🥈 2 место — сосиски</div>
+        <ol start="2">
+            <li>Сосиски</li>
+        </ol>
+        <div class="note">🥉 3 место — пельмени</div>
+        <ol start="3">
+            <li>Пельмени</li>
+        </ol>
+    </div>
+
+    <div class="top-section">
+        <h2>🐾 Топ животных</h2>
+        <ol>
+            <li>Голуби</li>
+            <li>Курицы</li>
+            <li>Кошки</li>
+            <li>Собаки</li>
+            <li>Тюлени</li>
+        </ol>
+    </div>
+</body>
+</html>
