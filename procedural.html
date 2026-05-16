@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>дзен</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: #1e1e1e;
             color: #ddd;
@@ -38,9 +34,7 @@
             font-size: 1rem;
             transition: background 0.2s;
         }
-        .menu button:hover, .menu select:hover {
-            background: #666;
-        }
+        .menu button:hover, .menu select:hover { background: #666; }
         .menu button.active {
             background: #ff9800;
             color: #000;
@@ -88,7 +82,6 @@
 </head>
 <body>
     <div class="zen-project">zen project</div>
-
     <div class="menu">
         <button id="btnFractal">фрактал</button>
         <button id="btnMenger">губка</button>
@@ -101,7 +94,6 @@
             </select>
         </div>
     </div>
-
     <div class="content" id="content">
         <canvas id="fractalCanvas" style="display: none;"></canvas>
         <canvas id="mengerCanvas" style="display: none;"></canvas>
@@ -109,19 +101,13 @@
     </div>
 
     <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.157.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/"
-            }
-        }
+        { "imports": { "three": "https://unpkg.com/three@0.157.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.157.0/examples/jsm/" } }
     </script>
 
     <script type="module">
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // DOM
         const btnFractal = document.getElementById('btnFractal');
         const btnMenger = document.getElementById('btnMenger');
         const btnRandom = document.getElementById('btnRandom');
@@ -132,11 +118,8 @@
         const randomPageDiv = document.getElementById('randomPage');
 
         let currentMode = 'fractal';
-        let mengerRenderer, mengerScene, mengerCamera, mengerControls;
-        let currentSpongeLevel = 3; // начальный уровень
-        let spongeGroup = null;
+        let mengerRenderer, mengerScene, mengerCamera, mengerControls, spongeGroup;
 
-        // Фрактал
         let fractalZoom = 1, fractalOffsetX = 0, fractalOffsetY = 0;
         let isDragging = false, dragStartX, dragStartY, dragStartOffX, dragStartOffY;
         let needsFractalRedraw = false;
@@ -170,7 +153,7 @@
         btnRandom.addEventListener('click', () => setMode('random'));
         fractalTypeSelect.addEventListener('change', drawFractal);
 
-        // --- Фрактал (оптимизированная перерисовка) ---
+        // Фрактал (оптимизированный)
         function drawFractal() {
             if (currentMode !== 'fractal') return;
             const ctx = fractalCanvas.getContext('2d');
@@ -184,7 +167,6 @@
                 for (let py = 0; py < h; py++) {
                     let x0 = (px - w/2) / (0.5 * fractalZoom * w) + fractalOffsetX;
                     let y0 = (py - h/2) / (0.5 * fractalZoom * h) + fractalOffsetY;
-
                     let x = 0, y = 0, iter = 0;
                     if (type === 'mandelbrot') {
                         const cx = x0, cy = y0;
@@ -211,8 +193,7 @@
                             iter++;
                         }
                     }
-
-                    let color = [0, 0, 0];
+                    let color = [0,0,0];
                     if (iter < maxIter) {
                         const hue = iter * 360 / maxIter;
                         const rgb = hslToRgb(hue/360, 0.8, 0.5);
@@ -240,9 +221,8 @@
 
         function hslToRgb(h, s, l) {
             let r, g, b;
-            if (s === 0) {
-                r = g = b = l;
-            } else {
+            if (s === 0) { r = g = b = l; }
+            else {
                 const hue2rgb = (p, q, t) => {
                     if (t < 0) t += 1;
                     if (t > 1) t -= 1;
@@ -287,14 +267,13 @@
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
             const newZoom = fractalZoom * zoomFactor;
-
             fractalOffsetX = (mouseX - fractalCanvas.width/2) / (0.5 * fractalZoom * fractalCanvas.width) + fractalOffsetX - (mouseX - fractalCanvas.width/2) / (0.5 * newZoom * fractalCanvas.width);
             fractalOffsetY = (mouseY - fractalCanvas.height/2) / (0.5 * fractalZoom * fractalCanvas.height) + fractalOffsetY - (mouseY - fractalCanvas.height/2) / (0.5 * newZoom * fractalCanvas.height);
             fractalZoom = newZoom;
             requestFractalRedraw();
         });
 
-        // --- Губка Менгера (динамическая детализация) ---
+        // Губка Менгера (фиксированный уровень 3)
         function initMenger() {
             if (mengerRenderer) {
                 mengerRenderer.setAnimationLoop(animateMenger);
@@ -317,41 +296,18 @@
             mengerControls.enableDamping = true;
             mengerControls.dampingFactor = 0.1;
 
-            // Освещение
             const ambient = new THREE.AmbientLight(0x404040);
             mengerScene.add(ambient);
             const dirLight = new THREE.DirectionalLight(0xffffff, 1);
             dirLight.position.set(1, 1, 1);
             mengerScene.add(dirLight);
 
-            // Построим губку уровня 3 для начала
-            buildSponge(3);
+            spongeGroup = new THREE.Group();
+            createMengerSponge(spongeGroup, 0, 0, 0, 1, 3);
+            mengerScene.add(spongeGroup);
 
             mengerRenderer.setAnimationLoop(animateMenger);
             window.addEventListener('resize', onMengerResize);
-
-            // Следим за изменением зума камеры
-            mengerControls.addEventListener('change', updateSpongeDetail);
-        }
-
-        function buildSponge(level) {
-            if (spongeGroup) mengerScene.remove(spongeGroup);
-            spongeGroup = new THREE.Group();
-            createMengerSponge(spongeGroup, 0, 0, 0, 1, level);
-            mengerScene.add(spongeGroup);
-            currentSpongeLevel = level;
-        }
-
-        function updateSpongeDetail() {
-            const dist = mengerCamera.position.length();
-            let targetLevel;
-            if (dist < 2.5) targetLevel = 4;
-            else if (dist < 5) targetLevel = 3;
-            else targetLevel = 2;
-
-            if (targetLevel !== currentSpongeLevel) {
-                buildSponge(targetLevel);
-            }
         }
 
         function createMengerSponge(parent, x, y, z, size, level) {
@@ -363,7 +319,6 @@
                 parent.add(cube);
                 return;
             }
-
             const newSize = size / 3;
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
@@ -391,12 +346,9 @@
             mengerCamera.updateProjectionMatrix();
         }
 
-        // --- Случайная страница ---
+        // Случайная страница
         function generateRandomPage() {
-            const titles = [
-                'Мудрость дня', 'Случайные мысли', 'Кроличий дзен', 'Тест на удачу', 'Печенье с предсказанием',
-                'Топ чего-то', 'Записки сумасшедшего', 'Факт №42', 'Инструкция к жизни'
-            ];
+            const titles = ['Мудрость дня','Случайные мысли','Кроличий дзен','Тест на удачу','Печенье с предсказанием','Топ чего-то','Записки сумасшедшего','Факт №42','Инструкция к жизни'];
             const paragraphs = [
                 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
                 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
@@ -406,22 +358,14 @@
                 'Пельмени являются единицей измерения пельменей.',
                 'Наггетсы не спасут мир.'
             ];
-            const images = [
-                'rabbit1.jpg', 'rabbit2.jpg', 'rabbit3.jpg', 'rabbit4.jpg', 'rabbit5.jpg',
-                'cat1.jpg', 'cat2.jpg', 'cat3.jpg', 'cat4.jpg', 'cat5.jpg'
-            ];
+            const images = ['rabbit1.jpg','rabbit2.jpg','rabbit3.jpg','rabbit4.jpg','rabbit5.jpg','cat1.jpg','cat2.jpg','cat3.jpg','cat4.jpg','cat5.jpg'];
 
             const title = titles[Math.floor(Math.random() * titles.length)];
             const numParagraphs = 2 + Math.floor(Math.random() * 4);
             let html = `<h1>${title}</h1>`;
-            for (let i = 0; i < numParagraphs; i++) {
-                html += `<p>${paragraphs[Math.floor(Math.random() * paragraphs.length)]}</p>`;
-            }
+            for (let i = 0; i < numParagraphs; i++) html += `<p>${paragraphs[Math.floor(Math.random() * paragraphs.length)]}</p>`;
             const numImages = 1 + Math.floor(Math.random() * 5);
-            for (let i = 0; i < numImages; i++) {
-                const img = images[Math.floor(Math.random() * images.length)];
-                html += `<img src="${img}" alt="random">`;
-            }
+            for (let i = 0; i < numImages; i++) html += `<img src="${images[Math.floor(Math.random() * images.length)]}" alt="random">`;
             html += `<p><a href="paint.html">Рисовалка</a> | <a href="top.html">Топы</a> | <a href="index.html">На главную</a></p>`;
             randomPageDiv.innerHTML = html;
         }
