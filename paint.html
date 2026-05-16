@@ -21,6 +21,7 @@
             --btn-secondary-bg: #e5e7eb;
             --btn-secondary-text: #374151;
             --tool-active: #1d4ed8;
+            --blue-text: #3b82f6; /* для синего текста */
             color-scheme: light;
         }
 
@@ -39,10 +40,25 @@
             --btn-secondary-bg: #374151;
             --btn-secondary-text: #e5e7eb;
             --tool-active: #6d28d9;
+            --blue-text: #a78bfa;
             color-scheme: dark;
         }
 
-        /* Общие стили, которые зависят от переменных */
+        /* Переопределяем стандартные Tailwind‑классы, чтобы они слушались тем */
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .bg-gray-100,
+        [data-theme="dark"] .bg-gray-50,
+        [data-theme="dark"] .bg-gray-200 { background-color: var(--panel-bg) !important; }
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700,
+        [data-theme="dark"] .text-gray-600,
+        [data-theme="dark"] .text-gray-900 { color: var(--text) !important; }
+        [data-theme="dark"] .text-gray-500,
+        [data-theme="dark"] .text-gray-400 { color: var(--text-secondary) !important; }
+        [data-theme="dark"] .text-blue-600 { color: var(--blue-text) !important; }
+        [data-theme="dark"] .border-gray-300 { border-color: var(--border) !important; }
+
+        /* базовые стили */
         body {
             font-family: "Inter", sans-serif;
             background-color: var(--bg);
@@ -61,7 +77,6 @@
         #drawingScreen.active {
             display: flex;
             gap: 20px;
-            flex-wrap: wrap;
         }
 
         .left-panel {
@@ -85,7 +100,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: 100%;
+            max-width: calc(100% - 270px);
             position: relative;
         }
         canvas {
@@ -106,7 +121,7 @@
             display: none;
             transform: translate(-50%, -50%);
             z-index: 1000;
-            background-color: rgba(0, 0, 0, 0.1);
+            background-color: rgba(0,0,0,0.1);
         }
 
         .btn {
@@ -114,8 +129,8 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,10 +138,7 @@
             background-color: var(--btn-secondary-bg);
             color: var(--btn-secondary-text);
         }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-primary {
             background-color: var(--accent);
             color: var(--btn-primary-text);
@@ -134,260 +146,116 @@
         .btn-primary:hover:not(:disabled) {
             background-color: var(--accent-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
         .btn-primary.active {
             background-color: var(--tool-active);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
             transform: translateY(0);
         }
-        .btn-clear {
-            background-color: var(--danger);
-            color: #fff;
-        }
-        .btn-clear:hover {
-            background-color: #dc2626;
-        }
-        .btn-save {
-            background-color: #22c55e;
-            color: #fff;
-        }
-        .btn-save:hover {
-            background-color: #16a34a;
-        }
+        .btn-clear { background-color: var(--danger); color: white; }
+        .btn-save { background-color: #22c55e; color: white; }
         .btn-gemini {
             background: linear-gradient(45deg, #4285f4, #9b72cb, #d96570, #f2a600);
             color: white;
         }
-        .btn-gemini:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        .btn-dev-switch {
-            background: linear-gradient(45deg, #ef4444, #f97316);
-            color: white;
-        }
-        .btn-stable-switch {
-            background: linear-gradient(45deg, #22c55e, #84cc16);
-            color: white;
-        }
 
-        /* Модальные окна */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex; justify-content: center; align-items: center;
             z-index: 9999;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s;
         }
-        .modal-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
         .modal-content {
             background: var(--panel-bg);
             color: var(--text);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            position: relative;
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
+            padding: 30px; border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            width: 90%; max-width: 500px; text-align: center;
+            position: relative; transform: scale(0.9); transition: transform 0.3s;
         }
-        .modal-overlay.show .modal-content {
-            transform: scale(1);
-        }
+        .modal-overlay.show .modal-content { transform: scale(1); }
         .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            color: #aaa;
+            position: absolute; top: 15px; right: 15px;
+            font-size: 24px; font-weight: bold; cursor: pointer; color: #aaa;
         }
-        .modal-close:hover {
-            color: #333;
-        }
-        #geminiPrompt {
-            margin-top: 20px;
-            min-height: 50px;
-            font-size: 1.2rem;
-            color: var(--text);
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        .modal-close:hover { color: #333; }
 
-        /* Библиотека идей */
+        #geminiPrompt { margin-top: 20px; min-height: 50px; font-size: 1.2rem; color: var(--text); }
+        .loader {
+            border: 4px solid #f3f3f3; border-top: 4px solid var(--accent);
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 20px auto;
+        }
+        @keyframes spin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
+
         #ideaListContainer {
-            background-color: var(--btn-secondary-bg);
-            padding: 8px;
-            border-radius: 8px;
-            max-height: 120px;
-            overflow-y: auto;
-            width: 100%;
+            background: var(--btn-secondary-bg); padding: 8px; border-radius: 8px;
+            max-height: 120px; overflow-y: auto; width: 100%;
         }
         .idea-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border);
-            color: var(--text);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 6px; font-size: 14px; border-bottom: 1px solid var(--border); color: var(--text);
         }
-        .idea-item:last-child {
-            border-bottom: none;
-        }
-        .copy-idea-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            color: var(--text-secondary);
-        }
-        .copy-idea-btn:hover svg {
-            color: var(--accent);
-        }
+        .idea-item:last-child { border-bottom: none; }
+        .copy-idea-btn { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary); }
+        .copy-idea-btn:hover svg { color: var(--accent); }
 
-        /* Галерея */
         #drawingGrid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px; margin-top: 20px;
         }
         .drawing-thumbnail {
-            background: var(--panel-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
+            background: var(--panel-bg); border-radius: 12px; box-shadow: var(--shadow);
+            overflow: hidden; cursor: pointer; transition: transform 0.2s; position: relative;
         }
-        .drawing-thumbnail:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-        }
-        .drawing-thumbnail img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-bottom: 1px solid var(--border);
-        }
-        .thumbnail-info {
-            padding: 10px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
+        .drawing-thumbnail:hover { transform: translateY(-5px); }
+        .drawing-thumbnail img { width: 100%; height: 150px; object-fit: cover; border-bottom: 1px solid var(--border); }
+        .thumbnail-info { padding: 10px; font-size: 14px; color: var(--text-secondary); }
         .delete-drawing-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: rgba(239, 68, 68, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            position: absolute; top: 8px; right: 8px; background: rgba(239,68,68,0.8);
+            color: white; border: none; border-radius: 50%; width: 28px; height: 28px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
             font-size: 16px;
-            line-height: 1;
-            transition: background 0.2s;
-        }
-        .delete-drawing-btn:hover {
-            background: #dc2626;
         }
 
-        /* Тёмная тема – акцент фиолетовый уже через переменные */
-        [data-theme="dark"] .text-blue-600 {
-            color: #8b5cf6 !important;
-        }
-
-        /* DEV-фичи (слои и т.д.) */
+        /* DEV фичи */
         .layer-panel {
-            background: var(--panel-bg);
-            border-radius: 8px;
-            padding: 8px;
-            margin-top: 10px;
-            width: 100%;
-            box-shadow: var(--shadow);
+            background: var(--panel-bg); border-radius: 8px; padding: 8px;
+            margin-top: 10px; width: 100%; box-shadow: var(--shadow);
         }
         .layer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 4px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            color: var(--text);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 4px 8px; cursor: pointer; border-radius: 4px; color: var(--text);
         }
-        .layer-item.active {
-            background: var(--accent);
-            color: white;
-        }
-        .advanced-color {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-        }
-        .color-input-group {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
+        .layer-item.active { background: var(--accent); color: white; }
+        .advanced-color { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+        .color-input-group { display: flex; gap: 4px; align-items: center; }
         .color-input-group input {
-            width: 60px;
-            padding: 2px;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            background: var(--panel-bg);
-            color: var(--text);
+            width: 60px; padding: 2px; border: 1px solid var(--border);
+            border-radius: 4px; background: var(--panel-bg); color: var(--text);
         }
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
+        .theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+
+        /* Адаптив */
+        @media (max-width: 768px) {
+            #drawingScreen.active { flex-direction: column; }
+            .left-panel { width: 100%; order: 2; }
+            .main-drawing-area { max-width: 100%; order: 1; }
         }
+
+        /* иконки инструментов */
+        .tool-icon { width: 20px; height: 20px; margin-right: 6px; }
     </style>
 </head>
 <body>
-    <!-- Баннер согласия и модальные окна (как в оригинале) -->
-    <div id="dataConsentBanner" class="fixed top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-4xl p-4 bg-yellow-200 border border-yellow-400 text-yellow-900 rounded-lg shadow-lg flex items-center justify-between z-[10000]" style="display: none">
-        <p class="text-sm sm:text-base">
-            <strong class="font-bold">Предупреждение:</strong> Этот сайт использует
-            файлы cookie для сохранения ваших ИИ-идей и рисунков. Экспортировать и
-            импортировать их можно через кнопки на главном экране.
-        </p>
-        <button id="consentButton" class="ml-4 text-2xl font-bold hover:text-yellow-900">&times;</button>
+    <!-- Баннер согласия и модалки -->
+    <div id="dataConsentBanner" class="fixed top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-4xl p-4 bg-yellow-200 border border-yellow-400 text-yellow-900 rounded-lg shadow-lg flex items-center justify-between z-[10000]" style="display:none">
+        <p class="text-sm"><strong>Предупреждение:</strong> Этот сайт использует cookie для сохранения идей и рисунков.</p>
+        <button id="consentButton" class="ml-4 text-2xl font-bold">&times;</button>
     </div>
 
     <div id="confirmationModal" class="modal-overlay">
@@ -410,7 +278,7 @@
     <div id="versionSwitchModal" class="modal-overlay">
         <div class="modal-content">
             <h3 id="versionSwitchTitle" class="text-2xl font-bold"></h3>
-            <p id="versionSwitchMessage" class="mt-4 text-gray-600"></p>
+            <p id="versionSwitchMessage" class="mt-4"></p>
             <div class="flex gap-4 mt-6">
                 <button id="cancelSwitchBtn" class="btn btn-secondary flex-1">Отмена</button>
                 <button id="confirmSwitchBtn" class="btn flex-1">Подтвердить</button>
@@ -418,66 +286,68 @@
         </div>
     </div>
 
-    <!-- Экран Галереи (как в оригинале) -->
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close" id="settingsModalClose">&times;</span>
+            <h3 class="text-2xl font-bold mb-4">Настройки</h3>
+            <div class="flex flex-col gap-4">
+                <button id="exportDataBtn" class="btn btn-secondary w-full">Экспорт данных</button>
+                <label for="importDataInput" class="btn btn-secondary cursor-pointer w-full">Импорт данных</label>
+                <input type="file" id="importDataInput" class="hidden" accept=".json"/>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран Галереи -->
     <div id="galleryScreen" class="screen active relative">
         <div class="flex justify-between items-center flex-wrap gap-4">
-            <h1 class="text-4xl font-extrabold text-gray-800">
+            <h1 class="text-4xl font-extrabold">
                 <span class="text-blue-600">Ваша</span> Галерея
             </h1>
-            <div class="flex flex-col items-end">
-                <div class="flex gap-4">
-                    <button id="exportDataBtn" class="btn btn-secondary">Экспорт данных</button>
-                    <label for="importDataInput" class="btn btn-secondary cursor-pointer">Импорт данных</label>
-                    <input type="file" id="importDataInput" class="hidden" accept=".json" />
-                    <button id="newDrawingBtn" class="btn btn-primary">Новый рисунок</button>
-                </div>
-                <p class="text-xs text-gray-500 mt-1">Для переноса идей и рисунков на другое устройство</p>
+            <div class="flex gap-4 items-center">
+                <button id="settingsBtn" class="btn btn-secondary p-2" title="Настройки">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+                <button id="newDrawingBtn" class="btn btn-primary">Новый рисунок</button>
             </div>
         </div>
         <div id="drawingGrid"></div>
-        <div class="absolute bottom-0 left-0 text-gray-400 text-sm font-mono">
+        <div class="absolute bottom-0 left-0 text-sm" style="color: var(--text-secondary);">
             <span id="versionText"></span>
             <span id="betaText" class="text-orange-500 font-bold hidden">beta!</span>
         </div>
         <div id="versionSwitchContainer" class="absolute bottom-5 left-1/2 -translate-x-1/2"></div>
     </div>
 
-    <!-- Экран Рисования -->
+    <!-- Экран рисования -->
     <div id="drawingScreen" class="screen">
-        <!-- Левая панель инструментов -->
         <div class="left-panel">
             <button id="backToGalleryBtn" class="btn btn-primary w-full mb-4">Назад в галерею</button>
             <h2 class="text-2xl font-bold mb-4">Инструменты</h2>
-            <button id="pencilTool" class="btn btn-primary w-full">Карандаш</button>
-            <button id="eraserTool" class="btn btn-primary w-full">Ластик</button>
-            <button id="rectangleTool" class="btn btn-primary w-full">Прямоугольник</button>
-            <button id="circleTool" class="btn btn-primary w-full">Круг</button>
-            <button id="lineTool" class="btn btn-primary w-full">Линия</button>
-            <button id="eyedropperTool" class="btn btn-primary w-full flex items-center justify-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13.5 2.5-3 3a2.5 2.5 0 0 0 0 3.5l7 7a2.5 2.5 0 0 0 3.5 0l3-3a2.5 2.5 0 0 0 0-3.5l-7-7a2.5 2.5 0 0 0-3.5 0Z"/><path d="m22 22-5-5"/><path d="m2 2 5 5"/></svg>
-                Пипетка
-            </button>
-            <!-- Дополнительные инструменты для DEV -->
+            <button id="pencilTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Карандаш</button>
+            <button id="eraserTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.5 1.7c.8-.8 2-.8 2.8 0L21 5.5c.8.8.8 2 0 2.8L12 17"/><line x1="18" y1="12" x2="12" y2="18"/></svg>Ластик</button>
+            <button id="rectangleTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/></svg>Прямоугольник</button>
+            <button id="circleTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Круг</button>
+            <button id="lineTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>Линия</button>
+            <button id="eyedropperTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13.5 2.5-3 3a2.5 2.5 0 0 0 0 3.5l7 7a2.5 2.5 0 0 0 3.5 0l3-3a2.5 2.5 0 0 0 0-3.5l-7-7a2.5 2.5 0 0 0-3.5 0Z"/><path d="m22 22-5-5"/><path d="m2 2 5 5"/></svg>Пипетка</button>
             <div id="devToolsContainer" style="display:none; width:100%">
-                <button id="fillTool" class="btn btn-primary w-full">Заливка</button>
-                <button id="sprayTool" class="btn btn-primary w-full">Распылитель</button>
-                <button id="textTool" class="btn btn-primary w-full">Текст</button>
+                <button id="fillTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2Z"/><path d="m5 11 7-7 7 7"/></svg>Заливка</button>
+                <button id="sprayTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><circle cx="8" cy="8" r="1"/><circle cx="14" cy="8" r="1"/><circle cx="11" cy="13" r="1"/><circle cx="17" cy="13" r="1"/><circle cx="8" cy="18" r="1"/></svg>Распылитель</button>
+                <button id="textTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Текст</button>
             </div>
             <div class="w-full h-px bg-gray-300 my-4"></div>
             <div id="aiFeatures" class="w-full text-center">
                 <button id="geminiIdeaButton" class="btn btn-gemini w-full">✨ Идея для рисунка</button>
-                <p class="text-xs text-gray-500 mt-1">Используется API Gemini, модель Gemini 2.0 Flash</p>
+                <p class="text-xs text-gray-500 mt-1">API Gemini 2.0 Flash</p>
             </div>
             <div id="ideaLibrarySection" class="w-full text-center">
-                <h4 class="text-md font-semibold mt-2 mb-2">Библиотека идей</h4>
-                <p class="text-xs text-gray-400 -mt-2 mb-2">(сохраняется в браузере)</p>
+                <h4 class="text-md font-semibold mt-2">Библиотека идей</h4>
                 <div id="ideaListContainer"><p class="text-gray-400 text-center p-4">Здесь будут сохраненные идеи...</p></div>
-                <button id="clearLibraryButton" class="text-xs text-red-500 hover:underline mt-2">Очистить библиотеку</button>
+                <button id="clearLibraryButton" class="text-xs text-red-500 hover:underline mt-2">Очистить</button>
             </div>
             <div class="w-full h-px bg-gray-300 my-4"></div>
-            <label for="colorPicker" class="text-gray-700 font-medium self-start">Цвет:</label>
+            <label for="colorPicker" class="font-medium self-start">Цвет:</label>
             <input type="color" id="colorPicker" value="#000000" />
-            <!-- Продвинутый выбор цвета для DEV -->
             <div id="advancedColorContainer" class="advanced-color" style="display:none">
                 <div class="color-input-group">
                     <span>R:</span><input type="number" id="redInput" min="0" max="255" value="0">
@@ -488,26 +358,23 @@
                     <span>HEX:</span><input type="text" id="hexInput" value="#000000" style="width:80px">
                 </div>
             </div>
-            <label for="lineWidth" class="text-gray-700 font-medium self-start mt-2">Толщина:</label>
+            <label for="lineWidth" class="font-medium self-start mt-2">Толщина:</label>
             <div class="flex items-center w-full">
                 <input type="range" id="lineWidth" min="1" max="50" value="5" />
-                <span id="lineWidthValue" class="text-gray-700 font-medium ml-2">5</span>
+                <span id="lineWidthValue" class="font-medium ml-2">5</span>
             </div>
-            <!-- Слои (только DEV) -->
             <div id="layersContainer" class="layer-panel" style="display:none">
                 <h4 class="text-md font-semibold mb-2">Слои</h4>
                 <div id="layerList"></div>
                 <button id="addLayerBtn" class="btn btn-secondary w-full mt-2">+ Добавить слой</button>
             </div>
         </div>
-        <!-- Основная область рисования -->
         <div class="main-drawing-area">
             <canvas id="drawingCanvas" width="800" height="600"></canvas>
-            <div class="controls">
+            <div class="controls flex items-center gap-4 mt-4">
                 <button id="clearButton" class="btn btn-clear">Очистить</button>
                 <button id="saveButton" class="btn btn-save">Скачать PNG</button>
-                <!-- Переключатель тёмной темы (DEV) -->
-                <div id="themeToggleContainer" style="display:none; margin-left:10px;" class="theme-toggle">
+                <div id="themeToggleContainer" style="display:none;" class="theme-toggle">
                     <label class="theme-toggle">
                         <input type="checkbox" id="darkThemeCheckbox">
                         Тёмная тема
@@ -517,34 +384,30 @@
         </div>
     </div>
 
-    <!-- Кастомный курсор и модалка Gemini -->
     <div id="customCursor"></div>
     <div id="geminiModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close">&times;</span>
-            <h3 class="text-2xl font-bold text-gray-800">Генератор идей</h3>
-            <div class="flex flex-col sm:flex-row gap-2 mt-4">
-                <button id="funnyIdeaBtn" class="btn btn-primary flex-1">Смешная идея</button>
-                <button id="seriousIdeaBtn" class="btn btn-primary flex-1">Серьезная идея</button>
+            <h3 class="text-2xl font-bold">Генератор идей</h3>
+            <div class="flex gap-2 mt-4">
+                <button id="funnyIdeaBtn" class="btn btn-primary flex-1">Смешная</button>
+                <button id="seriousIdeaBtn" class="btn btn-primary flex-1">Серьёзная</button>
             </div>
             <div class="mt-4">
-                <input type="text" id="customMoodInput" placeholder="Введите свое настроение..." class="w-full p-2 border border-gray-300 rounded-md">
-                <button id="customIdeaBtn" class="btn btn-gemini w-full mt-2">✨ Сгенерировать по настроению</button>
+                <input type="text" id="customMoodInput" placeholder="Своё настроение..." class="w-full p-2 border rounded-md">
+                <button id="customIdeaBtn" class="btn btn-gemini w-full mt-2">✨ Сгенерировать</button>
             </div>
-            <div class="w-full h-px bg-gray-300 my-4"></div>
             <div id="geminiPrompt"></div>
         </div>
     </div>
 
     <script>
-        // --- Определение версии ---
+        // === Версия ===
         const isDevVersion = new URLSearchParams(window.location.search).get("env") === "dev";
         const drawingsKey = isDevVersion ? "myDrawings_dev" : "myDrawings";
         const ideasKey = isDevVersion ? "drawingIdeas_dev" : "drawingIdeas";
 
-        // --- DOM элементы (большинство как в оригинале) ---
-        const dataConsentBanner = document.getElementById("dataConsentBanner");
-        const consentButton = document.getElementById("consentButton");
+        // === DOM ===
         const confirmationModal = document.getElementById("confirmationModal");
         const confirmationMessage = document.getElementById("confirmationMessage");
         const confirmYesBtn = document.getElementById("confirmYesBtn");
@@ -552,32 +415,17 @@
         const notificationModal = document.getElementById("notificationModal");
         const notificationMessage = document.getElementById("notificationMessage");
         const notificationCloseBtn = document.getElementById("notificationCloseBtn");
-        const versionSwitchModal = document.getElementById("versionSwitchModal");
         const galleryScreen = document.getElementById("galleryScreen");
         const drawingScreen = document.getElementById("drawingScreen");
-        const newDrawingBtn = document.getElementById("newDrawingBtn");
-        const backToGalleryBtn = document.getElementById("backToGalleryBtn");
         const drawingGrid = document.getElementById("drawingGrid");
-        const exportDataBtn = document.getElementById("exportDataBtn");
-        const importDataInput = document.getElementById("importDataInput");
         const canvas = document.getElementById("drawingCanvas");
         const ctx = canvas.getContext("2d");
         const colorPicker = document.getElementById("colorPicker");
-        const lineWidthControl = document.getElementById("lineWidth");
-        const lineWidthValueSpan = document.getElementById("lineWidthValue");
-        const clearButton = document.getElementById("clearButton");
-        const saveButton = document.getElementById("saveButton");
+        const lineWidth = document.getElementById("lineWidth");
+        const lineWidthValue = document.getElementById("lineWidthValue");
         const customCursor = document.getElementById("customCursor");
-        const geminiIdeaButton = document.getElementById("geminiIdeaButton");
-        const geminiModal = document.getElementById("geminiModal");
-        const geminiPromptContainer = document.getElementById("geminiPrompt");
-        const modalCloseButton = geminiModal.querySelector(".modal-close");
-        const ideaListContainer = document.getElementById("ideaListContainer");
-        const clearLibraryButton = document.getElementById("clearLibraryButton");
-        const funnyIdeaBtn = document.getElementById("funnyIdeaBtn");
-        const seriousIdeaBtn = document.getElementById("seriousIdeaBtn");
-        const customMoodInput = document.getElementById("customMoodInput");
-        const customIdeaBtn = document.getElementById("customIdeaBtn");
+
+        // Инструменты
         const toolButtons = {
             pencil: document.getElementById("pencilTool"),
             eraser: document.getElementById("eraserTool"),
@@ -586,59 +434,45 @@
             line: document.getElementById("lineTool"),
             eyedropper: document.getElementById("eyedropperTool"),
         };
-
-        // DEV-элементы
-        const devToolsContainer = document.getElementById("devToolsContainer");
         const fillTool = document.getElementById("fillTool");
         const sprayTool = document.getElementById("sprayTool");
         const textTool = document.getElementById("textTool");
+        const devToolsContainer = document.getElementById("devToolsContainer");
+        const advancedColorContainer = document.getElementById("advancedColorContainer");
+        const themeToggleContainer = document.getElementById("themeToggleContainer");
+        const darkThemeCheckbox = document.getElementById("darkThemeCheckbox");
         const layersContainer = document.getElementById("layersContainer");
         const layerList = document.getElementById("layerList");
         const addLayerBtn = document.getElementById("addLayerBtn");
-        const advancedColorContainer = document.getElementById("advancedColorContainer");
-        const redInput = document.getElementById("redInput");
-        const greenInput = document.getElementById("greenInput");
-        const blueInput = document.getElementById("blueInput");
-        const hexInput = document.getElementById("hexInput");
-        const themeToggleContainer = document.getElementById("themeToggleContainer");
-        const darkThemeCheckbox = document.getElementById("darkThemeCheckbox");
 
         // Состояние
         let isDrawing = false, lastX = 0, lastY = 0, startX = 0, startY = 0;
         let currentTool = "pencil", previousTool = "pencil";
         let currentDrawingId = null;
         let autoSaveInterval = null;
-        const CANVAS_BACKGROUND_COLOR = "#ffffff";
-        // Слои (только DEV)
-        let layers = [];
-        let activeLayerIndex = 0;
-        // Для распылителя
-        let sprayInterval = null;
+        const CANVAS_BG = "#ffffff";
+        let layers = [{ name: "Фон" }], activeLayer = 0;
 
-        // --- Модальные окна ---
-        function showNotification(message) {
-            notificationMessage.textContent = message;
+        // === Модалки ===
+        function showNotification(msg) {
+            notificationMessage.textContent = msg;
             notificationModal.classList.add("show");
         }
         notificationCloseBtn.addEventListener("click", () => notificationModal.classList.remove("show"));
-
-        function showConfirmation(message, onConfirmCallback) {
-            confirmationMessage.textContent = message;
+        function showConfirm(msg, cb) {
+            confirmationMessage.textContent = msg;
             confirmationModal.classList.add("show");
-            const newYesBtn = confirmYesBtn.cloneNode(true);
-            confirmYesBtn.parentNode.replaceChild(newYesBtn, confirmYesBtn);
-            newYesBtn.addEventListener("click", () => {
-                onConfirmCallback();
-                confirmationModal.classList.remove("show");
-            });
-            confirmNoBtn.addEventListener("click", () => { confirmationModal.classList.remove("show"); }, { once: true });
+            const newYes = confirmYesBtn.cloneNode(true);
+            confirmYesBtn.parentNode.replaceChild(newYes, confirmYesBtn);
+            newYes.addEventListener("click", () => { cb(); confirmationModal.classList.remove("show"); });
+            confirmNoBtn.addEventListener("click", () => confirmationModal.classList.remove("show"), { once: true });
         }
 
-        // --- Экраны ---
-        function showScreen(screenId) {
+        // === Экраны ===
+        function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-            document.getElementById(screenId).classList.add("active");
-            if (screenId === "galleryScreen") {
+            document.getElementById(id).classList.add("active");
+            if (id === "galleryScreen") {
                 renderGallery();
                 if (autoSaveInterval) clearInterval(autoSaveInterval);
             } else {
@@ -647,627 +481,724 @@
             }
         }
 
-        // --- Галерея и localStorage (как в оригинале) ---
+        // === Галерея ===
+        function getDrawings() {
+            try { return JSON.parse(localStorage.getItem(drawingsKey)) || {}; } catch { return {}; }
+        }
+        function saveCurrentDrawing() {
+            if (!currentDrawingId || !canvas.width) return;
+            const tmp = document.createElement("canvas");
+            tmp.width = canvas.width; tmp.height = canvas.height;
+            const tctx = tmp.getContext("2d");
+            tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
+            tctx.drawImage(canvas,0,0);
+            const drawings = getDrawings();
+            drawings[currentDrawingId] = {
+                thumbnail: tmp.toDataURL("image/jpeg",0.5),
+                full: tmp.toDataURL("image/png")
+            };
+            localStorage.setItem(drawingsKey, JSON.stringify(drawings));
+        }
         function renderGallery() {
-            const drawings = getDrawingsFromStorage();
+            const drawings = getDrawings();
             drawingGrid.innerHTML = "";
-            if (Object.keys(drawings).length === 0) {
-                drawingGrid.innerHTML = `<p class="text-gray-500 col-span-full text-center mt-10">У вас пока нет рисунков. Нажмите "Новый рисунок", чтобы начать!</p>`;
+            if (!Object.keys(drawings).length) {
+                drawingGrid.innerHTML = '<p class="text-center mt-10 col-span-full" style="color:var(--text-secondary)">Нет рисунков</p>';
                 return;
             }
-            const sortedIds = Object.keys(drawings).sort((a, b) => b - a);
-            for (const id of sortedIds) {
-                const drawingData = drawings[id];
-                const thumb = document.createElement("div");
-                thumb.className = "drawing-thumbnail";
-                thumb.innerHTML = `
-                    <img src="${drawingData.thumbnail}" alt="Миниатюра рисунка">
-                    <div class="thumbnail-info">${new Date(parseInt(id)).toLocaleString("ru-RU")}</div>
-                    <button class="delete-drawing-btn" data-id="${id}">&times;</button>
-                `;
-                thumb.addEventListener("click", (e) => {
+            Object.keys(drawings).sort((a,b)=>b-a).forEach(id => {
+                const d = drawings[id];
+                const div = document.createElement("div");
+                div.className = "drawing-thumbnail";
+                div.innerHTML = `<img src="${d.thumbnail}" alt=""/><div class="thumbnail-info">${new Date(+id).toLocaleString("ru")}</div><button class="delete-drawing-btn">&times;</button>`;
+                div.addEventListener("click", e => {
                     if (!e.target.classList.contains("delete-drawing-btn")) loadDrawing(id);
                 });
-                thumb.querySelector(".delete-drawing-btn").addEventListener("click", () => deleteDrawing(id));
-                drawingGrid.appendChild(thumb);
-            }
+                div.querySelector(".delete-drawing-btn").addEventListener("click", () => deleteDrawing(id));
+                drawingGrid.appendChild(div);
+            });
         }
-
-        function getDrawingsFromStorage() {
-            try {
-                const drawingsJSON = localStorage.getItem(drawingsKey);
-                return drawingsJSON ? JSON.parse(drawingsJSON) : {};
-            } catch (e) {
-                return {};
-            }
-        }
-
-        function saveCurrentDrawing() {
-            if (!currentDrawingId || !canvas.width || !canvas.height) return;
-            try {
-                const tempCanvas = document.createElement("canvas");
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
-                const tempCtx = tempCanvas.getContext("2d");
-                tempCtx.fillStyle = CANVAS_BACKGROUND_COLOR;
-                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                tempCtx.drawImage(canvas, 0, 0);
-                const drawings = getDrawingsFromStorage();
-                drawings[currentDrawingId] = {
-                    thumbnail: tempCanvas.toDataURL("image/jpeg", 0.5),
-                    full: tempCanvas.toDataURL("image/png"),
-                };
-                localStorage.setItem(drawingsKey, JSON.stringify(drawings));
-            } catch (e) {
-                console.error("Ошибка сохранения рисунка:", e);
-            }
-        }
-
         function loadDrawing(id) {
-            const drawings = getDrawingsFromStorage();
+            const drawings = getDrawings();
             if (drawings[id]) {
                 currentDrawingId = id;
                 const img = new Image();
                 img.onload = () => {
                     showScreen("drawingScreen");
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+                    canvas.width = img.width; canvas.height = img.height;
+                    ctx.drawImage(img,0,0);
                 };
                 img.src = drawings[id].full;
             }
         }
-
         function deleteDrawing(id) {
-            showConfirmation("Вы уверены, что хотите удалить этот рисунок?", () => {
-                const drawings = getDrawingsFromStorage();
-                delete drawings[id];
-                localStorage.setItem(drawingsKey, JSON.stringify(drawings));
+            showConfirm("Удалить рисунок?", () => {
+                const d = getDrawings(); delete d[id];
+                localStorage.setItem(drawingsKey, JSON.stringify(d));
                 renderGallery();
             });
         }
-
+        // Экспорт/Импорт через настройки
         function exportData() {
-            const drawings = localStorage.getItem(drawingsKey) || "{}";
-            const ideas = localStorage.getItem(ideasKey) || "[]";
-            const data = { drawings: JSON.parse(drawings), ideas: JSON.parse(ideas) };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.download = `drawing-app-backup-${Date.now()}.json`;
-            a.href = url;
-            a.click();
-            URL.revokeObjectURL(url);
+            const data = { drawings: getDrawings(), ideas: JSON.parse(localStorage.getItem(ideasKey)||"[]") };
+            const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+            a.download = `backup-${Date.now()}.json`; a.click();
         }
-
-        function handleImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+        function importData(file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = e => {
                 try {
-                    const imported = JSON.parse(e.target.result);
-                    if (!imported.drawings || !imported.ideas) {
-                        showNotification("Неверный формат файла.");
-                        return;
-                    }
-                    showConfirmation("Перезаписать текущие данные?", () => {
-                        localStorage.setItem(drawingsKey, JSON.stringify(imported.drawings));
-                        localStorage.setItem(ideasKey, JSON.stringify(imported.ideas));
+                    const json = JSON.parse(e.target.result);
+                    if (!json.drawings || !json.ideas) return showNotification("Неверный формат");
+                    showConfirm("Перезаписать данные?", () => {
+                        localStorage.setItem(drawingsKey, JSON.stringify(json.drawings));
+                        localStorage.setItem(ideasKey, JSON.stringify(json.ideas));
                         renderGallery();
-                        renderIdeaLibrary();
-                        showNotification("Импорт выполнен!");
+                        if (!isDevVersion) renderIdeaLibrary();
+                        showNotification("Импорт выполнен");
                     });
-                } catch (err) {
-                    showNotification("Ошибка чтения файла.");
-                }
-                event.target.value = "";
+                } catch { showNotification("Ошибка чтения файла"); }
             };
             reader.readAsText(file);
         }
 
-        newDrawingBtn.addEventListener("click", () => {
-            currentDrawingId = Date.now();
-            showScreen("drawingScreen");
-            setTimeout(() => ctx.clearRect(0, 0, canvas.width, canvas.height), 0);
-        });
-        backToGalleryBtn.addEventListener("click", () => {
-            saveCurrentDrawing();
-            showScreen("galleryScreen");
-        });
-        exportDataBtn.addEventListener("click", exportData);
-        importDataInput.addEventListener("change", handleImport);
+        // === Рис };
+            reader.readAsText(file);
+        }
 
-        // --- Инструменты и рисование ---
+        // === Рисование ===
         function setupContext() {
-            ctx.strokeStyle = currentTool === "eraser" ? CANVAS_BACKGROUND_COLOR : colorPicker.value;
+           ование ===
+        function setupContext() {
+            ctx.st ctx.strokeStyle = currentrokeStyle = currentTool === "eraser" ? CANVASTool === "eraser" ? CANVAS_BG : colorPicker.value;
+            ctx.fillStyle =_BG : colorPicker.value;
             ctx.fillStyle = colorPicker.value;
-            ctx.lineWidth = lineWidthControl.value;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
+            colorPicker.value;
+            ctx.lineWidth = line ctx.lineWidth = lineWidth.valueWidth.value;
+            ctx.lineCap = ctx.lineJoin = "round";
         }
-
+        function resize;
+            ctx.lineCap = ctx.lineJoin = "round";
+        }
         function resizeCanvas() {
-            const mainDrawingArea = document.querySelector(".main-drawing-area");
-            const controlsHeight = mainDrawingArea.querySelector(".controls").offsetHeight;
-            const availableWidth = mainDrawingArea.clientWidth - 40;
-            const availableHeight = mainDrawingArea.clientHeight - controlsHeight - 80;
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            canvas.width = availableWidth;
-            canvas.height = availableHeight;
-            ctx.putImageData(imageData, 0, 0);
+            const areaCanvas() {
+            const area = document.querySelector(".main-drawing-area = document.querySelector(".main-drawing-area");
+           ");
+            const ctr const ctrls =ls = area.querySelector(".controls").offsetHeight;
+            canvas.width = area.clientWidth - area.querySelector(".controls").offsetHeight;
+            canvas.width = area.clientWidth - 40 40;
+            canvas.height = area;
+            canvas.height = area.clientHeight - c.clientHeight - ctrls - 80trls - 80;
             setupContext();
         }
-
+        function startDrawing(e);
+            setupContext();
+        }
         function startDrawing(e) {
-            if (currentTool === "eyedropper" || currentTool === "fill" || currentTool === "text") return;
+            if ( {
+            if (["ey["eyedroedropper","pper","fill","text"].includes(currentTool)) return;
             isDrawing = true;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            [lastX, lastY] = [x, y];
-            [startX, startY] = [x, y];
+            const r = canvas.getBfill","text"].includes(currentTool)) return;
+            isDrawing = true;
+            const r = canvas.getBoundingClientRect();
+            const x = (eoundingClientRect();
+            const x = (e.clientX||e.touches.clientX||e.touches[0].clientX) - r.left;
+           [0].clientX) - r.left;
+            const y = (e.client const y = (e.clientY||Y||e.te.touches[0].clientouches[0].clientY)Y) - r.top - r.top;
+           ;
+            [lastX [lastX,lastY] =,lastY] = [x,y]; [startX,startY] [x,y]; [startX,startY] = [x,y];
             setupContext();
-            if (currentTool === "spray") {
-                sprayInterval = setInterval(() => {
-                    for (let i = 0; i < 5; i++) {
-                        const offsetX = (Math.random() - 0.5) * lineWidthControl.value * 2;
-                        const offsetY = (Math.random() - 0.5) * lineWidthControl.value * 2;
-                        ctx.fillRect(lastX + offsetX, lastY + offsetY, 1, 1);
-                    }
-                }, 50);
-            }
+        = [x,y];
+            setupContext();
         }
-
+        function drawFreehand(e) }
         function drawFreehand(e) {
-            if (!isDrawing || currentTool === "spray") return;
-            const rect = canvas.getBoundingClientRect();
-            const currentX = (e.clientX || e.touches[0].clientX) - rect.left;
-            const currentY = (e.clientY || e.touches[0].clientY) - rect.top;
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(currentX, currentY);
-            ctx.stroke();
-            [lastX, lastY] = [currentX, currentY];
-        }
-
-        function stopDrawing(e) {
             if (!isDrawing) return;
-            isDrawing = false;
-            if (sprayInterval) {
-                clearInterval(sprayInterval);
-                sprayInterval = null;
-            }
-            const rect = canvas.getBoundingClientRect();
-            const endX = (e.clientX || e.changedTouches[0].clientX) - rect.left;
-            const endY = (e.clientY || e.changedTouches[0].clientY) - rect.top;
-            switch (currentTool) {
-                case "rectangle":
-                    ctx.strokeRect(startX, startY, endX - startX, endY - startY);
-                    break;
+            {
+            if (!isDrawing) return;
+            const r = canvas.getBoundingClientRect();
+            const const r = canvas.getBoundingClientRect();
+            const x = (e x = (e.clientX||e.touches.clientX||e.touches[0].[0].clientXclientX) -) - r.left;
+            const y = ( r.left;
+            const y = (e.cliente.clientY||e.touches[0].clientY)Y||e.touches[0].clientY) - r.top;
+            ctx.beginPath(); ctx - r.top;
+            ctx.beginPath(); ctx.moveTo(lastX,lastY);.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.lineTo(x,y); ctx.stroke();
+            [lastX ctx.stroke();
+            [lastX,lastY] = [x,y,lastY] = [x,y];
+        }
+        function stop];
+        }
+        function stopDrawing(e) {
+            if (!isDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing) return;
+            isDrawing =Drawing = false;
+            const r = false;
+            const r = canvas.get canvas.getBoundingClientRect();
+            const exBoundingClientRect();
+            const ex = (e.clientX|| = (e.clientX||e.che.changedTouches[0angedTouches[0].clientX) - r.left].clientX) - r.left;
+            const;
+            const ey = (e.clientY||e.changed ey = (e.clientY||e.changedTouches[0].clientYTouches[0].clientY) - r.top;
+            switch(currentTool)) - r.top;
+            switch(currentTool) {
+                case "rectangle": ctx.strokeRect {
+                case "rectangle": ctx.strokeRect(startX,startY,ex-start(startX,startY,ex-startX,ey-startY);X,ey-startY); break;
+                case break;
                 case "circle":
-                    const radius = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
-                    ctx.beginPath();
-                    ctx.arc(startX, startY, radius, 0, 2 * Math.PI);
-                    ctx.stroke();
-                    break;
+                    const rad = Math.hypot(ex-startX, "circle":
+                    const rad = Math.hypot(ex-startX, ey-start ey-startY);
+                    ctx.beginPath(); ctx.arc(startX,startY);
+                    ctx.beginPath(); ctx.arc(startX,startY,rad,0,Y,rad,0,Math.PI*2);Math.PI*2); ctx.stroke(); break;
+                case ctx.stroke(); break;
                 case "line":
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(endX, endY);
-                    ctx.stroke();
-                    break;
+                    ctx "line":
+                    ctx.beginPath(); ctx.moveTo(startX.beginPath(); ctx.moveTo(startX,startY); ctx.lineTo(ex,startY); ctx.lineTo(ex,ey); ctx,ey); ctx.st.stroke(); break;
             }
         }
-
-        function updateCursor(e) {
-            if (currentTool !== "eyedropper") {
-                customCursor.style.left = `${e.clientX}px`;
-                customCursor.style.top = `${e.clientY}px`;
-            }
-            if (isDrawing && (currentTool === "pencil" || currentTool === "eraser")) {
-                drawFreehand(e);
+       roke(); break;
             }
         }
-
-        function activateTool(toolName) {
-            if (toolName !== "eyedropper") {
-                previousTool = toolName;
-                canvas.style.cursor = "none";
-                customCursor.style.display = "block";
-            } else {
-                canvas.style.cursor = "copy";
-                customCursor.style.display = "none";
-            }
-            currentTool = toolName;
-            Object.values(toolButtons).forEach(b => b.classList.remove("active"));
-            if (toolButtons[toolName]) toolButtons[toolName].classList.add("active");
-            setupContext();
-        }
-
-        function pickColor(e) {
-            if (currentTool !== "eyedropper") return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left, y = e.clientY - rect.top;
-            const pixel = ctx.getImageData(x, y, 1, 1).data;
-            const hex = "#" + ((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1);
+        function pick function pickColor(e) {
+            if (currentTool !==Color(e) {
+            if (currentTool !== "eyedropper") "eyedropper") return return;
+            const r = canvas.get;
+            const r = canvas.getBoundingClientRect();
+            const xBoundingClientRect();
+            const x = e = e.clientX.clientX - r.left, y = e.client - r.left, y = e.clientY - r.topY - r.top;
+            const [r0;
+            const [r0,g0,g0,b0] = ctx.getImageData,b0] = ctx.getImageData(x,y,1,1).data(x,y,1,1).data;
+            const hex = "#" +;
+            const hex = "#" + ((1<<24)+(r ((1<<24)+(r0<<16)+(g0<<8)+b0<<16)+(g0<<8)+b0).toString(16).slice(0).toString(16).slice(1);
+            colorPicker.value1);
             colorPicker.value = hex;
-            if (isDevVersion) updateAdvancedColorFromPicker();
+            activateTool(previous = hex;
             activateTool(previousTool);
         }
+        functionTool);
+        }
+        function activateTool(name activateTool(name) {
+            if (name !== "eyedropper") {
+                previous) {
+            if (name !== "eyedropper") {
+                previousTool = name;
+                canvas.style.cTool = name;
+                canvas.style.cursor = "none";
+                customCursor.style.display = "block";
+            } elseursor = "none";
+                customCursor.style.display = "block";
+            } {
+                canvas.style.c else {
+                canvas.style.cursor =ursor = "copy "copy";
+               ";
+                customCursor customCursor.style.display.style.display = "none";
+            }
+            current = "none";
+            }
+            currentTool =Tool = name;
+            Object.values(toolButtons).forEach(b => b.classList.remove(" name;
+            Object.values(toolButtons).forEach(b => b.classList.remove("active"));
+            if (toolButtons[name]) toolButtons[name].classList.add("active");
+            setupContextactive"));
+            if (toolButtons[name]) toolButtons[name].classList.add("active");
+            setupContext();
+       ();
+        }
 
-        // Заливка
-        function floodFill(x, y, fillColor) {
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const data = imageData.data;
-            const targetColor = ctx.getImageData(x, y, 1, 1).data;
-            const [tr, tg, tb] = [targetColor[0], targetColor[1], targetColor[2]];
-            const [fr, fg, fb] = [
-                parseInt(fillColor.slice(1,3), 16),
-                parseInt(fillColor.slice(3,5), 16),
-                parseInt(fillColor.slice(5,7), 16)
-            ];
-            if (tr === fr && tg === fg && tb === fb) return;
-            const stack = [[x, y]];
-            while (stack.length) {
-                const [cx, cy] = stack.pop();
-                if (cx < 0 || cy < 0 || cx >= canvas.width || cy >= canvas.height) continue;
-                const idx = (cy * canvas.width + cx) * 4;
-                if (data[idx] === tr && data[idx+1] === tg && data[idx+2] === tb) {
-                    data[idx] = fr; data[idx+1] = fg; data[idx+2] = fb; data[idx+3] = 255;
-                    stack.push([cx+1, cy], [cx-1, cy], [cx, cy+1], [cx, cy-1]);
+        // DEV заливка/распылитель/текст
+        function floodFill(x }
+
+        // DEV заливка/распылитель/текст
+        function floodFill(x,y,,y,fillColorfillColor) {
+            const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+            const data = img) {
+            const img = ctx.getImageData(0,0,canvas.width,canvas.height);
+            const data = img.data;
+            const target = ctx.getImage.data;
+            const target = ctx.getImageData(xData(x,y,,y,1,1,1).1).datadata;
+            const;
+            const [tr [tr,tg,tg,tb,tb] =] = [target [target[0[0],target],target[1],target[2]];
+            const [fr,fg,fb] = [parseInt[1],target[2]];
+            const [fr,fg,fb] = [parseInt(fillColor.slice(1,3),16), parseInt(fillColor.slice(3,5),(fillColor.slice(1,3),16), parseInt(fillColor.slice(316,5),16), parseInt), parseInt(fillColor.slice(fillColor.slice(5(5,7),16)];
+            if (,7),16)];
+            if (tr===tr===fr &&fr && tg=== tg===fg &&fg && tb=== tb===fb) return;
+            const stack = [[xfb) return;
+            const stack = [[x,y,y]];
+            while(stack.length) {
+                const]];
+            while(stack.length) {
+                const [cx, [cx,cy]cy] = stack = stack.pop();
+                if.pop();
+                if (cx (cx<0<0||cy||cy<0||cx>=canvas.width||<0||cx>=canvas.width||cy>=cy>=canvas.heightcanvas.height) continue) continue;
+               ;
+                const i const i = (cy* = (cy*canvas.widthcanvas.width+cx)*4;
+                if (data[i+cx)*4;
+                if (data[i]===]===tr &&tr && data[i data[i++1]===tg &&1]===tg && data[i data[i+2+2]===]===tb)tb) {
+                    {
+                    data[i data[i]=fr; data[i+1]=]=fr; data[i+1]=fg;fg; data[i+2 data[i+2]=fb]=fb; data; data[i+3]=255;
+                    stack.push([cx+1,cy],[cx-1,[i+3]=255;
+                    stack.push([cx+1,cy],[cx-1,cycy],[cx,cy+1],[cx,cy-1]);
                 }
             }
-            ctx.putImageData(imageData, 0, 0);
-        }
-
-        // Текст
-        function placeText(x, y) {
-            const text = prompt("Введите текст:");
-            if (text) {
-                ctx.font = `${lineWidthControl.value * 3}px sans-serif`;
-                ctx.fillText(text, x, y);
+            ctx.putImageData(img,0],[cx,cy+1],[cx,cy-1]);
+                }
             }
+            ctx.putImageData(img,0,0,0);
+       );
         }
-
-        canvas.addEventListener("click", (e) => {
-            if (currentTool === "eyedropper") {
-                pickColor(e);
-            } else if (currentTool === "fill") {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left, y = e.clientY - rect.top;
-                floodFill(Math.floor(x), Math.floor(y), colorPicker.value);
-            } else if (currentTool === "text") {
-                const rect = canvas.getBoundingClientRect();
-                const x = e.clientX - rect.left, y = e.clientY - rect.top;
-                placeText(x, y);
+        }
+        canvas.addEventListener canvas.addEventListener("click", e => {
+            if("click", e => {
+            if (current (currentTool ===Tool === "ey "eyedropper") pickColor(e);
+            elseedropper") pickColor(e);
+            else if ( if (currentTool === "currentTool === "fill") {
+               fill") {
+                const r const r = canvas = canvas.getB.getBoundingClientoundingClientRectRect();
+                flood();
+                floodFill(MathFill(Math.floor(e.floor(e.clientX.clientX-r.left-r.left), Math), Math.floor(e.floor(e.clientY.clientY-r.top-r.top), color), colorPicker.valuePicker.value);
+           );
+            } else } else if ( if (currentToolcurrentTool === " === "text") {
+               text") {
+                const r const r = canvas.getBoundingClientRect();
+                const text = = canvas.getBoundingClientRect();
+                const text = prompt(" prompt("ВведитеВведите текст:");
+                if (text) {
+                    ctx.font = `${lineWidth.value текст:");
+                if (text) {
+                    ctx.font = `${lineWidth.value*3}px*3}px sans-serif`;
+                    sans-serif`;
+                    ctx.fillText(text ctx.fillText(text, e, e.clientX-r.left.clientX-r.left, e, e.clientY-r.top.clientY-r.top);
+               );
+                }
+            }
             }
         });
 
-        // Слои DEV
-        function renderLayers() {
-            layerList.innerHTML = "";
-            layers.forEach((layer, idx) => {
-                const div = document.createElement("div");
-                div.className = "layer-item" + (idx === activeLayerIndex ? " active" : "");
-                div.textContent = layer.name || `Слой ${idx+1}`;
-                div.addEventListener("click", () => {
-                    activeLayerIndex = idx;
-                    renderLayers();
-                });
-                if (idx > 0) {
-                    const delBtn = document.createElement("button");
-                    delBtn.textContent = "✕";
-                    delBtn.style.background = "none";
-                    delBtn.style.border = "none";
-                    delBtn.style.color = "var(--danger)";
-                    delBtn.addEventListener("click", (e) => {
-                        e.stopPropagation();
-                        layers.splice(idx, 1);
-                        if (activeLayerIndex >= layers.length) activeLayerIndex = layers.length - 1;
-                        renderLayers();
-                    });
-                    div.appendChild(delBtn);
-                }
-                layerList.appendChild(div);
+        // Слои
+        function render }
+        });
+
+        // Слои
+        function renderLayersLayers()() {
+            layer {
+            layerList.innerHTML =List.innerHTML = "";
+            layers.forEach(( "";
+            layers.forEach((l,il,i) => {
+                const d = document.createElement("div) => {
+                const d = document.createElement("div");
+                d.className = "layer-item");
+                d.className = "layer-item" + (i" + (i===active===activeLayer?"Layer?" active":" active":"");
+               ");
+                d.textContent = l.name;
+                d.textContent = l.name;
+                d.addEventListener d.addEventListener("click", ()("click", () => { => { activeLayer activeLayer = i; renderLayers = i; renderLayers(); });
+                layerList.appendChild(d);
+           (); });
+                layerList.appendChild(d);
             });
-        }
-
-        addLayerBtn?.addEventListener("click", () => {
-            layers.push({ name: `Слой ${layers.length+1}` });
-            activeLayerIndex = layers.length - 1;
-            renderLayers();
         });
+        }
+        add }
+        addLayerBtn?.addLayerBtn?.addEventListener("EventListener("click",click", () => () => {
+ {
+                       layers.push({ name layers.push({ name: `: `СлойСлой ${lay ${layers.lengthers.length+1+1}`}` });
+            active });
+            activeLayer = layers.lengthLayer = layers.length-1-1;
+           ;
+            renderLayers();
+        renderLayers();
+        });
+
+        // });
 
         // Продвинутый цвет
-        function updateColorFromInputs() {
-            const r = parseInt(redInput.value) || 0;
-            const g = parseInt(greenInput.value) || 0;
-            const b = parseInt(blueInput.value) || 0;
-            const hex = "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-            colorPicker.value = hex;
-            hexInput.value = hex;
-            setupContext();
-        }
-
-        function updateAdvancedColorFromPicker() {
+        function syncAdv Продвинутый цвет
+        function syncAdvColor()Color() {
             const hex = colorPicker.value;
-            hexInput.value = hex;
-            const r = parseInt(hex.slice(1,3), 16);
-            const g = parseInt(hex.slice(3,5), 16);
-            const b = parseInt(hex.slice(5,7), 16);
-            redInput.value = r;
-            greenInput.value = g;
-            blueInput.value = b;
+ {
+            const hex = colorPicker.value;
+            document.getElementById("hexInput").            document.getElementById("hexInput").value =value = hex hex;
+            document;
+            document.getElementById("redInput.getElementById("redInput").value = parseInt(hex").value = parseInt(hex.slice(.slice(1,3),1,3),1616);
+            document.getElementById("greenInput);
+            document.getElementById("greenInput").value = parseInt").value = parseInt(hex(hex.slice(.slice(3,5),3,5),16);
+            document16);
+            document.getElementById("blueInput.getElementById("blueInput").value").value = parseInt(hex = parseInt(hex.slice(5,.slice(5,7),167),16);
+        }
+        function);
+        }
+        function updateFrom updateFromRGB()RGB() {
+            const r = {
+            const r = +document.getElementById(" +document.getElementById("redInput").valueredInput").value;
+            const g = +document.getElementById("greenInput;
+            const g = +document.getElementById("greenInput").value;
+           ").value;
+            const b = + const b = +document.getElementByIddocument.getElementById("blueInput").value;
+            const hex = "#" + ((1("blueInput").value;
+            const hex = "#" + ((1<<24)+(<<24)+(r<<16)+(r<<16)+(gg<<8)+<<8)+b).b).toString(toString(16).slice(16).slice(11);
+            color);
+            colorPicker.valuePicker.value = hex;
+            document.getElementById = hex;
+            document.getElementById("hex("hexInput").value =Input").value = hex hex;
+            setupContext();
         }
 
         // Тёмная тема
-        function applyTheme(isDark) {
-            if (isDark) {
-                document.documentElement.setAttribute("data-theme", "dark");
-            } else {
-                document.documentElement.removeAttribute("data-theme");
-            }
+        darkThemeCheckbox?.;
+            setupContext();
         }
 
-        // --- Версии и фичи ---
-        function setupVersionUI() {
-            const versionText = document.getElementById("versionText");
-            const betaText = document.getElementById("betaText");
-            const versionSwitchContainer = document.getElementById("versionSwitchContainer");
+        // Тёмная тема
+        darkThemeCheckbox?.addEventListeneraddEventListener("change("change", e => {
+            document.documentElement.toggleAttribute("data-theme", e => {
+            document.documentElement.toggleAttribute("data-theme", e.target.checked);
+        });
 
+        // Обработ", e.target.checked);
+        });
+
+        // Обработчикичики мы мыши
+        canvasши
+        canvas.addEventListener(".addEventListener("mousedmousedown",own", startDrawing);
+        canvas.addEventListener("m startDrawing);
+        canvas.addEventListener("mousemousemove", e => {
+           ove", e => {
+            if (currentTool if (currentTool !== "eyed !== "eyedropperropper")") {
+                custom {
+                customCursor.style.left = e.clientX+"px";
+                customCursor.styleCursor.style.left = e.clientX+"px";
+                customCursor.style.top =.top = e.client e.clientY+"px";
+           Y+"px";
+            }
+            }
+            if ( if (isDrawing && (currentTool==="pencil"||currentTool==="eraser"))isDrawing && (currentTool==="pencil"||currentTool==="eraser")) drawFreehand(e);
+        });
+        canvas.addEventListener drawFreehand(e);
+        });
+        canvas.addEventListener("mouseup", stopDrawing);
+        canvas.addEventListener("touchstart", e => { e.preventDefault(); startDrawing(e); });
+        canvas.addEventListener("touchmove", e => { e.preventDefault(); drawFreehand(e); });
+        canvas.addEventListener("touchend",("mouseup", stopDrawing);
+        canvas.addEventListener("touchstart", e => { e.preventDefault(); startDrawing(e); });
+        canvas.addEventListener("touchmove", e => { e.preventDefault(); drawFreehand(e); });
+        canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(e); e => { e.preventDefault(); stopDrawing(e); });
+
+ });
+
+        //        // === И === Инициализация ===
+        window.addEventListener("load", ()нициализация ===
+        window.addEventListener("load", () => {
+            // => {
+            // согла согласие
+            if (!сие
+            if (!sessionStorage.getItem("consentBannerClosed")) {
+               sessionStorage.getItem("consentBannerClosed")) {
+                document.getElementById document.getElementById("dataConsentBanner("dataConsentBanner").style.display = "flex";
+                document.getElementById").style.display = "flex";
+                document.getElementById("cons("consentButton").addentButton").addEventListener("click",EventListener("click", () => () => {
+                    sessionStorage.setItem("cons {
+                    sessionStorage.setItem("consentBentBannerClosed","annerClosed","truetrue");
+                    document.getElementById");
+                    document.getElementById("dataConsentBanner("dataConsentBanner").style").style.display = "none";
+               .display = "none";
+                });
+ });
+            }
+
+            // настройки            }
+
+            // настройки версии версии
+           
+            const verText = const verText = document.getElementById document.getElementById("versionText("versionText");
+            const");
+            const beta = document.getElementById("betaText beta = document.getElementById("betaText");
+            const");
+            const switchContainer = document.getElementById switchContainer = document.getElementById("versionSwitchContainer("versionSwitchContainer");
+           ");
             if (isDevVersion) {
-                versionText.textContent = "HTMPen 8 DEV, ПРОЕКТ ЖИВ!";
-                betaText.classList.remove("hidden");
-                versionSwitchContainer.innerHTML = `<button id="switchToStableBtn" class="btn btn-stable-switch">Перейти к стабильной версии</button>`;
-                document.getElementById("switchToStableBtn").addEventListener("click", () => showVersionSwitchConfirmation(false));
-
-                // Включаем DEV-функции
+                if (isDevVersion) {
+                verText verText.textContent.textContent = "HTMPen  = "HTMPen 8 DEV, ПРОЕКТ Ж8 DEV, ПРОЕКТ ЖИВИВ!";
+                beta.classList.remove("hidden");
+                switchContainer!";
+                beta.classList.remove("hidden");
+                switchContainer.innerHTML =.innerHTML = '<button id="switchTo '<button id="switchToStableStableBtn" class="Btn" class="btn btnbtn btn-stable-switch-stable-switch">Ста">Стабильнаябильная версия</button>';
+                document.getElementById версия</button>';
+                document.getElementById("switchToStableBtn("switchToStableBtn").add").addEventListener("EventListener("click",click", () => () => {
+                    {
+                    document.getElementById("versionSwitchTitle").textContent = "Возврат в ста document.getElementById("versionSwitchTitle").textContent = "Возврат в стабильнуюбильную";
+                   ";
+                    document.getElementById(" document.getElementById("versionSwitchMessageversionSwitchMessage").text").textContent =Content = "Стабильная "Стабильная версия над версия надёжёжнее.";
+                    document.getElementById("confirmSwitchBtn").нее.";
+                    document.getElementById("confirmSwitchBtn").textContent = "textContent = "Перейти";
+                    document.getElementById("confirmSwitchBtn").style.background = "#3b82f6Перейти";
+                    document.getElementById("confirmSwitchBtn").style.background = "#3b82f6";
+                    document.getElementById("versionSwitchModal").classList.add("show");
+                   ";
+                    document.getElementById("versionSwitchModal").classList.add("show");
+                    document.getElementById("confirmSwitchBtn").onclick = () => location.h document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname;
+                });
+                //ref = location.pathname;
+                });
+                // Включаем DEV‑ Включаем DEV‑фичи
+                devToolsContainer.style.display =фичи
                 devToolsContainer.style.display = "block";
                 layersContainer.style.display = "block";
+                advanced "block";
+                layersContainer.style.display = "block";
                 advancedColorContainer.style.display = "flex";
-                themeToggleContainer.style.display = "flex";
-                // Инициализация слоёв
-                if (layers.length === 0) {
-                    layers.push({ name: "Фон" });
-                    activeLayerIndex = 0;
-                }
+                themeColorContainer.style.display = "flex";
+                themeToggleContainer.style.displayToggleContainer.style.display = " = "flex";
+                renderflex";
                 renderLayers();
-                // Продвинутый цвет
-                redInput.addEventListener("input", updateColorFromInputs);
-                greenInput.addEventListener("input", updateColorFromInputs);
-                blueInput.addEventListener("input", updateColorFromInputs);
-                hexInput.addEventListener("change", () => {
-                    if (/^#[0-9a-fA-F]{6}$/.test(hexInput.value)) {
-                        colorPicker.value = hexInput.value;
-                        updateAdvancedColorFromPicker();
-                        setupContext();
-                    }
+                document.getElementById("redInput").Layers();
+                document.getElementById("redInput").addEventListener("input", updateFromRGBaddEventListener("input", updateFromRGB);
+                document.getElementById);
+                document.getElementById("greenInput").addEventListener("greenInput").addEventListener("input", updateFromRGB);
+               ("input", updateFromRGB);
+                document.getElementById("blue document.getElementById("blueInput").addEventListener("input", updateFromRGB);
+               Input").addEventListener("input", updateFromRGB);
+                document.getElementById document.getElementById("hexInput").addEventListener("("hexInput").addEventListener("change", () =>change", () => {
+                    const v = document.getElementById {
+                    const v = document.getElementById("hexInput").value;
+                    if("hexInput").value;
+                    if (/^#[0-9a-fA-F]{6 (/^#[0-9a-fA-F]{6}$/.test(v)) {}$/.test(v)) { colorPicker colorPicker.value = v; syncAdv.value = v; syncAdvColor(); setupContextColor(); setupContext();(); }
                 });
-                colorPicker.addEventListener("input", updateAdvancedColorFromPicker);
-                updateAdvancedColorFromPicker();
-
-                // Тёмная тема
-                darkThemeCheckbox.addEventListener("change", (e) => {
-                    applyTheme(e.target.checked);
+                color }
                 });
-                // Отключаем AI функции в dev
-                geminiIdeaButton.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    showNotification("AI отключён в dev-версии");
+                colorPicker.addEventListener("input", syncPicker.addEventListener("input", syncAdvColorAdvColor);
+                syncAdvColor);
+                syncAdvColor();
+                // AI отключён();
+                // AI отключён
+                document.getElementById("geminiIdeaButton").
+                document.getElementById("geminiIdeaButton").addEventListener("click", eaddEventListener("click", e => {
+                    e.preventDefault(); => {
+                    e.preventDefault(); showNotification("AI от showNotification("AI отключён в dev‑ключён в dev‑версиверсии");
                 });
-                ideaListContainer.innerHTML = `<p class="text-gray-400 text-center p-4">Недоступно в dev-версии</p>`;
-                clearLibraryButton.style.display = "none";
-
+               и");
+                });
+                document.getElementById("ideaListContainer document.getElementById("ideaListContainer").innerHTML = '<p").innerHTML = '<p class="text-center p- class="text-center p-4">Недоступно4">Недоступно в dev‑версии</p>';
+                document в dev‑версии</p>';
+                document.getElementById("clearLibraryButton")..getElementById("clearLibraryButton").style.displaystyle.display = "none";
+            } = "none";
             } else {
-                versionText.textContent = "HTMPen 8, ПРОЕКТ ЗАБРОШЕН";
-                betaText.classList.add("hidden");
-                versionSwitchContainer.innerHTML = `<button id="switchToDevBtn" class="btn btn-dev-switch">Перейти к dev-версии</button>`;
-                document.getElementById("switchToDevBtn").addEventListener("click", () => showVersionSwitchConfirmation(true));
-
-                // Стабильный режим: AI работает
-                geminiIdeaButton.addEventListener("click", () => {
-                    geminiPromptContainer.innerHTML = "";
-                    geminiModal.classList.add("show");
+                verText.text else {
+                verText.textContent =Content = "HT "HTMPen 8MPen 8, ПРОЕКТ ЗАБРОШ, ПРОЕКТ ЗАБРОШЕН";
+                beta.classList.add("hiddenЕН";
+                beta.classList.add("hidden");
+                switchContainer.innerHTML = '<button id="switchToDevBtn");
+                switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev" class="btn btn-dev-switch">Dev‑версия</‑версия</buttonbutton>';
+                document>';
+                document.getElementById("switchTo.getElementById("switchToDevBtn").addEventListener("DevBtn").addEventListener("click",click", () => {
+                    document.getElementById("version () => {
+                    document.getElementById("versionSwitchTitleSwitchTitle").text").textContent =Content = "Пере "Переход вход в Dev‑версию";
+                    document.getElementById("version Dev‑версию";
+                    document.getElementById("versionSwitchMessage").textSwitchMessage").textContent = "НContent = "Новые функции, возможны ошибки.";
+                    documentовые функции, возможны ошибки.";
+                    document.getElementById(".getElementById("confirmSwitchconfirmSwitchBtn").Btn").textContent = "Да, перейти";
+                    document.getElementById("confirmSwitchBtn").styletextContent = "Да, перейти";
+                    document.getElementById("confirmSwitchBtn").style.background = "#f97316";
+                    document.getElementById("versionSwitch.background = "#f97316";
+                    document.getElementById("versionSwitchModal").classListModal").classList.add(".add("showshow");
+                    document.getElementById("");
+                    document.getElementById("confirmSwitchBtn").onclickconfirmSwitchBtn").onclick = () => location.href = location = () => location.href = location.pathname + "?env=dev";
+                });
+                // Stable AI
+               .pathname + "?env=dev";
+                });
+                // Stable AI
+                document.getElementById document.getElementById("geminiIdeaButton").addEventListener("click", () =>("geminiIdeaButton").addEventListener("click", () => {
+                    document.getElementById {
+                    document.getElementById("geminiPrompt").innerHTML = "";
+                   ("geminiPrompt").innerHTML = "";
+                    document document.getElementById("geminiModal.getElementById("geminiModal").classList.add("show");
+               ").classList.add("show");
                 });
                 renderIdeaLibrary();
-            }
-        }
-
-        function showVersionSwitchConfirmation(isSwitchingToDev) {
-            const modal = versionSwitchModal;
-            const title = modal.querySelector("#versionSwitchTitle");
-            const message = modal.querySelector("#versionSwitchMessage");
-            const confirmBtn = modal.querySelector("#confirmSwitchBtn");
-            const cancelBtn = modal.querySelector("#cancelSwitchBtn");
-
-            if (isSwitchingToDev) {
-                title.textContent = "Переход в Dev-версию";
-                title.style.color = "#c2410c";
-                message.textContent = "Здесь находятся новые функции в разработке. Возможны ошибки и нестабильная работа. Вы уверены?";
-                confirmBtn.textContent = "Да, перейти";
-                confirmBtn.className = "btn flex-1";
-                confirmBtn.style.backgroundColor = "#f97316";
-            } else {
-                title.textContent = "Возврат к стабильной версии";
-                title.style.color = "#1d4ed8";
-                message.textContent = "Stable-версия более стабильна, но в неё новые функции выходят позже.";
-                confirmBtn.textContent = "Да, вернуться";
-                confirmBtn.className = "btn flex-1";
-                confirmBtn.style.backgroundColor = "#3b82f6";
-            }
-
-            const newConfirm = confirmBtn.cloneNode(true);
-            confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
-            newConfirm.addEventListener("click", () => {
-                const targetUrl = isSwitchingToDev
-                    ? window.location.pathname + "?env=dev"
-                    : window.location.pathname;
-                window.location.href = targetUrl;
             });
-            cancelBtn.addEventListener("click", () => modal.classList.remove("show"), { once: true });
-            modal.classList.add("show");
-        }
-
-        // --- Обработчики инструментов ---
-        Object.keys(toolButtons).forEach(toolName => {
-            toolButtons[toolName].addEventListener("click", () => activateTool(toolName));
-        });
-        fillTool?.addEventListener("click", () => activateTool("fill"));
-        sprayTool?.addEventListener("click", () => activateTool("spray"));
-        textTool?.addEventListener("click", () => activateTool("text"));
-
-        colorPicker.addEventListener("input", () => {
-            if (currentTool !== "eyedropper") activateTool("pencil");
-            setupContext();
-        });
-        lineWidthControl.addEventListener("input", (e) => {
-            lineWidthValueSpan.textContent = e.target.value;
-            customCursor.style.width = `${e.target.value}px`;
-            customCursor.style.height = `${e.target.value}px`;
-            setupContext();
-        });
-        clearButton.addEventListener("click", () => ctx.clearRect(0, 0, canvas.width, canvas.height));
-        saveButton.addEventListener("click", () => {
-            const tempCanvas = document.createElement("canvas");
-            tempCanvas.width = canvas.width;
-            tempCanvas.height = canvas.height;
-            const tempCtx = tempCanvas.getContext("2d");
-            tempCtx.fillStyle = CANVAS_BACKGROUND_COLOR;
-            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            tempCtx.drawImage(canvas, 0, 0);
-            const link = document.createElement("a");
-            link.download = `drawing-${currentDrawingId}.png`;
-            link.href = tempCanvas.toDataURL("image/png");
-            link.click();
-        });
-
-        canvas.addEventListener("mousedown", startDrawing);
-        canvas.addEventListener("mousemove", updateCursor);
-        canvas.addEventListener("mouseup", stopDrawing);
-        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDrawing(e); }, { passive: false });
-        canvas.addEventListener("touchmove", (e) => { e.preventDefault(); drawFreehand(e); }, { passive: false });
-        canvas.addEventListener("touchend", (e) => { e.preventDefault(); stopDrawing(e); }, { passive: false });
-        canvas.addEventListener("touchcancel", () => isDrawing = false);
-        canvas.addEventListener("mouseenter", () => {
-            if (currentTool !== "eyedropper") customCursor.style.display = "block";
-        });
-        canvas.addEventListener("mouseleave", () => {
-            customCursor.style.display = "none";
-            isDrawing = false;
-        });
-
-        // Согласие на cookie
-        function handleDataConsent() {
-            if (sessionStorage.getItem("consentBannerClosed")) return;
-            dataConsentBanner.style.display = "flex";
-            consentButton.addEventListener("click", () => {
-                sessionStorage.setItem("consentBannerClosed", "true");
-                dataConsentBanner.style.display = "none";
+                renderIdeaLibrary();
+            }
+            document.getElementById("cancelSwitch }
+            document.getElementById("cancelSwitchBtn").Btn").addEventListeneraddEventListener("click("click", ()", () => => {
+                document.getElementById {
+                document.getElementById("versionSwitch("versionSwitchModal").Modal").classListclassList.remove("show");
             });
-        }
+            // Настройки (экспорт/импорт)
+            document.remove("show");
+            });
+            // Настройки (экспорт/импорт)
+            document.getElementById(".getElementById("settingsBtn").addEventListener("click",settingsBtn").addEventListener("click", () => {
+                document.getElementById("settingsModal").classList () => {
+                document.getElementById("settingsModal").classList.add("show.add("show");
+           ");
+            });
+            document.getElementById(" });
+            document.getElementById("settingsModalsettingsModalClose").Close").addEventListener("click", () => {
+                document.getElementById("settingsModal").classaddEventListener("click", () => {
+                document.getElementById("settingsModal").classList.remove("show");
+            });
+           List.remove("show");
+            });
+            document.getElementById("export document.getElementById("exportDataBtn").addEventListener("DataBtn").addEventListener("click", exportData);
+            document.getElementById("importclick", exportData);
+            document.getElementById("importDataInput").addEventListenerDataInput").addEventListener("change",("change", e => {
+                if ( e => {
+                if (e.targete.target.files[0.files[0]) importData(e.target.f]) importData(e.target.files[0]);
+                e.target.valueiles[0]);
+                e.target.value = "";
+            });
 
-        // Библиотека идей (только stable)
+            show = "";
+            });
+
+            showScreen("Screen("galleryScreengalleryScreen");
+            activate");
+            activateTool("pencil");
+            document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+            document.getElementById("saveButton").addEventListener("click", () => {
+                const tmp = document.createElement("canvas");
+                tmp.width = canvas.width; tmp.height = canvas.height;
+                const tctx = tmp.getContext("2d");
+                tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
+                tctx.drawTool("pencil");
+            document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
+            document.getElementById("saveButton").addEventListener("click", () => {
+                const tmp = document.createElement("canvas");
+                tmp.width = canvas.width; tmp.height = canvas.height;
+                const tctx = tmp.getContext("2d");
+                tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
+                tctx.drawImage(canvas,0,0);
+                const a = document.createElement("a");
+                a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
+            });
+            document.getElementById("newDrawingBtn").addEventListener("click", () => {
+                currentDrawingId = Date.now();
+                showScreen("drawingScreen");
+                setTimeout(() => ctx.clearRect(0,0,canvas.width,canvas.height), 0);
+            });
+            document.getElementById("backToGalleryBtn").addEventListener("click", () => {
+                saveCurrentDrawing();
+                showScreen("galleryScreen");
+            });
+            window.addEventListener("resize", resizeCanvas);
+        });
+
+        // БиблиотеImage(canvas,0,0);
+                const a = document.createElement("a");
+                a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
+            });
+            document.getElementById("newDrawingBtn").addEventListener("click", () => {
+                currentDrawingId = Date.now();
+                showScreen("drawingScreen");
+                setTimeout(() => ctx.clearRect(0,0,canvas.width,canvas.height), 0);
+            });
+            document.getElementById("backToGalleryBtn").addEventListener("click", () => {
+                saveCurrentDrawing();
+                showScreen("galleryScreen");
+            });
+            window.addEventListener("resize", resizeCanvas);
+        });
+
+        // Библиотека идей (stable)
         function renderIdeaLibrary() {
-            const ideasJSON = localStorage.getItem(ideasKey);
-            const ideas = ideasJSON ? JSON.parse(ideasJSON) : [];
-            ideaListContainer.innerHTML = "";
-            if (ideas.length === 0) {
-                ideaListContainer.innerHTML = `<p class="text-gray-400 text-center p-4">Здесь будут сохраненные идеи...</p>`;
-                clearLibraryButton.style.display = "none";
+            const ideas = JSON.parse(localStorage.getItem(ideasка идей (stable)
+        function renderIdeaLibrary() {
+            const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
+            const cont = document.getElementByIdKey) || "[]");
+            const cont = document.getElementById("ideaListContainer");
+           ("ideaListContainer");
+            cont.innerHTML = cont.innerHTML = "";
+            if "";
+            if (!ideas.length) {
+                cont.innerHTML = '<p (!ideas.length) {
+                cont.innerHTML = '<p class=" class="text-center p-text-center p-4">Пусто</p>';
+                document.getElementById("clearLibraryButton").style.display = "none";
                 return;
             }
             ideas.forEach(idea => {
                 const el = document.createElement("div");
                 el.className = "idea-item";
-                el.innerHTML = `<span class="flex-1">${idea}</span><button class="copy-idea-btn"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H9.75"/></svg></button>`;
-                el.querySelector(".copy-idea-btn").addEventListener("click", () => copyToClipboard(idea));
-                ideaListContainer.appendChild(el);
+                el.innerHTML = `<span>${idea}</span><button class="copy-4">Пусто</p>';
+                document.getElementById("clearLibraryButton").style.display = "none";
+                return;
+            }
+            ideas.forEach(idea => {
+                const el = document.createElement("div");
+                el.className = "idea-item";
+                el.innerHTML = `<span>${idea}</span><button class="copy-idea-btn"><svg width="16idea-btn"><svg width="16" viewBox="0 0 24 24" fill="none"" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15. stroke="currentColor" stroke-width="2"><path d="M15.75 17.75 17.25v25v3.375c0 .621-.504 3.375c0 .621-.504 1.125-1.1.125-1.125 125 1.125h-9.75a1.1251.125h-9.75a1.125 1 1.125 0 01.125 0 01-1-1.125-1.125V7.875c0.125-1.125V7.875c0-.621.504-.621.504-1.125 1.125-1-1.125 1.125-1..125H6.75a9.06125H6.75a9.06 0 011.5.124m7. 0 011.5.124m7.55 10.376h3 10.376h3.375.375c.621 0 c.621 0 1.125-.504 1.1.125-.504 1.125-1.125V125-1.125V11.25c0-4.11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-46-3.243-8.161-7.5-8.876a9.06 0 00-1.1.5-.124H9.5-.124H9.375c-.621 0375c-.621 0-1-1.125.504.125.504-1.125 1.125-1.125 1.125v3.5m7.5 10v3.5m7.5 10.375H9.375.375H9.375a1.125 1.125a1.125 1.125 0 01-1.125-1.125v- 0 01-1.125-1.125v-9.25m9.25m12 12 6.625v-1.8756.625v-1.875a3.375 3.375a3.375 3.375 0 00-3.375-3 0 00-3.375-3.375h-1.5a1.125 .375h-1.5a1.125 1.125 0 1.125 0 01-1.125-1.01-1.125-1.125v125v-1.5c0-1.5c0-.621-.504-1.125-.621-.504-1.125-1.125-1-1.125-1.125H9.75"/></svg></button>`;
+                el.querySelector.125H9.75"/></svg></button>`;
+                el.querySelector(".copy(".copy-idea-btn").addEventListener("click-idea-btn").addEventListener("click", () => navigator.cl", () => navigator.clipboard.writeText(idea));
+                cont.appendChildipboard.writeText(idea));
+                cont.appendChild(el);
+           (el);
             });
-            clearLibraryButton.style.display = "block";
+            document.getElementById("clearLibraryButton").style.display = "block });
+            document.getElementById("clearLibraryButton").style.display = "block";
         }
-
-        function saveIdeaToLibrary(idea) {
-            try {
-                let ideas = localStorage.getItem(ideasKey) ? JSON.parse(localStorage.getItem(ideasKey)) : [];
-                if (!ideas.includes(idea)) {
-                    ideas.unshift(idea);
-                    if (ideas.length > 15) ideas.pop();
-                    localStorage.setItem(ideasKey, JSON.stringify(ideas));
-                    renderIdeaLibrary();
-                }
-            } catch (e) {}
+        document.getElementById("clearLibraryButton").addEventListener("click", () => {
+            localStorage.removeItem(ideasKey";
         }
-
-        clearLibraryButton.addEventListener("click", () => {
+        document.getElementById("clearLibraryButton").addEventListener("click", () => {
             localStorage.removeItem(ideasKey);
             renderIdeaLibrary();
+       );
+            renderIdeaLibrary();
         });
-
-        function copyToClipboard(text) {
-            navigator.clipboard?.writeText(text).catch(() => {
-                const ta = document.createElement("textarea");
-                ta.value = text;
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand("copy");
-                document.body.removeChild(ta);
-            });
-        }
-
-        // Gemini API (только stable)
-        async function getDrawingIdea(mood) {
-            geminiPromptContainer.innerHTML = '<div class="loader"></div>';
-            let prompt;
-            switch (mood) {
-                case "funny":
-                    prompt = "Предложи короткую, очень смешную и абсурдную идею для рисунка на русском языке. Ответ только идея, без лишних слов.";
-                    break;
-                case "serious":
-                    prompt = "Предложи короткую, серьезную, эпичную идею для рисунка на русском языке. Ответ только идея.";
-                    break;
-                default:
-                    if (!mood.trim()) {
-                        geminiPromptContainer.textContent = "Введите настроение.";
-                        return;
-                    }
-                    prompt = `Предложи короткую идею для рисунка на русском, основанную на настроении: '${mood}'. Ответ только идея.`;
+        // Gemini
+        async function get });
+        // Gemini
+        async function getIdea(mood) {
+            const promptCont = document.getElementById("geminiIdea(mood) {
+            const promptCont = document.getElementById("geminiPrompt");
+            promptCont.innerHTMLPrompt");
+            promptCont.innerHTML = '<div class="loader"></div>';
+            = '<div class="loader"></div>';
+            const prompts const prompts = {
+                funny: " = {
+                funny: "ССмешная идея длямешная идея для рисун рисунка на русском (коротко).",
+                serious: "Эпичнаяка на русском (коротко).",
+                serious: "Эпичная идея для рисунка на русском (кор идея для рисунка на русском (короткоотко).",
+            };
+            const prompt =).",
+            };
+            const prompt = mood === "funny" || mood mood === "funny" || mood === "serious" ? prompts[m === "serious" ? prompts[mood] : `Идеяood] : `Идея для рисун для рисунка нака на русском русском, настроение: ${mood}`;
+            const resp = await fetch(`https://generativelanguage, настроение: ${mood}`;
+            const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=NO`, {
+                method.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=NO`, {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({contents: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({contents:[{parts:[{text:prompt:[{parts:[{text:prompt}]}]})
+            }).catch(() => {});
+            if (!resp || !resp.ok) {
+                promptCont.textContent = "Ошибка}]}]})
+            }).catch(() => {});
+            if (!resp || !resp.ok) {
+                promptCont.textContent = "Ошибка или ключ отсутствует.";
+                return;
             }
-            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-            const apiKey = "NO"; // ваш ключ
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-            try {
-                const resp = await fetch(apiUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload),
-                });
-                if (!resp.ok) throw new Error("HTTP " + resp.status);
-                const result = await resp.json();
-                if (result.candidates?.length) {
-                    const text = result.candidates[0].content.parts[0].text.trim();
-                    geminiPromptContainer.textContent = text;
-                    saveIdeaToLibrary(text);
-                } else throw new Error("Нет ответа");
-            } catch (e) {
-                geminiPromptContainer.textContent = "Функция недоступна (возможно, отсутствует ключ).";
+            const data = await resp.json();
+            const text = data.candidates? или ключ отсутствует.";
+                return;
             }
+            const data = await resp.json();
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text.[0]?.content?.parts?.[0]?.text?.trim() || "Нет ответа";
+            promptCont.textContent = text;
+            const ideas = JSON?.trim() || "Нет ответа";
+            promptCont.textContent = text;
+            const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
+            ideas.un.parse(localStorage.getItem(ideasKey) || "[]");
+            ideas.unshift(text);
+            if (shift(text);
+            if (ideas.length > 15) ideas.pop();
+            localStorage.setItem(ideasKey, JSON.stringify(ideas));
+            renderIdeaLibrary();
         }
-
-        funnyIdeaBtn.addEventListener("click", () => getDrawingIdea("funny"));
-        seriousIdeaBtn.addEventListener("click", () => getDrawingIdea("serious"));
-        customIdeaBtn.addEventListener("click", () => getDrawingIdea(customMoodInput.value));
-        modalCloseButton.addEventListener("click", () => geminiModal.classList.remove("show"));
-        geminiModal.addEventListener("click", (e) => { if (e.target === geminiModal) geminiModal.classList.remove("show"); });
-
-        // Старт
-        window.addEventListener("load", () => {
-            handleDataConsent();
-            setupVersionUI();
-            showScreen("galleryScreen");
-            if (!isDevVersion) renderIdeaLibrary();
-            activateTool("pencil");
-        });
+        document.getElementById("funnyIdeaBtn").addEventListener("click", () => getIdea("funny"));
+        document.getElementById("seriousIdeaBtn").addEventListener("click", () => getIdea("serious"));
+        document.getElementById("customIdeaBtn").addEventListener("click", () => getIdea(document.getElementById("customMoodInput").value));
+        document.querySelector("#geminiModal .modal-close").addEventListener("click", () => document.getElementById("geminiModal").classList.remove("show"));
     </script>
 </body>
 </html>
