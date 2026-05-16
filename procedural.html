@@ -10,7 +10,6 @@
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             background: #1e1e1e;
             color: #ddd;
@@ -20,7 +19,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-
         .menu {
             display: flex;
             gap: 1rem;
@@ -30,7 +28,6 @@
             align-items: center;
             flex-wrap: wrap;
         }
-
         .menu button, .menu select {
             padding: 0.5rem 1rem;
             border: none;
@@ -41,51 +38,57 @@
             font-size: 1rem;
             transition: background 0.2s;
         }
-
         .menu button:hover, .menu select:hover {
             background: #666;
         }
-
         .menu button.active {
             background: #ff9800;
             color: #000;
             font-weight: bold;
         }
-
         #fractalControls {
             display: none;
             gap: 0.5rem;
             align-items: center;
         }
-
         .content {
             flex: 1;
             position: relative;
             overflow: auto;
         }
-
         canvas {
             display: block;
             width: 100%;
             height: 100%;
         }
-
         #randomPage {
             padding: 2rem;
             max-width: 800px;
             margin: 0 auto;
             display: none;
         }
-
         #randomPage img {
             max-width: 200px;
             border-radius: 12px;
             margin: 0.5rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
+        .zen-project {
+            position: fixed;
+            top: 15px;
+            right: 25px;
+            color: rgba(255,255,255,0.25);
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 3px;
+            pointer-events: none;
+            z-index: 10;
+        }
     </style>
 </head>
 <body>
+    <div class="zen-project">zen project</div>
+
     <div class="menu">
         <button id="btnFractal">фрактал</button>
         <button id="btnMenger">губка</button>
@@ -118,7 +121,7 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-        // ---------- DOM элементы ----------
+        // DOM
         const btnFractal = document.getElementById('btnFractal');
         const btnMenger = document.getElementById('btnMenger');
         const btnRandom = document.getElementById('btnRandom');
@@ -128,10 +131,16 @@
         const mengerCanvas = document.getElementById('mengerCanvas');
         const randomPageDiv = document.getElementById('randomPage');
 
-        let currentMode = 'fractal'; // fractal, menger, random
-        let mengerRenderer, mengerScene, mengerCamera, mengerControls, mengerMesh;
+        let currentMode = 'fractal';
+        let mengerRenderer, mengerScene, mengerCamera, mengerControls;
+        let currentSpongeLevel = 3; // начальный уровень
+        let spongeGroup = null;
 
-        // ---------- Переключение режимов ----------
+        // Фрактал
+        let fractalZoom = 1, fractalOffsetX = 0, fractalOffsetY = 0;
+        let isDragging = false, dragStartX, dragStartY, dragStartOffX, dragStartOffY;
+        let needsFractalRedraw = false;
+
         function setMode(mode) {
             currentMode = mode;
             [btnFractal, btnMenger, btnRandom].forEach(b => b.classList.remove('active'));
@@ -161,11 +170,9 @@
         btnRandom.addEventListener('click', () => setMode('random'));
         fractalTypeSelect.addEventListener('change', drawFractal);
 
-        // ---------- Фракталы (canvas) ----------
-        let fractalZoom = 1, fractalOffsetX = 0, fractalOffsetY = 0;
-        let isDragging = false, dragStartX, dragStartY, dragStartOffX, dragStartOffY;
-
+        // --- Фрактал (оптимизированная перерисовка) ---
         function drawFractal() {
+            if (currentMode !== 'fractal') return;
             const ctx = fractalCanvas.getContext('2d');
             const w = fractalCanvas.width = fractalCanvas.clientWidth;
             const h = fractalCanvas.height = fractalCanvas.clientHeight;
@@ -175,31 +182,30 @@
 
             for (let px = 0; px < w; px++) {
                 for (let py = 0; py < h; py++) {
-                    // преобразование координат с учетом зума и смещения
                     let x0 = (px - w/2) / (0.5 * fractalZoom * w) + fractalOffsetX;
                     let y0 = (py - h/2) / (0.5 * fractalZoom * h) + fractalOffsetY;
 
                     let x = 0, y = 0, iter = 0;
                     if (type === 'mandelbrot') {
-                        let cx = x0, cy = y0;
+                        const cx = x0, cy = y0;
                         while (x*x + y*y <= 4 && iter < maxIter) {
-                            let xtemp = x*x - y*y + cx;
+                            const xtemp = x*x - y*y + cx;
                             y = 2*x*y + cy;
                             x = xtemp;
                             iter++;
                         }
                     } else if (type === 'julia') {
-                        let cx = -0.7269, cy = 0.1889; // классическая Julia
+                        const cx = -0.7269, cy = 0.1889;
                         while (x*x + y*y <= 4 && iter < maxIter) {
-                            let xtemp = x*x - y*y + cx;
+                            const xtemp = x*x - y*y + cx;
                             y = 2*x*y + cy;
                             x = xtemp;
                             iter++;
                         }
                     } else if (type === 'burningShip') {
-                        let cx = x0, cy = y0;
+                        const cx = x0, cy = y0;
                         while (x*x + y*y <= 4 && iter < maxIter) {
-                            let xtemp = Math.abs(x*x - y*y + cx);
+                            const xtemp = Math.abs(x*x - y*y + cx);
                             y = Math.abs(2*x*y) + cy;
                             x = xtemp;
                             iter++;
@@ -208,11 +214,11 @@
 
                     let color = [0, 0, 0];
                     if (iter < maxIter) {
-                        let hue = iter * 360 / maxIter;
-                        let rgb = hslToRgb(hue/360, 0.8, 0.5);
+                        const hue = iter * 360 / maxIter;
+                        const rgb = hslToRgb(hue/360, 0.8, 0.5);
                         color = [rgb[0], rgb[1], rgb[2]];
                     }
-                    let idx = (py * w + px) * 4;
+                    const idx = (py * w + px) * 4;
                     imgData.data[idx] = color[0];
                     imgData.data[idx+1] = color[1];
                     imgData.data[idx+2] = color[2];
@@ -220,6 +226,16 @@
                 }
             }
             ctx.putImageData(imgData, 0, 0);
+            needsFractalRedraw = false;
+        }
+
+        function requestFractalRedraw() {
+            if (!needsFractalRedraw) {
+                needsFractalRedraw = true;
+                requestAnimationFrame(() => {
+                    if (needsFractalRedraw) drawFractal();
+                });
+            }
         }
 
         function hslToRgb(h, s, l) {
@@ -256,9 +272,9 @@
             if (!isDragging || currentMode !== 'fractal') return;
             const dx = e.clientX - dragStartX;
             const dy = e.clientY - dragStartY;
-            fractalOffsetX = dragStartOffX - dx / (fractalCanvas.width * 0.5 * fractalZoom);
+            fractalOffsetX = dragStartOffX + dx / (fractalCanvas.width * 0.5 * fractalZoom);
             fractalOffsetY = dragStartOffY + dy / (fractalCanvas.height * 0.5 * fractalZoom);
-            drawFractal();
+            requestFractalRedraw();
         });
 
         window.addEventListener('mouseup', () => { isDragging = false; });
@@ -267,22 +283,20 @@
             e.preventDefault();
             if (currentMode !== 'fractal') return;
             const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
-            // Зум в точку курсора
             const rect = fractalCanvas.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
             const newZoom = fractalZoom * zoomFactor;
-            // Преобразование координат
+
             fractalOffsetX = (mouseX - fractalCanvas.width/2) / (0.5 * fractalZoom * fractalCanvas.width) + fractalOffsetX - (mouseX - fractalCanvas.width/2) / (0.5 * newZoom * fractalCanvas.width);
             fractalOffsetY = (mouseY - fractalCanvas.height/2) / (0.5 * fractalZoom * fractalCanvas.height) + fractalOffsetY - (mouseY - fractalCanvas.height/2) / (0.5 * newZoom * fractalCanvas.height);
             fractalZoom = newZoom;
-            drawFractal();
+            requestFractalRedraw();
         });
 
-        // ---------- Губка Менгера (Three.js) ----------
+        // --- Губка Менгера (динамическая детализация) ---
         function initMenger() {
             if (mengerRenderer) {
-                // Уже инициализирован, просто показываем и запускаем анимацию
                 mengerRenderer.setAnimationLoop(animateMenger);
                 return;
             }
@@ -303,11 +317,6 @@
             mengerControls.enableDamping = true;
             mengerControls.dampingFactor = 0.1;
 
-            // Строим губку Менгера 3-го порядка
-            const spongeGroup = new THREE.Group();
-            createMengerSponge(spongeGroup, 0, 0, 0, 1, 3);
-            mengerScene.add(spongeGroup);
-
             // Освещение
             const ambient = new THREE.AmbientLight(0x404040);
             mengerScene.add(ambient);
@@ -315,8 +324,34 @@
             dirLight.position.set(1, 1, 1);
             mengerScene.add(dirLight);
 
+            // Построим губку уровня 3 для начала
+            buildSponge(3);
+
             mengerRenderer.setAnimationLoop(animateMenger);
             window.addEventListener('resize', onMengerResize);
+
+            // Следим за изменением зума камеры
+            mengerControls.addEventListener('change', updateSpongeDetail);
+        }
+
+        function buildSponge(level) {
+            if (spongeGroup) mengerScene.remove(spongeGroup);
+            spongeGroup = new THREE.Group();
+            createMengerSponge(spongeGroup, 0, 0, 0, 1, level);
+            mengerScene.add(spongeGroup);
+            currentSpongeLevel = level;
+        }
+
+        function updateSpongeDetail() {
+            const dist = mengerCamera.position.length();
+            let targetLevel;
+            if (dist < 2.5) targetLevel = 4;
+            else if (dist < 5) targetLevel = 3;
+            else targetLevel = 2;
+
+            if (targetLevel !== currentSpongeLevel) {
+                buildSponge(targetLevel);
+            }
         }
 
         function createMengerSponge(parent, x, y, z, size, level) {
@@ -333,9 +368,8 @@
             for (let i = -1; i <= 1; i++) {
                 for (let j = -1; j <= 1; j++) {
                     for (let k = -1; k <= 1; k++) {
-                        // Пропускаем центральный куб и центральные в гранях
                         const absSum = Math.abs(i) + Math.abs(j) + Math.abs(k);
-                        if (absSum <= 1) continue; // это условие для губки Менгера
+                        if (absSum <= 1) continue;
                         createMengerSponge(parent, x + i * newSize, y + j * newSize, z + k * newSize, newSize, level - 1);
                     }
                 }
@@ -357,14 +391,14 @@
             mengerCamera.updateProjectionMatrix();
         }
 
-        // ---------- Рандомная страница ----------
+        // --- Случайная страница ---
         function generateRandomPage() {
             const titles = [
                 'Мудрость дня', 'Случайные мысли', 'Кроличий дзен', 'Тест на удачу', 'Печенье с предсказанием',
                 'Топ чего-то', 'Записки сумасшедшего', 'Факт №42', 'Инструкция к жизни'
             ];
             const paragraphs = [
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
                 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
                 'Кролики прыгали по зелёной лужайке, не подозревая о приближающейся губке Менгера.',
@@ -380,23 +414,19 @@
             const title = titles[Math.floor(Math.random() * titles.length)];
             const numParagraphs = 2 + Math.floor(Math.random() * 4);
             let html = `<h1>${title}</h1>`;
-
             for (let i = 0; i < numParagraphs; i++) {
                 html += `<p>${paragraphs[Math.floor(Math.random() * paragraphs.length)]}</p>`;
             }
-
             const numImages = 1 + Math.floor(Math.random() * 5);
             for (let i = 0; i < numImages; i++) {
                 const img = images[Math.floor(Math.random() * images.length)];
-                html += `<img src="${img}" alt="random asset">`;
+                html += `<img src="${img}" alt="random">`;
             }
-
-            // Добавим пару ссылок на другие страницы
             html += `<p><a href="paint.html">Рисовалка</a> | <a href="top.html">Топы</a> | <a href="index.html">На главную</a></p>`;
             randomPageDiv.innerHTML = html;
         }
 
-        // Инициализация
+        // Старт
         setMode('fractal');
         drawFractal();
     </script>
