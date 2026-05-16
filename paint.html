@@ -238,7 +238,6 @@
             width: 60px; padding: 2px; border: 1px solid var(--border);
             border-radius: 4px; background: var(--panel-bg); color: var(--text);
         }
-        .theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 
         .tool-icon { width: 20px; height: 20px; margin-right: 6px; }
 
@@ -283,6 +282,7 @@
         </div>
     </div>
 
+    <!-- Окно настроек (только в dev) -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" id="settingsModalClose">&times;</span>
@@ -291,6 +291,12 @@
                 <button id="exportDataBtn" class="btn btn-secondary w-full">Экспорт данных</button>
                 <label for="importDataInput" class="btn btn-secondary cursor-pointer w-full">Импорт данных</label>
                 <input type="file" id="importDataInput" class="hidden" accept=".json"/>
+                <div class="theme-toggle">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="darkThemeCheckbox">
+                        <span>Тёмная тема</span>
+                    </label>
+                </div>
             </div>
         </div>
     </div>
@@ -302,9 +308,15 @@
                 <span class="text-blue-600">Ваша</span> Галерея
             </h1>
             <div class="flex gap-4 items-center">
-                <button id="settingsBtn" class="btn btn-secondary p-2" title="Настройки">
+                <!-- Кнопка настроек только в dev -->
+                <button id="settingsBtn" class="btn btn-secondary p-2" style="display: none" title="Настройки">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 </button>
+                <div id="stableExportImport" class="flex gap-4">
+                    <button id="exportDataBtnStable" class="btn btn-secondary">Экспорт данных</button>
+                    <label for="importDataInputStable" class="btn btn-secondary cursor-pointer">Импорт данных</label>
+                    <input type="file" id="importDataInputStable" class="hidden" accept=".json"/>
+                </div>
                 <button id="newDrawingBtn" class="btn btn-primary">Новый рисунок</button>
             </div>
         </div>
@@ -376,12 +388,6 @@
                 <div id="saveContainer">
                     <button id="saveButton" class="btn btn-save">Скачать PNG</button>
                 </div>
-                <div id="themeToggleContainer" style="display:none;" class="theme-toggle">
-                    <label class="theme-toggle">
-                        <input type="checkbox" id="darkThemeCheckbox">
-                        Тёмная тема
-                    </label>
-                </div>
             </div>
         </div>
     </div>
@@ -408,7 +414,7 @@
         const drawingsKey = isDevVersion ? "myDrawings_dev" : "myDrawings";
         const ideasKey = isDevVersion ? "drawingIdeas_dev" : "drawingIdeas";
 
-        // DOM
+        // DOM элементы
         const confirmationModal = document.getElementById("confirmationModal");
         const confirmationMessage = document.getElementById("confirmationMessage");
         const confirmYesBtn = document.getElementById("confirmYesBtn");
@@ -439,8 +445,6 @@
         const textTool = document.getElementById("textTool");
         const devToolsContainer = document.getElementById("devToolsContainer");
         const advancedColorContainer = document.getElementById("advancedColorContainer");
-        const themeToggleContainer = document.getElementById("themeToggleContainer");
-        const darkThemeCheckbox = document.getElementById("darkThemeCheckbox");
         const layersContainer = document.getElementById("layersContainer");
         const layerList = document.getElementById("layerList");
         const addLayerBtn = document.getElementById("addLayerBtn");
@@ -453,7 +457,7 @@
         const CANVAS_BG = "#ffffff";
         let layers = [{ name: "Фон" }], activeLayer = 0;
 
-        // Модалки
+        // Модальные окна
         function showNotification(msg) {
             notificationMessage.textContent = msg;
             notificationModal.classList.add("show");
@@ -481,7 +485,7 @@
             }
         }
 
-        // Галерея и хранение
+        // Галерея и localStorage
         function getDrawings() {
             try { return JSON.parse(localStorage.getItem(drawingsKey)) || {}; } catch { return {}; }
         }
@@ -538,6 +542,8 @@
                 renderGallery();
             });
         }
+
+        // Экспорт/импорт
         function exportData() {
             const data = { drawings: getDrawings(), ideas: JSON.parse(localStorage.getItem(ideasKey)||"[]") };
             const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
@@ -632,7 +638,7 @@
             setupContext();
         }
 
-        // Заливка, распылитель, текст (dev)
+        // Dev-инструменты
         function floodFill(x,y,fillColor) {
             const img = ctx.getImageData(0,0,canvas.width,canvas.height);
             const data = img.data;
@@ -697,7 +703,7 @@
             setupContext();
         }
 
-        // Сохранение с выбором формата (dev)
+        // Сохранение в разных форматах (dev)
         function downloadCanvas(format) {
             const tmp = document.createElement("canvas");
             tmp.width = canvas.width; tmp.height = canvas.height;
@@ -736,11 +742,15 @@
                 });
             }
 
-            // Версия и переключатель
             const verText = document.getElementById("versionText");
             const beta = document.getElementById("betaText");
             const switchContainer = document.getElementById("versionSwitchContainer");
+            const settingsBtn = document.getElementById("settingsBtn");
+            const stableExportImport = document.getElementById("stableExportImport");
+            const darkThemeCheckbox = document.getElementById("darkThemeCheckbox");
+
             if (isDevVersion) {
+                // Dev-режим
                 verText.textContent = "HTMPen 9.0 ";
                 beta.textContent = "beta!";
                 beta.classList.remove("hidden");
@@ -753,11 +763,13 @@
                     document.getElementById("versionSwitchModal").classList.add("show");
                     document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname;
                 });
-                // Включаем DEV‑фичи
+
+                // Включаем dev-фичи
                 devToolsContainer.style.display = "block";
                 layersContainer.style.display = "block";
                 advancedColorContainer.style.display = "flex";
-                themeToggleContainer.style.display = "flex";
+                settingsBtn.style.display = "block";
+                stableExportImport.style.display = "none";
                 // Кнопки сохранения
                 saveContainer.innerHTML = `
                     <button id="savePngBtn" class="btn btn-save">PNG</button>
@@ -767,6 +779,7 @@
                 document.getElementById("savePngBtn").addEventListener("click", () => downloadCanvas("png"));
                 document.getElementById("saveJpgBtn").addEventListener("click", () => downloadCanvas("jpg"));
                 document.getElementById("saveWebpBtn").addEventListener("click", () => downloadCanvas("webp"));
+
                 // Слои
                 renderLayers();
                 addLayerBtn.addEventListener("click", () => {
@@ -784,9 +797,28 @@
                 });
                 colorPicker.addEventListener("input", syncAdvColor);
                 syncAdvColor();
-                // Тёмная тема
+                // Тёмная тема из localStorage
+                if (localStorage.getItem("darkTheme") === "true") {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                    darkThemeCheckbox.checked = true;
+                }
                 darkThemeCheckbox.addEventListener("change", e => {
-                    document.documentElement.toggleAttribute("data-theme", e.target.checked);
+                    if (e.target.checked) {
+                        document.documentElement.setAttribute("data-theme", "dark");
+                        localStorage.setItem("darkTheme", "true");
+                    } else {
+                        document.documentElement.removeAttribute("data-theme");
+                        localStorage.setItem("darkTheme", "false");
+                    }
+                });
+                // Настройки (экспорт/импорт)
+                settingsBtn.addEventListener("click", () => {
+                    document.getElementById("settingsModal").classList.add("show");
+                });
+                document.getElementById("exportDataBtn").addEventListener("click", exportData);
+                document.getElementById("importDataInput").addEventListener("change", e => {
+                    if (e.target.files[0]) importData(e.target.files[0]);
+                    e.target.value = "";
                 });
                 // AI отключён
                 document.getElementById("geminiIdeaButton").addEventListener("click", e => {
@@ -794,11 +826,12 @@
                 });
                 document.getElementById("ideaListContainer").innerHTML = '<p class="text-center p-4">Недоступно в dev‑версии</p>';
                 document.getElementById("clearLibraryButton").style.display = "none";
-                // Инструменты dev
+                // Dev-инструменты
                 fillTool.addEventListener("click", () => activateTool("fill"));
                 sprayTool.addEventListener("click", () => activateTool("spray"));
                 textTool.addEventListener("click", () => activateTool("text"));
             } else {
+                // Stable-режим (как оригинал)
                 verText.textContent = "HTMPen 8, ПРОЕКТ ЗАБРОШЕН";
                 beta.classList.add("hidden");
                 switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev‑версия</button>';
@@ -810,34 +843,20 @@
                     document.getElementById("versionSwitchModal").classList.add("show");
                     document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname + "?env=dev";
                 });
+
+                // Stable: экспорт/импорт на месте
+                document.getElementById("exportDataBtnStable").addEventListener("click", exportData);
+                document.getElementById("importDataInputStable").addEventListener("change", e => {
+                    if (e.target.files[0]) importData(e.target.files[0]);
+                    e.target.value = "";
+                });
                 // Stable AI
                 document.getElementById("geminiIdeaButton").addEventListener("click", () => {
                     document.getElementById("geminiPrompt").innerHTML = "";
                     document.getElementById("geminiModal").classList.add("show");
                 });
                 renderIdeaLibrary();
-            }
-
-            document.getElementById("cancelSwitchBtn").addEventListener("click", () => {
-                document.getElementById("versionSwitchModal").classList.remove("show");
-            });
-            document.getElementById("settingsBtn").addEventListener("click", () => {
-                document.getElementById("settingsModal").classList.add("show");
-            });
-            document.getElementById("settingsModalClose").addEventListener("click", () => {
-                document.getElementById("settingsModal").classList.remove("show");
-            });
-            document.getElementById("exportDataBtn").addEventListener("click", exportData);
-            document.getElementById("importDataInput").addEventListener("change", e => {
-                if (e.target.files[0]) importData(e.target.files[0]);
-                e.target.value = "";
-            });
-
-            showScreen("galleryScreen");
-            activateTool("pencil");
-            document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
-            // Stable save PNG
-            if (!isDevVersion) {
+                // Stable save PNG
                 document.getElementById("saveButton").addEventListener("click", () => {
                     const tmp = document.createElement("canvas");
                     tmp.width = canvas.width; tmp.height = canvas.height;
@@ -848,6 +867,18 @@
                     a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
                 });
             }
+
+            // Общие обработчики
+            document.getElementById("cancelSwitchBtn").addEventListener("click", () => {
+                document.getElementById("versionSwitchModal").classList.remove("show");
+            });
+            document.getElementById("settingsModalClose").addEventListener("click", () => {
+                document.getElementById("settingsModal").classList.remove("show");
+            });
+
+            showScreen("galleryScreen");
+            activateTool("pencil");
+            document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
             document.getElementById("newDrawingBtn").addEventListener("click", () => {
                 currentDrawingId = Date.now();
                 showScreen("drawingScreen");
@@ -869,6 +900,7 @@
             });
         });
 
+        // Библиотека идей (stable)
         function renderIdeaLibrary() {
             const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
             const cont = document.getElementById("ideaListContainer");
