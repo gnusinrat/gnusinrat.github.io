@@ -21,7 +21,7 @@
             --btn-secondary-bg: #e5e7eb;
             --btn-secondary-text: #374151;
             --tool-active: #1d4ed8;
-            --blue-text: #3b82f6; /* для синего текста */
+            --blue-text: #3b82f6;
             color-scheme: light;
         }
 
@@ -44,7 +44,6 @@
             color-scheme: dark;
         }
 
-        /* Переопределяем стандартные Tailwind‑классы, чтобы они слушались тем */
         [data-theme="dark"] .bg-white,
         [data-theme="dark"] .bg-gray-100,
         [data-theme="dark"] .bg-gray-50,
@@ -58,7 +57,6 @@
         [data-theme="dark"] .text-blue-600 { color: var(--blue-text) !important; }
         [data-theme="dark"] .border-gray-300 { border-color: var(--border) !important; }
 
-        /* базовые стили */
         body {
             font-family: "Inter", sans-serif;
             background-color: var(--bg);
@@ -67,18 +65,13 @@
             padding: 20px;
             box-sizing: border-box;
         }
-
-        .screen {
-            display: none;
-        }
-        .screen.active {
-            display: block;
-        }
+        .screen { display: none; }
+        .screen.active { display: block; }
         #drawingScreen.active {
             display: flex;
             gap: 20px;
+            flex-wrap: wrap;
         }
-
         .left-panel {
             width: 250px;
             flex-shrink: 0;
@@ -100,7 +93,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            max-width: calc(100% - 270px);
+            max-width: 100%;
             position: relative;
         }
         canvas {
@@ -157,6 +150,14 @@
         .btn-save { background-color: #22c55e; color: white; }
         .btn-gemini {
             background: linear-gradient(45deg, #4285f4, #9b72cb, #d96570, #f2a600);
+            color: white;
+        }
+        .btn-dev-switch {
+            background: linear-gradient(45deg, #ef4444, #f97316);
+            color: white;
+        }
+        .btn-stable-switch {
+            background: linear-gradient(45deg, #22c55e, #84cc16);
             color: white;
         }
 
@@ -222,7 +223,6 @@
             font-size: 16px;
         }
 
-        /* DEV фичи */
         .layer-panel {
             background: var(--panel-bg); border-radius: 8px; padding: 8px;
             margin-top: 10px; width: 100%; box-shadow: var(--shadow);
@@ -240,19 +240,16 @@
         }
         .theme-toggle { display: flex; align-items: center; gap: 8px; font-size: 14px; }
 
-        /* Адаптив */
+        .tool-icon { width: 20px; height: 20px; margin-right: 6px; }
+
         @media (max-width: 768px) {
             #drawingScreen.active { flex-direction: column; }
             .left-panel { width: 100%; order: 2; }
             .main-drawing-area { max-width: 100%; order: 1; }
         }
-
-        /* иконки инструментов */
-        .tool-icon { width: 20px; height: 20px; margin-right: 6px; }
     </style>
 </head>
 <body>
-    <!-- Баннер согласия и модалки -->
     <div id="dataConsentBanner" class="fixed top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-4xl p-4 bg-yellow-200 border border-yellow-400 text-yellow-900 rounded-lg shadow-lg flex items-center justify-between z-[10000]" style="display:none">
         <p class="text-sm"><strong>Предупреждение:</strong> Этот сайт использует cookie для сохранения идей и рисунков.</p>
         <button id="consentButton" class="ml-4 text-2xl font-bold">&times;</button>
@@ -301,7 +298,7 @@
     <!-- Экран Галереи -->
     <div id="galleryScreen" class="screen active relative">
         <div class="flex justify-between items-center flex-wrap gap-4">
-            <h1 class="text-4xl font-extrabold">
+            <h1 class="text-4xl font-extrabold text-gray-800">
                 <span class="text-blue-600">Ваша</span> Галерея
             </h1>
             <div class="flex gap-4 items-center">
@@ -319,20 +316,23 @@
         <div id="versionSwitchContainer" class="absolute bottom-5 left-1/2 -translate-x-1/2"></div>
     </div>
 
-    <!-- Экран рисования -->
+    <!-- Экран Рисования -->
     <div id="drawingScreen" class="screen">
         <div class="left-panel">
             <button id="backToGalleryBtn" class="btn btn-primary w-full mb-4">Назад в галерею</button>
             <h2 class="text-2xl font-bold mb-4">Инструменты</h2>
-            <button id="pencilTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Карандаш</button>
-            <button id="eraserTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.5 1.7c.8-.8 2-.8 2.8 0L21 5.5c.8.8.8 2 0 2.8L12 17"/><line x1="18" y1="12" x2="12" y2="18"/></svg>Ластик</button>
-            <button id="rectangleTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/></svg>Прямоугольник</button>
-            <button id="circleTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Круг</button>
-            <button id="lineTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/></svg>Линия</button>
-            <button id="eyedropperTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13.5 2.5-3 3a2.5 2.5 0 0 0 0 3.5l7 7a2.5 2.5 0 0 0 3.5 0l3-3a2.5 2.5 0 0 0 0-3.5l-7-7a2.5 2.5 0 0 0-3.5 0Z"/><path d="m22 22-5-5"/><path d="m2 2 5 5"/></svg>Пипетка</button>
+            <button id="pencilTool" class="btn btn-primary w-full">Карандаш</button>
+            <button id="eraserTool" class="btn btn-primary w-full">Ластик</button>
+            <button id="rectangleTool" class="btn btn-primary w-full">Прямоугольник</button>
+            <button id="circleTool" class="btn btn-primary w-full">Круг</button>
+            <button id="lineTool" class="btn btn-primary w-full">Линия</button>
+            <button id="eyedropperTool" class="btn btn-primary w-full flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m13.5 2.5-3 3a2.5 2.5 0 0 0 0 3.5l7 7a2.5 2.5 0 0 0 3.5 0l3-3a2.5 2.5 0 0 0 0-3.5l-7-7a2.5 2.5 0 0 0-3.5 0Z"/><path d="m22 22-5-5"/><path d="m2 2 5 5"/></svg>
+                Пипетка
+            </button>
             <div id="devToolsContainer" style="display:none; width:100%">
                 <button id="fillTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 11H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2Z"/><path d="m5 11 7-7 7 7"/></svg>Заливка</button>
-                <button id="sprayTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><circle cx="8" cy="8" r="1"/><circle cx="14" cy="8" r="1"/><circle cx="11" cy="13" r="1"/><circle cx="17" cy="13" r="1"/><circle cx="8" cy="18" r="1"/></svg>Распылитель</button>
+                <button id="sprayTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="1"/><circle cx="14" cy="8" r="1"/><circle cx="11" cy="13" r="1"/><circle cx="17" cy="13" r="1"/><circle cx="8" cy="18" r="1"/></svg>Распылитель</button>
                 <button id="textTool" class="btn btn-primary w-full"><svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Текст</button>
             </div>
             <div class="w-full h-px bg-gray-300 my-4"></div>
@@ -373,7 +373,9 @@
             <canvas id="drawingCanvas" width="800" height="600"></canvas>
             <div class="controls flex items-center gap-4 mt-4">
                 <button id="clearButton" class="btn btn-clear">Очистить</button>
-                <button id="saveButton" class="btn btn-save">Скачать PNG</button>
+                <div id="saveContainer">
+                    <button id="saveButton" class="btn btn-save">Скачать PNG</button>
+                </div>
                 <div id="themeToggleContainer" style="display:none;" class="theme-toggle">
                     <label class="theme-toggle">
                         <input type="checkbox" id="darkThemeCheckbox">
@@ -402,12 +404,11 @@
     </div>
 
     <script>
-        // === Версия ===
         const isDevVersion = new URLSearchParams(window.location.search).get("env") === "dev";
         const drawingsKey = isDevVersion ? "myDrawings_dev" : "myDrawings";
         const ideasKey = isDevVersion ? "drawingIdeas_dev" : "drawingIdeas";
 
-        // === DOM ===
+        // DOM
         const confirmationModal = document.getElementById("confirmationModal");
         const confirmationMessage = document.getElementById("confirmationMessage");
         const confirmYesBtn = document.getElementById("confirmYesBtn");
@@ -425,7 +426,6 @@
         const lineWidthValue = document.getElementById("lineWidthValue");
         const customCursor = document.getElementById("customCursor");
 
-        // Инструменты
         const toolButtons = {
             pencil: document.getElementById("pencilTool"),
             eraser: document.getElementById("eraserTool"),
@@ -444,8 +444,8 @@
         const layersContainer = document.getElementById("layersContainer");
         const layerList = document.getElementById("layerList");
         const addLayerBtn = document.getElementById("addLayerBtn");
+        const saveContainer = document.getElementById("saveContainer");
 
-        // Состояние
         let isDrawing = false, lastX = 0, lastY = 0, startX = 0, startY = 0;
         let currentTool = "pencil", previousTool = "pencil";
         let currentDrawingId = null;
@@ -453,7 +453,7 @@
         const CANVAS_BG = "#ffffff";
         let layers = [{ name: "Фон" }], activeLayer = 0;
 
-        // === Модалки ===
+        // Модалки
         function showNotification(msg) {
             notificationMessage.textContent = msg;
             notificationModal.classList.add("show");
@@ -468,7 +468,7 @@
             confirmNoBtn.addEventListener("click", () => confirmationModal.classList.remove("show"), { once: true });
         }
 
-        // === Экраны ===
+        // Экраны
         function showScreen(id) {
             document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
             document.getElementById(id).classList.add("active");
@@ -481,7 +481,7 @@
             }
         }
 
-        // === Галерея ===
+        // Галерея и хранение
         function getDrawings() {
             try { return JSON.parse(localStorage.getItem(drawingsKey)) || {}; } catch { return {}; }
         }
@@ -538,7 +538,6 @@
                 renderGallery();
             });
         }
-        // Экспорт/Импорт через настройки
         function exportData() {
             const data = { drawings: getDrawings(), ideas: JSON.parse(localStorage.getItem(ideasKey)||"[]") };
             const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
@@ -563,514 +562,292 @@
             reader.readAsText(file);
         }
 
-        // === Рис };
-            reader.readAsText(file);
-        }
-
-        // === Рисование ===
+        // Рисование
         function setupContext() {
-           ование ===
-        function setupContext() {
-            ctx.st ctx.strokeStyle = currentrokeStyle = currentTool === "eraser" ? CANVASTool === "eraser" ? CANVAS_BG : colorPicker.value;
-            ctx.fillStyle =_BG : colorPicker.value;
+            ctx.strokeStyle = currentTool === "eraser" ? CANVAS_BG : colorPicker.value;
             ctx.fillStyle = colorPicker.value;
-            colorPicker.value;
-            ctx.lineWidth = line ctx.lineWidth = lineWidth.valueWidth.value;
-            ctx.lineCap = ctx.lineJoin = "round";
-        }
-        function resize;
+            ctx.lineWidth = lineWidth.value;
             ctx.lineCap = ctx.lineJoin = "round";
         }
         function resizeCanvas() {
-            const areaCanvas() {
-            const area = document.querySelector(".main-drawing-area = document.querySelector(".main-drawing-area");
-           ");
-            const ctr const ctrls =ls = area.querySelector(".controls").offsetHeight;
-            canvas.width = area.clientWidth - area.querySelector(".controls").offsetHeight;
-            canvas.width = area.clientWidth - 40 40;
-            canvas.height = area;
-            canvas.height = area.clientHeight - c.clientHeight - ctrls - 80trls - 80;
-            setupContext();
-        }
-        function startDrawing(e);
+            const area = document.querySelector(".main-drawing-area");
+            const ctrls = area.querySelector(".controls").offsetHeight;
+            canvas.width = area.clientWidth - 40;
+            canvas.height = area.clientHeight - ctrls - 80;
             setupContext();
         }
         function startDrawing(e) {
-            if ( {
-            if (["ey["eyedroedropper","pper","fill","text"].includes(currentTool)) return;
-            isDrawing = true;
-            const r = canvas.getBfill","text"].includes(currentTool)) return;
+            if (["eyedropper","fill","text"].includes(currentTool)) return;
             isDrawing = true;
             const r = canvas.getBoundingClientRect();
-            const x = (eoundingClientRect();
-            const x = (e.clientX||e.touches.clientX||e.touches[0].clientX) - r.left;
-           [0].clientX) - r.left;
-            const y = (e.client const y = (e.clientY||Y||e.te.touches[0].clientouches[0].clientY)Y) - r.top - r.top;
-           ;
-            [lastX [lastX,lastY] =,lastY] = [x,y]; [startX,startY] [x,y]; [startX,startY] = [x,y];
-            setupContext();
-        = [x,y];
+            const x = (e.clientX||e.touches[0].clientX) - r.left;
+            const y = (e.clientY||e.touches[0].clientY) - r.top;
+            [lastX,lastY] = [x,y]; [startX,startY] = [x,y];
             setupContext();
         }
-        function drawFreehand(e) }
         function drawFreehand(e) {
             if (!isDrawing) return;
-            {
-            if (!isDrawing) return;
             const r = canvas.getBoundingClientRect();
-            const const r = canvas.getBoundingClientRect();
-            const x = (e x = (e.clientX||e.touches.clientX||e.touches[0].[0].clientXclientX) -) - r.left;
-            const y = ( r.left;
-            const y = (e.cliente.clientY||e.touches[0].clientY)Y||e.touches[0].clientY) - r.top;
-            ctx.beginPath(); ctx - r.top;
-            ctx.beginPath(); ctx.moveTo(lastX,lastY);.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.lineTo(x,y); ctx.stroke();
-            [lastX ctx.stroke();
-            [lastX,lastY] = [x,y,lastY] = [x,y];
-        }
-        function stop];
+            const x = (e.clientX||e.touches[0].clientX) - r.left;
+            const y = (e.clientY||e.touches[0].clientY) - r.top;
+            ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.stroke();
+            [lastX,lastY] = [x,y];
         }
         function stopDrawing(e) {
-            if (!isDrawing(e) {
             if (!isDrawing) return;
-            isDrawing) return;
-            isDrawing =Drawing = false;
-            const r = false;
-            const r = canvas.get canvas.getBoundingClientRect();
-            const exBoundingClientRect();
-            const ex = (e.clientX|| = (e.clientX||e.che.changedTouches[0angedTouches[0].clientX) - r.left].clientX) - r.left;
-            const;
-            const ey = (e.clientY||e.changed ey = (e.clientY||e.changedTouches[0].clientYTouches[0].clientY) - r.top;
-            switch(currentTool)) - r.top;
-            switch(currentTool) {
-                case "rectangle": ctx.strokeRect {
-                case "rectangle": ctx.strokeRect(startX,startY,ex-start(startX,startY,ex-startX,ey-startY);X,ey-startY); break;
-                case break;
-                case "circle":
-                    const rad = Math.hypot(ex-startX, "circle":
-                    const rad = Math.hypot(ex-startX, ey-start ey-startY);
-                    ctx.beginPath(); ctx.arc(startX,startY);
-                    ctx.beginPath(); ctx.arc(startX,startY,rad,0,Y,rad,0,Math.PI*2);Math.PI*2); ctx.stroke(); break;
-                case ctx.stroke(); break;
-                case "line":
-                    ctx "line":
-                    ctx.beginPath(); ctx.moveTo(startX.beginPath(); ctx.moveTo(startX,startY); ctx.lineTo(ex,startY); ctx.lineTo(ex,ey); ctx,ey); ctx.st.stroke(); break;
-            }
-        }
-       roke(); break;
-            }
-        }
-        function pick function pickColor(e) {
-            if (currentTool !==Color(e) {
-            if (currentTool !== "eyedropper") "eyedropper") return return;
-            const r = canvas.get;
+            isDrawing = false;
             const r = canvas.getBoundingClientRect();
-            const xBoundingClientRect();
-            const x = e = e.clientX.clientX - r.left, y = e.client - r.left, y = e.clientY - r.topY - r.top;
-            const [r0;
-            const [r0,g0,g0,b0] = ctx.getImageData,b0] = ctx.getImageData(x,y,1,1).data(x,y,1,1).data;
-            const hex = "#" +;
-            const hex = "#" + ((1<<24)+(r ((1<<24)+(r0<<16)+(g0<<8)+b0<<16)+(g0<<8)+b0).toString(16).slice(0).toString(16).slice(1);
-            colorPicker.value1);
+            const ex = (e.clientX||e.changedTouches[0].clientX) - r.left;
+            const ey = (e.clientY||e.changedTouches[0].clientY) - r.top;
+            switch(currentTool) {
+                case "rectangle": ctx.strokeRect(startX,startY,ex-startX,ey-startY); break;
+                case "circle":
+                    const rad = Math.hypot(ex-startX, ey-startY);
+                    ctx.beginPath(); ctx.arc(startX,startY,rad,0,Math.PI*2); ctx.stroke(); break;
+                case "line":
+                    ctx.beginPath(); ctx.moveTo(startX,startY); ctx.lineTo(ex,ey); ctx.stroke(); break;
+            }
+        }
+        function pickColor(e) {
+            if (currentTool !== "eyedropper") return;
+            const r = canvas.getBoundingClientRect();
+            const x = e.clientX - r.left, y = e.clientY - r.top;
+            const [r0,g0,b0] = ctx.getImageData(x,y,1,1).data;
+            const hex = "#" + ((1<<24)+(r0<<16)+(g0<<8)+b0).toString(16).slice(1);
             colorPicker.value = hex;
-            activateTool(previous = hex;
             activateTool(previousTool);
         }
-        functionTool);
-        }
-        function activateTool(name activateTool(name) {
-            if (name !== "eyedropper") {
-                previous) {
+        function activateTool(name) {
             if (name !== "eyedropper") {
                 previousTool = name;
-                canvas.style.cTool = name;
                 canvas.style.cursor = "none";
                 customCursor.style.display = "block";
-            } elseursor = "none";
-                customCursor.style.display = "block";
-            } {
-                canvas.style.c else {
-                canvas.style.cursor =ursor = "copy "copy";
-               ";
-                customCursor customCursor.style.display.style.display = "none";
+            } else {
+                canvas.style.cursor = "copy";
+                customCursor.style.display = "none";
             }
-            current = "none";
-            }
-            currentTool =Tool = name;
-            Object.values(toolButtons).forEach(b => b.classList.remove(" name;
+            currentTool = name;
             Object.values(toolButtons).forEach(b => b.classList.remove("active"));
             if (toolButtons[name]) toolButtons[name].classList.add("active");
-            setupContextactive"));
-            if (toolButtons[name]) toolButtons[name].classList.add("active");
             setupContext();
-       ();
         }
 
-        // DEV заливка/распылитель/текст
-        function floodFill(x }
-
-        // DEV заливка/распылитель/текст
-        function floodFill(x,y,,y,fillColorfillColor) {
-            const img = ctx.getImageData(0,0,canvas.width,canvas.height);
-            const data = img) {
+        // Заливка, распылитель, текст (dev)
+        function floodFill(x,y,fillColor) {
             const img = ctx.getImageData(0,0,canvas.width,canvas.height);
             const data = img.data;
-            const target = ctx.getImage.data;
-            const target = ctx.getImageData(xData(x,y,,y,1,1,1).1).datadata;
-            const;
-            const [tr [tr,tg,tg,tb,tb] =] = [target [target[0[0],target],target[1],target[2]];
-            const [fr,fg,fb] = [parseInt[1],target[2]];
-            const [fr,fg,fb] = [parseInt(fillColor.slice(1,3),16), parseInt(fillColor.slice(3,5),(fillColor.slice(1,3),16), parseInt(fillColor.slice(316,5),16), parseInt), parseInt(fillColor.slice(fillColor.slice(5(5,7),16)];
-            if (,7),16)];
-            if (tr===tr===fr &&fr && tg=== tg===fg &&fg && tb=== tb===fb) return;
-            const stack = [[xfb) return;
-            const stack = [[x,y,y]];
+            const target = ctx.getImageData(x,y,1,1).data;
+            const [tr,tg,tb] = [target[0],target[1],target[2]];
+            const [fr,fg,fb] = [parseInt(fillColor.slice(1,3),16), parseInt(fillColor.slice(3,5),16), parseInt(fillColor.slice(5,7),16)];
+            if (tr===fr && tg===fg && tb===fb) return;
+            const stack = [[x,y]];
             while(stack.length) {
-                const]];
-            while(stack.length) {
-                const [cx, [cx,cy]cy] = stack = stack.pop();
-                if.pop();
-                if (cx (cx<0<0||cy||cy<0||cx>=canvas.width||<0||cx>=canvas.width||cy>=cy>=canvas.heightcanvas.height) continue) continue;
-               ;
-                const i const i = (cy* = (cy*canvas.widthcanvas.width+cx)*4;
-                if (data[i+cx)*4;
-                if (data[i]===]===tr &&tr && data[i data[i++1]===tg &&1]===tg && data[i data[i+2+2]===]===tb)tb) {
-                    {
-                    data[i data[i]=fr; data[i+1]=]=fr; data[i+1]=fg;fg; data[i+2 data[i+2]=fb]=fb; data; data[i+3]=255;
-                    stack.push([cx+1,cy],[cx-1,[i+3]=255;
-                    stack.push([cx+1,cy],[cx-1,cycy],[cx,cy+1],[cx,cy-1]);
+                const [cx,cy] = stack.pop();
+                if (cx<0||cy<0||cx>=canvas.width||cy>=canvas.height) continue;
+                const i = (cy*canvas.width+cx)*4;
+                if (data[i]===tr && data[i+1]===tg && data[i+2]===tb) {
+                    data[i]=fr; data[i+1]=fg; data[i+2]=fb; data[i+3]=255;
+                    stack.push([cx+1,cy],[cx-1,cy],[cx,cy+1],[cx,cy-1]);
                 }
             }
-            ctx.putImageData(img,0],[cx,cy+1],[cx,cy-1]);
-                }
-            }
-            ctx.putImageData(img,0,0,0);
-       );
+            ctx.putImageData(img,0,0);
         }
-        }
-        canvas.addEventListener canvas.addEventListener("click", e => {
-            if("click", e => {
-            if (current (currentTool ===Tool === "ey "eyedropper") pickColor(e);
-            elseedropper") pickColor(e);
-            else if ( if (currentTool === "currentTool === "fill") {
-               fill") {
-                const r const r = canvas = canvas.getB.getBoundingClientoundingClientRectRect();
-                flood();
-                floodFill(MathFill(Math.floor(e.floor(e.clientX.clientX-r.left-r.left), Math), Math.floor(e.floor(e.clientY.clientY-r.top-r.top), color), colorPicker.valuePicker.value);
-           );
-            } else } else if ( if (currentToolcurrentTool === " === "text") {
-               text") {
-                const r const r = canvas.getBoundingClientRect();
-                const text = = canvas.getBoundingClientRect();
-                const text = prompt(" prompt("ВведитеВведите текст:");
+        canvas.addEventListener("click", e => {
+            if (currentTool === "eyedropper") pickColor(e);
+            else if (currentTool === "fill") {
+                const r = canvas.getBoundingClientRect();
+                floodFill(Math.floor(e.clientX-r.left), Math.floor(e.clientY-r.top), colorPicker.value);
+            } else if (currentTool === "text") {
+                const r = canvas.getBoundingClientRect();
+                const text = prompt("Введите текст:");
                 if (text) {
-                    ctx.font = `${lineWidth.value текст:");
-                if (text) {
-                    ctx.font = `${lineWidth.value*3}px*3}px sans-serif`;
-                    sans-serif`;
-                    ctx.fillText(text ctx.fillText(text, e, e.clientX-r.left.clientX-r.left, e, e.clientY-r.top.clientY-r.top);
-               );
+                    ctx.font = `${lineWidth.value*3}px sans-serif`;
+                    ctx.fillText(text, e.clientX-r.left, e.clientY-r.top);
                 }
-            }
             }
         });
 
         // Слои
-        function render }
-        });
-
-        // Слои
-        function renderLayersLayers()() {
-            layer {
-            layerList.innerHTML =List.innerHTML = "";
-            layers.forEach(( "";
-            layers.forEach((l,il,i) => {
-                const d = document.createElement("div) => {
+        function renderLayers() {
+            layerList.innerHTML = "";
+            layers.forEach((l,i) => {
                 const d = document.createElement("div");
-                d.className = "layer-item");
-                d.className = "layer-item" + (i" + (i===active===activeLayer?"Layer?" active":" active":"");
-               ");
+                d.className = "layer-item" + (i===activeLayer?" active":"");
                 d.textContent = l.name;
-                d.textContent = l.name;
-                d.addEventListener d.addEventListener("click", ()("click", () => { => { activeLayer activeLayer = i; renderLayers = i; renderLayers(); });
-                layerList.appendChild(d);
-           (); });
+                d.addEventListener("click", () => { activeLayer = i; renderLayers(); });
                 layerList.appendChild(d);
             });
-        });
         }
-        add }
-        addLayerBtn?.addLayerBtn?.addEventListener("EventListener("click",click", () => () => {
- {
-                       layers.push({ name layers.push({ name: `: `СлойСлой ${lay ${layers.lengthers.length+1+1}`}` });
-            active });
-            activeLayer = layers.lengthLayer = layers.length-1-1;
-           ;
-            renderLayers();
-        renderLayers();
-        });
-
-        // });
 
         // Продвинутый цвет
-        function syncAdv Продвинутый цвет
-        function syncAdvColor()Color() {
+        function syncAdvColor() {
             const hex = colorPicker.value;
- {
-            const hex = colorPicker.value;
-            document.getElementById("hexInput").            document.getElementById("hexInput").value =value = hex hex;
-            document;
-            document.getElementById("redInput.getElementById("redInput").value = parseInt(hex").value = parseInt(hex.slice(.slice(1,3),1,3),1616);
-            document.getElementById("greenInput);
-            document.getElementById("greenInput").value = parseInt").value = parseInt(hex(hex.slice(.slice(3,5),3,5),16);
-            document16);
-            document.getElementById("blueInput.getElementById("blueInput").value").value = parseInt(hex = parseInt(hex.slice(5,.slice(5,7),167),16);
+            document.getElementById("hexInput").value = hex;
+            document.getElementById("redInput").value = parseInt(hex.slice(1,3),16);
+            document.getElementById("greenInput").value = parseInt(hex.slice(3,5),16);
+            document.getElementById("blueInput").value = parseInt(hex.slice(5,7),16);
         }
-        function);
-        }
-        function updateFrom updateFromRGB()RGB() {
-            const r = {
-            const r = +document.getElementById(" +document.getElementById("redInput").valueredInput").value;
-            const g = +document.getElementById("greenInput;
+        function updateFromRGB() {
+            const r = +document.getElementById("redInput").value;
             const g = +document.getElementById("greenInput").value;
-           ").value;
-            const b = + const b = +document.getElementByIddocument.getElementById("blueInput").value;
-            const hex = "#" + ((1("blueInput").value;
-            const hex = "#" + ((1<<24)+(<<24)+(r<<16)+(r<<16)+(gg<<8)+<<8)+b).b).toString(toString(16).slice(16).slice(11);
-            color);
-            colorPicker.valuePicker.value = hex;
-            document.getElementById = hex;
-            document.getElementById("hex("hexInput").value =Input").value = hex hex;
+            const b = +document.getElementById("blueInput").value;
+            const hex = "#" + ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);
+            colorPicker.value = hex;
+            document.getElementById("hexInput").value = hex;
             setupContext();
         }
 
-        // Тёмная тема
-        darkThemeCheckbox?.;
-            setupContext();
+        // Сохранение с выбором формата (dev)
+        function downloadCanvas(format) {
+            const tmp = document.createElement("canvas");
+            tmp.width = canvas.width; tmp.height = canvas.height;
+            const tctx = tmp.getContext("2d");
+            tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
+            tctx.drawImage(canvas,0,0);
+            const mime = { png: "image/png", jpg: "image/jpeg", webp: "image/webp" }[format];
+            const link = document.createElement("a");
+            link.download = `drawing.${format}`;
+            link.href = tmp.toDataURL(mime, format==="jpg"?0.9:1);
+            link.click();
         }
 
-        // Тёмная тема
-        darkThemeCheckbox?.addEventListeneraddEventListener("change("change", e => {
-            document.documentElement.toggleAttribute("data-theme", e => {
-            document.documentElement.toggleAttribute("data-theme", e.target.checked);
-        });
-
-        // Обработ", e.target.checked);
-        });
-
-        // Обработчикичики мы мыши
-        canvasши
-        canvas.addEventListener(".addEventListener("mousedmousedown",own", startDrawing);
-        canvas.addEventListener("m startDrawing);
-        canvas.addEventListener("mousemousemove", e => {
-           ove", e => {
-            if (currentTool if (currentTool !== "eyed !== "eyedropperropper")") {
-                custom {
+        // Обработчики
+        canvas.addEventListener("mousedown", startDrawing);
+        canvas.addEventListener("mousemove", e => {
+            if (currentTool !== "eyedropper") {
                 customCursor.style.left = e.clientX+"px";
-                customCursor.styleCursor.style.left = e.clientX+"px";
-                customCursor.style.top =.top = e.client e.clientY+"px";
-           Y+"px";
+                customCursor.style.top = e.clientY+"px";
             }
-            }
-            if ( if (isDrawing && (currentTool==="pencil"||currentTool==="eraser"))isDrawing && (currentTool==="pencil"||currentTool==="eraser")) drawFreehand(e);
-        });
-        canvas.addEventListener drawFreehand(e);
+            if (isDrawing && (currentTool==="pencil"||currentTool==="eraser")) drawFreehand(e);
         });
         canvas.addEventListener("mouseup", stopDrawing);
         canvas.addEventListener("touchstart", e => { e.preventDefault(); startDrawing(e); });
         canvas.addEventListener("touchmove", e => { e.preventDefault(); drawFreehand(e); });
-        canvas.addEventListener("touchend",("mouseup", stopDrawing);
-        canvas.addEventListener("touchstart", e => { e.preventDefault(); startDrawing(e); });
-        canvas.addEventListener("touchmove", e => { e.preventDefault(); drawFreehand(e); });
-        canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(e); e => { e.preventDefault(); stopDrawing(e); });
+        canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(e); });
 
- });
-
-        //        // === И === Инициализация ===
-        window.addEventListener("load", ()нициализация ===
+        // Инициализация
         window.addEventListener("load", () => {
-            // => {
-            // согла согласие
-            if (!сие
+            // Согласие
             if (!sessionStorage.getItem("consentBannerClosed")) {
-               sessionStorage.getItem("consentBannerClosed")) {
-                document.getElementById document.getElementById("dataConsentBanner("dataConsentBanner").style.display = "flex";
-                document.getElementById").style.display = "flex";
-                document.getElementById("cons("consentButton").addentButton").addEventListener("click",EventListener("click", () => () => {
-                    sessionStorage.setItem("cons {
-                    sessionStorage.setItem("consentBentBannerClosed","annerClosed","truetrue");
-                    document.getElementById");
-                    document.getElementById("dataConsentBanner("dataConsentBanner").style").style.display = "none";
-               .display = "none";
+                document.getElementById("dataConsentBanner").style.display = "flex";
+                document.getElementById("consentButton").addEventListener("click", () => {
+                    sessionStorage.setItem("consentBannerClosed","true");
+                    document.getElementById("dataConsentBanner").style.display = "none";
                 });
- });
             }
 
-            // настройки            }
-
-            // настройки версии версии
-           
-            const verText = const verText = document.getElementById document.getElementById("versionText("versionText");
-            const");
-            const beta = document.getElementById("betaText beta = document.getElementById("betaText");
-            const");
-            const switchContainer = document.getElementById switchContainer = document.getElementById("versionSwitchContainer("versionSwitchContainer");
-           ");
+            // Версия и переключатель
+            const verText = document.getElementById("versionText");
+            const beta = document.getElementById("betaText");
+            const switchContainer = document.getElementById("versionSwitchContainer");
             if (isDevVersion) {
-                if (isDevVersion) {
-                verText verText.textContent.textContent = "HTMPen  = "HTMPen 8 DEV, ПРОЕКТ Ж8 DEV, ПРОЕКТ ЖИВИВ!";
+                verText.textContent = "HTMPen 9.0 ";
+                beta.textContent = "beta!";
                 beta.classList.remove("hidden");
-                switchContainer!";
-                beta.classList.remove("hidden");
-                switchContainer.innerHTML =.innerHTML = '<button id="switchTo '<button id="switchToStableStableBtn" class="Btn" class="btn btnbtn btn-stable-switch-stable-switch">Ста">Стабильнаябильная версия</button>';
-                document.getElementById версия</button>';
-                document.getElementById("switchToStableBtn("switchToStableBtn").add").addEventListener("EventListener("click",click", () => () => {
-                    {
-                    document.getElementById("versionSwitchTitle").textContent = "Возврат в ста document.getElementById("versionSwitchTitle").textContent = "Возврат в стабильнуюбильную";
-                   ";
-                    document.getElementById(" document.getElementById("versionSwitchMessageversionSwitchMessage").text").textContent =Content = "Стабильная "Стабильная версия над версия надёжёжнее.";
-                    document.getElementById("confirmSwitchBtn").нее.";
-                    document.getElementById("confirmSwitchBtn").textContent = "textContent = "Перейти";
-                    document.getElementById("confirmSwitchBtn").style.background = "#3b82f6Перейти";
+                switchContainer.innerHTML = '<button id="switchToStableBtn" class="btn btn-stable-switch">Стабильная версия</button>';
+                document.getElementById("switchToStableBtn").addEventListener("click", () => {
+                    document.getElementById("versionSwitchTitle").textContent = "Возврат в стабильную";
+                    document.getElementById("versionSwitchMessage").textContent = "Стабильная версия надёжнее.";
+                    document.getElementById("confirmSwitchBtn").textContent = "Перейти";
                     document.getElementById("confirmSwitchBtn").style.background = "#3b82f6";
                     document.getElementById("versionSwitchModal").classList.add("show");
-                   ";
-                    document.getElementById("versionSwitchModal").classList.add("show");
-                    document.getElementById("confirmSwitchBtn").onclick = () => location.h document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname;
+                    document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname;
                 });
-                //ref = location.pathname;
-                });
-                // Включаем DEV‑ Включаем DEV‑фичи
-                devToolsContainer.style.display =фичи
+                // Включаем DEV‑фичи
                 devToolsContainer.style.display = "block";
                 layersContainer.style.display = "block";
-                advanced "block";
-                layersContainer.style.display = "block";
                 advancedColorContainer.style.display = "flex";
-                themeColorContainer.style.display = "flex";
-                themeToggleContainer.style.displayToggleContainer.style.display = " = "flex";
-                renderflex";
+                themeToggleContainer.style.display = "flex";
+                // Кнопки сохранения
+                saveContainer.innerHTML = `
+                    <button id="savePngBtn" class="btn btn-save">PNG</button>
+                    <button id="saveJpgBtn" class="btn btn-save">JPG</button>
+                    <button id="saveWebpBtn" class="btn btn-save">WebP</button>
+                `;
+                document.getElementById("savePngBtn").addEventListener("click", () => downloadCanvas("png"));
+                document.getElementById("saveJpgBtn").addEventListener("click", () => downloadCanvas("jpg"));
+                document.getElementById("saveWebpBtn").addEventListener("click", () => downloadCanvas("webp"));
+                // Слои
                 renderLayers();
-                document.getElementById("redInput").Layers();
-                document.getElementById("redInput").addEventListener("input", updateFromRGBaddEventListener("input", updateFromRGB);
-                document.getElementById);
-                document.getElementById("greenInput").addEventListener("greenInput").addEventListener("input", updateFromRGB);
-               ("input", updateFromRGB);
-                document.getElementById("blue document.getElementById("blueInput").addEventListener("input", updateFromRGB);
-               Input").addEventListener("input", updateFromRGB);
-                document.getElementById document.getElementById("hexInput").addEventListener("("hexInput").addEventListener("change", () =>change", () => {
-                    const v = document.getElementById {
+                addLayerBtn.addEventListener("click", () => {
+                    layers.push({ name: `Слой ${layers.length+1}` });
+                    activeLayer = layers.length-1;
+                    renderLayers();
+                });
+                // Цвет
+                document.getElementById("redInput").addEventListener("input", updateFromRGB);
+                document.getElementById("greenInput").addEventListener("input", updateFromRGB);
+                document.getElementById("blueInput").addEventListener("input", updateFromRGB);
+                document.getElementById("hexInput").addEventListener("change", () => {
                     const v = document.getElementById("hexInput").value;
-                    if("hexInput").value;
-                    if (/^#[0-9a-fA-F]{6 (/^#[0-9a-fA-F]{6}$/.test(v)) {}$/.test(v)) { colorPicker colorPicker.value = v; syncAdv.value = v; syncAdvColor(); setupContextColor(); setupContext();(); }
+                    if (/^#[0-9a-fA-F]{6}$/.test(v)) { colorPicker.value = v; syncAdvColor(); setupContext(); }
                 });
-                color }
-                });
-                colorPicker.addEventListener("input", syncPicker.addEventListener("input", syncAdvColorAdvColor);
-                syncAdvColor);
+                colorPicker.addEventListener("input", syncAdvColor);
                 syncAdvColor();
-                // AI отключён();
+                // Тёмная тема
+                darkThemeCheckbox.addEventListener("change", e => {
+                    document.documentElement.toggleAttribute("data-theme", e.target.checked);
+                });
                 // AI отключён
-                document.getElementById("geminiIdeaButton").
-                document.getElementById("geminiIdeaButton").addEventListener("click", eaddEventListener("click", e => {
-                    e.preventDefault(); => {
-                    e.preventDefault(); showNotification("AI от showNotification("AI отключён в dev‑ключён в dev‑версиверсии");
+                document.getElementById("geminiIdeaButton").addEventListener("click", e => {
+                    e.preventDefault(); showNotification("AI отключён в dev‑версии");
                 });
-               и");
-                });
-                document.getElementById("ideaListContainer document.getElementById("ideaListContainer").innerHTML = '<p").innerHTML = '<p class="text-center p- class="text-center p-4">Недоступно4">Недоступно в dev‑версии</p>';
-                document в dev‑версии</p>';
-                document.getElementById("clearLibraryButton")..getElementById("clearLibraryButton").style.displaystyle.display = "none";
-            } = "none";
+                document.getElementById("ideaListContainer").innerHTML = '<p class="text-center p-4">Недоступно в dev‑версии</p>';
+                document.getElementById("clearLibraryButton").style.display = "none";
+                // Инструменты dev
+                fillTool.addEventListener("click", () => activateTool("fill"));
+                sprayTool.addEventListener("click", () => activateTool("spray"));
+                textTool.addEventListener("click", () => activateTool("text"));
             } else {
-                verText.text else {
-                verText.textContent =Content = "HT "HTMPen 8MPen 8, ПРОЕКТ ЗАБРОШ, ПРОЕКТ ЗАБРОШЕН";
-                beta.classList.add("hiddenЕН";
+                verText.textContent = "HTMPen 8, ПРОЕКТ ЗАБРОШЕН";
                 beta.classList.add("hidden");
-                switchContainer.innerHTML = '<button id="switchToDevBtn");
-                switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev" class="btn btn-dev-switch">Dev‑версия</‑версия</buttonbutton>';
-                document>';
-                document.getElementById("switchTo.getElementById("switchToDevBtn").addEventListener("DevBtn").addEventListener("click",click", () => {
-                    document.getElementById("version () => {
-                    document.getElementById("versionSwitchTitleSwitchTitle").text").textContent =Content = "Пере "Переход вход в Dev‑версию";
-                    document.getElementById("version Dev‑версию";
-                    document.getElementById("versionSwitchMessage").textSwitchMessage").textContent = "НContent = "Новые функции, возможны ошибки.";
-                    documentовые функции, возможны ошибки.";
-                    document.getElementById(".getElementById("confirmSwitchconfirmSwitchBtn").Btn").textContent = "Да, перейти";
-                    document.getElementById("confirmSwitchBtn").styletextContent = "Да, перейти";
+                switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev‑версия</button>';
+                document.getElementById("switchToDevBtn").addEventListener("click", () => {
+                    document.getElementById("versionSwitchTitle").textContent = "Переход в Dev‑версию";
+                    document.getElementById("versionSwitchMessage").textContent = "Новые функции, возможны ошибки.";
+                    document.getElementById("confirmSwitchBtn").textContent = "Да, перейти";
                     document.getElementById("confirmSwitchBtn").style.background = "#f97316";
-                    document.getElementById("versionSwitch.background = "#f97316";
-                    document.getElementById("versionSwitchModal").classListModal").classList.add(".add("showshow");
-                    document.getElementById("");
-                    document.getElementById("confirmSwitchBtn").onclickconfirmSwitchBtn").onclick = () => location.href = location = () => location.href = location.pathname + "?env=dev";
+                    document.getElementById("versionSwitchModal").classList.add("show");
+                    document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname + "?env=dev";
                 });
                 // Stable AI
-               .pathname + "?env=dev";
-                });
-                // Stable AI
-                document.getElementById document.getElementById("geminiIdeaButton").addEventListener("click", () =>("geminiIdeaButton").addEventListener("click", () => {
-                    document.getElementById {
+                document.getElementById("geminiIdeaButton").addEventListener("click", () => {
                     document.getElementById("geminiPrompt").innerHTML = "";
-                   ("geminiPrompt").innerHTML = "";
-                    document document.getElementById("geminiModal.getElementById("geminiModal").classList.add("show");
-               ").classList.add("show");
+                    document.getElementById("geminiModal").classList.add("show");
                 });
-                renderIdeaLibrary();
-            });
                 renderIdeaLibrary();
             }
-            document.getElementById("cancelSwitch }
-            document.getElementById("cancelSwitchBtn").Btn").addEventListeneraddEventListener("click("click", ()", () => => {
-                document.getElementById {
-                document.getElementById("versionSwitch("versionSwitchModal").Modal").classListclassList.remove("show");
+
+            document.getElementById("cancelSwitchBtn").addEventListener("click", () => {
+                document.getElementById("versionSwitchModal").classList.remove("show");
             });
-            // Настройки (экспорт/импорт)
-            document.remove("show");
+            document.getElementById("settingsBtn").addEventListener("click", () => {
+                document.getElementById("settingsModal").classList.add("show");
             });
-            // Настройки (экспорт/импорт)
-            document.getElementById(".getElementById("settingsBtn").addEventListener("click",settingsBtn").addEventListener("click", () => {
-                document.getElementById("settingsModal").classList () => {
-                document.getElementById("settingsModal").classList.add("show.add("show");
-           ");
-            });
-            document.getElementById(" });
-            document.getElementById("settingsModalsettingsModalClose").Close").addEventListener("click", () => {
-                document.getElementById("settingsModal").classaddEventListener("click", () => {
+            document.getElementById("settingsModalClose").addEventListener("click", () => {
                 document.getElementById("settingsModal").classList.remove("show");
             });
-           List.remove("show");
-            });
-            document.getElementById("export document.getElementById("exportDataBtn").addEventListener("DataBtn").addEventListener("click", exportData);
-            document.getElementById("importclick", exportData);
-            document.getElementById("importDataInput").addEventListenerDataInput").addEventListener("change",("change", e => {
-                if ( e => {
-                if (e.targete.target.files[0.files[0]) importData(e.target.f]) importData(e.target.files[0]);
-                e.target.valueiles[0]);
+            document.getElementById("exportDataBtn").addEventListener("click", exportData);
+            document.getElementById("importDataInput").addEventListener("change", e => {
+                if (e.target.files[0]) importData(e.target.files[0]);
                 e.target.value = "";
             });
 
-            show = "";
-            });
-
-            showScreen("Screen("galleryScreengalleryScreen");
-            activate");
+            showScreen("galleryScreen");
             activateTool("pencil");
             document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
-            document.getElementById("saveButton").addEventListener("click", () => {
-                const tmp = document.createElement("canvas");
-                tmp.width = canvas.width; tmp.height = canvas.height;
-                const tctx = tmp.getContext("2d");
-                tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
-                tctx.drawTool("pencil");
-            document.getElementById("clearButton").addEventListener("click", () => ctx.clearRect(0,0,canvas.width,canvas.height));
-            document.getElementById("saveButton").addEventListener("click", () => {
-                const tmp = document.createElement("canvas");
-                tmp.width = canvas.width; tmp.height = canvas.height;
-                const tctx = tmp.getContext("2d");
-                tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
-                tctx.drawImage(canvas,0,0);
-                const a = document.createElement("a");
-                a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
-            });
+            // Stable save PNG
+            if (!isDevVersion) {
+                document.getElementById("saveButton").addEventListener("click", () => {
+                    const tmp = document.createElement("canvas");
+                    tmp.width = canvas.width; tmp.height = canvas.height;
+                    const tctx = tmp.getContext("2d");
+                    tctx.fillStyle = CANVAS_BG; tctx.fillRect(0,0,tmp.width,tmp.height);
+                    tctx.drawImage(canvas,0,0);
+                    const a = document.createElement("a");
+                    a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
+                });
+            }
             document.getElementById("newDrawingBtn").addEventListener("click", () => {
                 currentDrawingId = Date.now();
                 showScreen("drawingScreen");
@@ -1081,116 +858,62 @@
                 showScreen("galleryScreen");
             });
             window.addEventListener("resize", resizeCanvas);
+            Object.keys(toolButtons).forEach(name => {
+                toolButtons[name].addEventListener("click", () => activateTool(name));
+            });
+            lineWidth.addEventListener("input", e => {
+                lineWidthValue.textContent = e.target.value;
+                customCursor.style.width = `${e.target.value}px`;
+                customCursor.style.height = `${e.target.value}px`;
+                setupContext();
+            });
         });
 
-        // БиблиотеImage(canvas,0,0);
-                const a = document.createElement("a");
-                a.download = "drawing.png"; a.href = tmp.toDataURL(); a.click();
-            });
-            document.getElementById("newDrawingBtn").addEventListener("click", () => {
-                currentDrawingId = Date.now();
-                showScreen("drawingScreen");
-                setTimeout(() => ctx.clearRect(0,0,canvas.width,canvas.height), 0);
-            });
-            document.getElementById("backToGalleryBtn").addEventListener("click", () => {
-                saveCurrentDrawing();
-                showScreen("galleryScreen");
-            });
-            window.addEventListener("resize", resizeCanvas);
-        });
-
-        // Библиотека идей (stable)
-        function renderIdeaLibrary() {
-            const ideas = JSON.parse(localStorage.getItem(ideasка идей (stable)
         function renderIdeaLibrary() {
             const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
-            const cont = document.getElementByIdKey) || "[]");
             const cont = document.getElementById("ideaListContainer");
-           ("ideaListContainer");
-            cont.innerHTML = cont.innerHTML = "";
-            if "";
+            cont.innerHTML = "";
             if (!ideas.length) {
-                cont.innerHTML = '<p (!ideas.length) {
-                cont.innerHTML = '<p class=" class="text-center p-text-center p-4">Пусто</p>';
+                cont.innerHTML = '<p class="text-center p-4">Пусто</p>';
                 document.getElementById("clearLibraryButton").style.display = "none";
                 return;
             }
             ideas.forEach(idea => {
                 const el = document.createElement("div");
                 el.className = "idea-item";
-                el.innerHTML = `<span>${idea}</span><button class="copy-4">Пусто</p>';
-                document.getElementById("clearLibraryButton").style.display = "none";
-                return;
-            }
-            ideas.forEach(idea => {
-                const el = document.createElement("div");
-                el.className = "idea-item";
-                el.innerHTML = `<span>${idea}</span><button class="copy-idea-btn"><svg width="16idea-btn"><svg width="16" viewBox="0 0 24 24" fill="none"" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15. stroke="currentColor" stroke-width="2"><path d="M15.75 17.75 17.25v25v3.375c0 .621-.504 3.375c0 .621-.504 1.125-1.1.125-1.125 125 1.125h-9.75a1.1251.125h-9.75a1.125 1 1.125 0 01.125 0 01-1-1.125-1.125V7.875c0.125-1.125V7.875c0-.621.504-.621.504-1.125 1.125-1-1.125 1.125-1..125H6.75a9.06125H6.75a9.06 0 011.5.124m7. 0 011.5.124m7.55 10.376h3 10.376h3.375.375c.621 0 c.621 0 1.125-.504 1.1.125-.504 1.125-1.125V125-1.125V11.25c0-4.11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-46-3.243-8.161-7.5-8.876a9.06 0 00-1.1.5-.124H9.5-.124H9.375c-.621 0375c-.621 0-1-1.125.504.125.504-1.125 1.125-1.125 1.125v3.5m7.5 10v3.5m7.5 10.375H9.375.375H9.375a1.125 1.125a1.125 1.125 0 01-1.125-1.125v- 0 01-1.125-1.125v-9.25m9.25m12 12 6.625v-1.8756.625v-1.875a3.375 3.375a3.375 3.375 0 00-3.375-3 0 00-3.375-3.375h-1.5a1.125 .375h-1.5a1.125 1.125 0 1.125 0 01-1.125-1.01-1.125-1.125v125v-1.5c0-1.5c0-.621-.504-1.125-.621-.504-1.125-1.125-1-1.125-1.125H9.75"/></svg></button>`;
-                el.querySelector.125H9.75"/></svg></button>`;
-                el.querySelector(".copy(".copy-idea-btn").addEventListener("click-idea-btn").addEventListener("click", () => navigator.cl", () => navigator.clipboard.writeText(idea));
-                cont.appendChildipboard.writeText(idea));
+                el.innerHTML = `<span>${idea}</span><button class="copy-idea-btn"><svg width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H9.75"/></svg></button>`;
+                el.querySelector(".copy-idea-btn").addEventListener("click", () => navigator.clipboard.writeText(idea));
                 cont.appendChild(el);
-           (el);
             });
-            document.getElementById("clearLibraryButton").style.display = "block });
             document.getElementById("clearLibraryButton").style.display = "block";
-        }
-        document.getElementById("clearLibraryButton").addEventListener("click", () => {
-            localStorage.removeItem(ideasKey";
         }
         document.getElementById("clearLibraryButton").addEventListener("click", () => {
             localStorage.removeItem(ideasKey);
             renderIdeaLibrary();
-       );
-            renderIdeaLibrary();
         });
-        // Gemini
-        async function get });
-        // Gemini
+
         async function getIdea(mood) {
-            const promptCont = document.getElementById("geminiIdea(mood) {
             const promptCont = document.getElementById("geminiPrompt");
-            promptCont.innerHTMLPrompt");
             promptCont.innerHTML = '<div class="loader"></div>';
-            = '<div class="loader"></div>';
-            const prompts const prompts = {
-                funny: " = {
-                funny: "ССмешная идея длямешная идея для рисун рисунка на русском (коротко).",
-                serious: "Эпичнаяка на русском (коротко).",
-                serious: "Эпичная идея для рисунка на русском (кор идея для рисунка на русском (короткоотко).",
+            const prompts = {
+                funny: "Смешная идея для рисунка на русском (коротко).",
+                serious: "Эпичная идея для рисунка на русском (коротко).",
             };
-            const prompt =).",
-            };
-            const prompt = mood === "funny" || mood mood === "funny" || mood === "serious" ? prompts[m === "serious" ? prompts[mood] : `Идеяood] : `Идея для рисун для рисунка нака на русском русском, настроение: ${mood}`;
-            const resp = await fetch(`https://generativelanguage, настроение: ${mood}`;
+            const prompt = mood === "funny" || mood === "serious" ? prompts[mood] : `Идея для рисунка на русском, настроение: ${mood}`;
             const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=NO`, {
-                method.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=NO`, {
                 method: "POST",
                 headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({contents: "POST",
-                headers: {"Content-Type":"application/json"},
-                body: JSON.stringify({contents:[{parts:[{text:prompt:[{parts:[{text:prompt}]}]})
-            }).catch(() => {});
-            if (!resp || !resp.ok) {
-                promptCont.textContent = "Ошибка}]}]})
+                body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
             }).catch(() => {});
             if (!resp || !resp.ok) {
                 promptCont.textContent = "Ошибка или ключ отсутствует.";
                 return;
             }
             const data = await resp.json();
-            const text = data.candidates? или ключ отсутствует.";
-                return;
-            }
-            const data = await resp.json();
-            const text = data.candidates?.[0]?.content?.parts?.[0]?.text.[0]?.content?.parts?.[0]?.text?.trim() || "Нет ответа";
-            promptCont.textContent = text;
-            const ideas = JSON?.trim() || "Нет ответа";
+            const text = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Нет ответа";
             promptCont.textContent = text;
             const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
-            ideas.un.parse(localStorage.getItem(ideasKey) || "[]");
             ideas.unshift(text);
-            if (shift(text);
             if (ideas.length > 15) ideas.pop();
             localStorage.setItem(ideasKey, JSON.stringify(ideas));
             renderIdeaLibrary();
