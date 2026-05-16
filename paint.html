@@ -106,7 +106,6 @@
             font-size: 16px;
         }
 
-        /* Модалки */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -134,7 +133,6 @@
         }
         .modal-close:hover { color: #333; }
 
-        /* Редактор (модалка) */
         #editorModal {
             display: none;
             position: fixed;
@@ -275,6 +273,15 @@
             padding-bottom: 1rem;
         }
 
+        .whats-new-btn {
+            background: none;
+            border: none;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.875rem;
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .editor-container {
                 flex-direction: column;
@@ -287,13 +294,11 @@
     </style>
 </head>
 <body>
-    <!-- Баннер согласия -->
     <div id="dataConsentBanner" class="fixed top-5 left-1/2 -translate-x-1/2 w-11/12 max-w-4xl p-4 bg-yellow-200 border border-yellow-400 text-yellow-900 rounded-lg shadow-lg flex items-center justify-between z-[10000]" style="display:none">
         <p class="text-sm"><strong>Предупреждение:</strong> Этот сайт использует cookie для сохранения идей и рисунков.</p>
         <button id="consentButton" class="ml-4 text-2xl font-bold">&times;</button>
     </div>
 
-    <!-- Модальные окна -->
     <div id="confirmationModal" class="modal-overlay">
         <div class="modal-content">
             <p id="confirmationMessage" class="text-lg"></p>
@@ -322,7 +327,6 @@
         </div>
     </div>
 
-    <!-- Настройки (только dev) -->
     <div id="settingsModal" class="modal-overlay">
         <div class="modal-content">
             <span class="modal-close" id="settingsModalClose">&times;</span>
@@ -341,7 +345,6 @@
         </div>
     </div>
 
-    <!-- Модалка выбора формата сохранения (dev) -->
     <div id="saveFormatModal" class="modal-overlay">
         <div class="modal-content">
             <h3 class="text-2xl font-bold mb-4">Выбери формат</h3>
@@ -354,7 +357,25 @@
         </div>
     </div>
 
-    <!-- Экран Галереи -->
+    <!-- Модалка "Что нового" -->
+    <div id="whatsNewModal" class="modal-overlay">
+        <div class="modal-content" style="max-height:80vh; overflow-y:auto; text-align:left;">
+            <span class="modal-close" id="whatsNewClose">&times;</span>
+            <h3 class="text-2xl font-bold mb-4">Что нового в HTMPen 9</h3>
+            <ul style="list-style: disc; padding-left: 20px; margin-top: 10px;">
+                <li>Слои — добавляй, удаляй, скрывай и переключай слои.</li>
+                <li>Продвинутый выбор цвета — RGB и HEX.</li>
+                <li>Тёмная тема — включается в настройках (шестерёнка).</li>
+                <li>Счётчик времени и кликов у каждого рисунка.</li>
+                <li>Импорт фото как отдельный слой.</li>
+                <li>Инструмент «Перемещение» — двигай слои мышкой.</li>
+                <li>Сохранение в PNG, JPG, WebP.</li>
+                <li>Редактор открывается в отдельном окне.</li>
+            </ul>
+            <button id="whatsNewOkBtn" class="btn btn-primary mt-6 w-full">Понятно!</button>
+        </div>
+    </div>
+
     <div id="galleryScreen" class="screen active">
         <div class="flex justify-between items-center flex-wrap gap-4">
             <h1 class="text-4xl font-extrabold text-gray-800">
@@ -374,15 +395,17 @@
         </div>
         <div id="drawingGrid" class="flex-grow"></div>
         <div class="gallery-footer">
-            <div class="text-sm" style="color: var(--text-secondary);">
-                <span id="versionText"></span>
-                <span id="betaText" class="text-orange-500 font-bold hidden">beta!</span>
+            <div class="flex items-center justify-center gap-2" style="flex-wrap: wrap;">
+                <button id="whatsNewBtn" class="whats-new-btn" style="display: none;">Что нового?</button>
+                <div class="text-sm" style="color: var(--text-secondary);">
+                    <span id="versionText"></span>
+                    <span id="betaText" class="text-orange-500 font-bold hidden">beta!</span>
+                </div>
             </div>
             <div id="versionSwitchContainer" class="mt-2"></div>
         </div>
     </div>
 
-    <!-- Редактор (модальное окно) -->
     <div id="editorModal">
         <div class="editor-container">
             <div class="left-panel">
@@ -401,6 +424,8 @@
                     <button id="fillTool" class="btn btn-primary w-full">Заливка</button>
                     <button id="sprayTool" class="btn btn-primary w-full">Распылитель</button>
                     <button id="textTool" class="btn btn-primary w-full">Текст</button>
+                    <button id="importImageTool" class="btn btn-primary w-full">📷 Импорт фото</button>
+                    <button id="moveTool" class="btn btn-primary w-full">↕️ Перемещение</button>
                 </div>
                 <div class="w-full h-px bg-gray-300 my-4"></div>
                 <label for="colorPicker" class="font-medium self-start">Цвет:</label>
@@ -430,7 +455,6 @@
                 <canvas id="drawingCanvas" width="800" height="600"></canvas>
                 <div class="controls flex items-center gap-4 mt-4">
                     <button id="clearButton" class="btn btn-clear">Очистить</button>
-                    <!-- Блок сохранения будет разным в stable и dev -->
                     <div id="saveContainer">
                         <button id="saveButton" class="btn btn-save">Скачать PNG</button>
                     </div>
@@ -445,7 +469,7 @@
         const isDevVersion = new URLSearchParams(window.location.search).get("env") === "dev";
         const drawingsKey = isDevVersion ? "myDrawings_dev" : "myDrawings";
 
-        // DOM элементы
+        // DOM
         const galleryScreen = document.getElementById("galleryScreen");
         const editorModal = document.getElementById("editorModal");
         const canvas = document.getElementById("drawingCanvas");
@@ -465,12 +489,15 @@
         const fillTool = document.getElementById("fillTool");
         const sprayTool = document.getElementById("sprayTool");
         const textTool = document.getElementById("textTool");
+        const importImageTool = document.getElementById("importImageTool");
+        const moveTool = document.getElementById("moveTool");
         const devToolsContainer = document.getElementById("devToolsContainer");
         const advancedColorContainer = document.getElementById("advancedColorContainer");
         const layersContainer = document.getElementById("layersContainer");
         const layerList = document.getElementById("layerList");
         const addLayerBtn = document.getElementById("addLayerBtn");
         const saveContainer = document.getElementById("saveContainer");
+        const whatsNewBtn = document.getElementById("whatsNewBtn");
 
         let currentDrawingId = null;
         let isDrawing = false, lastX = 0, lastY = 0, startX = 0, startY = 0;
@@ -481,6 +508,9 @@
         let sessionStartTime = null;
         let clickCount = 0;
         let timerInterval = null;
+        let isMoving = false;
+        let moveStartX = 0, moveStartY = 0;
+        let moveStartOffsetX = 0, moveStartOffsetY = 0;
 
         // Модальные окна
         function showModal(id) { document.getElementById(id).classList.add("show"); }
@@ -500,7 +530,7 @@
             document.getElementById("confirmNoBtn").addEventListener("click", () => hideModal("confirmationModal"), { once: true });
         }
 
-        // Галерея и данные
+        // Галерея
         function getDrawings() {
             try { return JSON.parse(localStorage.getItem(drawingsKey)) || {}; } catch { return {}; }
         }
@@ -605,7 +635,7 @@
             galleryScreen.classList.remove("active");
             resizeCanvas();
             if (isDevVersion && layers.length === 0) {
-                layers.push({ name: "Фон", visible: true, dataURL: canvas.toDataURL() });
+                layers.push({ name: "Фон", visible: true, dataURL: canvas.toDataURL(), offsetX: 0, offsetY: 0 });
                 activeLayerIndex = 0;
                 renderLayers();
             }
@@ -627,7 +657,7 @@
             clickCount = 0;
         }
 
-        // Рисование с сохранением холста при ресайзе
+        // Рисование
         function resizeCanvas() {
             const area = document.querySelector(".main-drawing-area");
             if (!area) return;
@@ -649,43 +679,54 @@
             ctx.lineCap = ctx.lineJoin = "round";
         }
 
-        function startDrawing(e) {
-            if (["eyedropper","fill","text"].includes(currentTool)) return;
-            isDrawing = true;
+        function getLocalCoords(e) {
             const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            [lastX, lastY] = [x, y];
-            [startX, startY] = [x, y];
+            const mouseX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+            const mouseY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+            if (isDevVersion && layers.length && activeLayerIndex >= 0 && currentTool !== 'move') {
+                const layer = layers[activeLayerIndex];
+                return { x: mouseX - (layer.offsetX || 0), y: mouseY - (layer.offsetY || 0) };
+            }
+            return { x: mouseX, y: mouseY };
+        }
+
+        function startDrawing(e) {
+            if (["eyedropper","fill","text","move"].includes(currentTool)) return;
+            isDrawing = true;
+            const coords = getLocalCoords(e);
+            lastX = coords.x;
+            lastY = coords.y;
+            startX = coords.x;
+            startY = coords.y;
             setupContext();
             if (isDevVersion) clickCount++;
         }
 
         function drawFreehand(e) {
-            if (!isDrawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            if (!isDrawing || currentTool === 'move') return;
+            const coords = getLocalCoords(e);
             ctx.beginPath();
             ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
+            ctx.lineTo(coords.x, coords.y);
             ctx.stroke();
-            [lastX, lastY] = [x, y];
+            lastX = coords.x;
+            lastY = coords.y;
         }
 
         function stopDrawing(e) {
             if (!isDrawing) return;
             isDrawing = false;
-            const rect = canvas.getBoundingClientRect();
-            const ex = (e.clientX || e.changedTouches[0].clientX) - rect.left;
-            const ey = (e.clientY || e.changedTouches[0].clientY) - rect.top;
-            switch (currentTool) {
-                case "rectangle": ctx.strokeRect(startX, startY, ex - startX, ey - startY); break;
-                case "circle":
-                    const rad = Math.hypot(ex - startX, ey - startY);
-                    ctx.beginPath(); ctx.arc(startX, startY, rad, 0, Math.PI*2); ctx.stroke(); break;
-                case "line":
-                    ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(ex, ey); ctx.stroke(); break;
+            if (["rectangle","circle","line"].includes(currentTool)) {
+                const coords = getLocalCoords(e);
+                const ex = coords.x, ey = coords.y;
+                switch (currentTool) {
+                    case "rectangle": ctx.strokeRect(startX, startY, ex - startX, ey - startY); break;
+                    case "circle":
+                        const rad = Math.hypot(ex - startX, ey - startY);
+                        ctx.beginPath(); ctx.arc(startX, startY, rad, 0, Math.PI*2); ctx.stroke(); break;
+                    case "line":
+                        ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(ex, ey); ctx.stroke(); break;
+                }
             }
             if (isDevVersion && layers.length) {
                 layers[activeLayerIndex].dataURL = canvas.toDataURL();
@@ -703,8 +744,10 @@
         }
 
         function activateTool(name) {
-            if (name !== "eyedropper") {
-                previousTool = name;
+            if (name === 'move') {
+                canvas.style.cursor = "move";
+                customCursor.style.display = "none";
+            } else if (name !== "eyedropper") {
                 canvas.style.cursor = "none";
                 customCursor.style.display = "block";
             } else {
@@ -712,11 +755,15 @@
                 customCursor.style.display = "none";
             }
             currentTool = name;
+            if (name !== 'eyedropper') previousTool = name;
             Object.values(toolButtons).forEach(b => b.classList.remove("active"));
             if (toolButtons[name]) toolButtons[name].classList.add("active");
+            if (moveTool) moveTool.classList.remove("active");
+            if (name === 'move') moveTool.classList.add("active");
             setupContext();
         }
 
+        // Заливка
         function floodFill(x, y, fillColor) {
             const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
             const data = img.data;
@@ -738,23 +785,115 @@
             if (isDevVersion && layers.length) layers[activeLayerIndex].dataURL = canvas.toDataURL();
         }
 
-        canvas.addEventListener("click", e => {
+        // Перемещение слоя
+        function startMove(e) {
+            if (currentTool !== 'move' || !isDevVersion || !layers.length) return;
+            const rect = canvas.getBoundingClientRect();
+            moveStartX = e.clientX - rect.left;
+            moveStartY = e.clientY - rect.top;
+            const layer = layers[activeLayerIndex];
+            moveStartOffsetX = layer.offsetX || 0;
+            moveStartOffsetY = layer.offsetY || 0;
+            isMoving = true;
+        }
+
+        function doMove(e) {
+            if (!isMoving) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            const layer = layers[activeLayerIndex];
+            layer.offsetX = moveStartOffsetX + (mouseX - moveStartX);
+            layer.offsetY = moveStartOffsetY + (mouseY - moveStartY);
+            applyLayersComposition();
+        }
+
+        function endMove() {
+            if (isMoving) {
+                isMoving = false;
+                if (layers.length) layers[activeLayerIndex].dataURL = canvas.toDataURL();
+            }
+        }
+
+        canvas.addEventListener("mousedown", (e) => {
+            if (currentTool === 'move') startMove(e);
+            else startDrawing(e);
+        });
+        canvas.addEventListener("mousemove", (e) => {
+            if (currentTool !== "eyedropper" && currentTool !== 'move') {
+                customCursor.style.left = e.clientX + "px";
+                customCursor.style.top = e.clientY + "px";
+            }
+            if (isMoving) doMove(e);
+            else if (isDrawing && (currentTool === "pencil" || currentTool === "eraser")) drawFreehand(e);
+        });
+        canvas.addEventListener("mouseup", (e) => {
+            if (isMoving) endMove();
+            else stopDrawing(e);
+        });
+        canvas.addEventListener("touchstart", (e) => { e.preventDefault(); startDrawing(e); });
+        canvas.addEventListener("touchmove", (e) => { e.preventDefault(); drawFreehand(e); });
+        canvas.addEventListener("touchend", (e) => { e.preventDefault(); stopDrawing(e); });
+
+        canvas.addEventListener("click", (e) => {
             if (currentTool === "eyedropper") pickColor(e);
             else if (currentTool === "fill") {
-                const rect = canvas.getBoundingClientRect();
-                floodFill(Math.floor(e.clientX - rect.left), Math.floor(e.clientY - rect.top), colorPicker.value);
+                const coords = getLocalCoords(e);
+                floodFill(Math.floor(coords.x), Math.floor(coords.y), colorPicker.value);
             } else if (currentTool === "text") {
-                const rect = canvas.getBoundingClientRect();
+                const coords = getLocalCoords(e);
                 const text = prompt("Введите текст:");
                 if (text) {
                     ctx.font = `${lineWidth.value * 3}px sans-serif`;
-                    ctx.fillText(text, e.clientX - rect.left, e.clientY - rect.top);
+                    ctx.fillText(text, coords.x, coords.y);
                     if (isDevVersion && layers.length) layers[activeLayerIndex].dataURL = canvas.toDataURL();
                 }
             }
         });
 
-        // Слои (dev)
+        // Импорт фото как слой
+        function importImageAsLayer() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const maxW = canvas.width, maxH = canvas.height;
+                        let w = img.width, h = img.height;
+                        if (w > maxW || h > maxH) {
+                            const ratio = Math.min(maxW / w, maxH / h);
+                            w *= ratio; h *= ratio;
+                        }
+                        const layerCanvas = document.createElement('canvas');
+                        layerCanvas.width = canvas.width;
+                        layerCanvas.height = canvas.height;
+                        const lctx = layerCanvas.getContext('2d');
+                        lctx.drawImage(img, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+                        const dataURL = layerCanvas.toDataURL();
+                        layers.push({
+                            name: `Фото ${layers.length}`,
+                            visible: true,
+                            dataURL: dataURL,
+                            offsetX: 0,
+                            offsetY: 0
+                        });
+                        activeLayerIndex = layers.length - 1;
+                        renderLayers();
+                        applyLayersComposition();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        // Слои
         function renderLayers() {
             layerList.innerHTML = "";
             layers.forEach((layer, idx) => {
@@ -783,7 +922,6 @@
                 div.addEventListener("click", () => {
                     activeLayerIndex = idx;
                     renderLayers();
-                    applyLayersComposition();
                 });
                 layerList.appendChild(div);
             });
@@ -792,14 +930,23 @@
         function applyLayersComposition() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             layers.filter(l => l.visible).forEach(layer => {
+                ctx.save();
+                ctx.translate(layer.offsetX || 0, layer.offsetY || 0);
                 const img = new Image();
                 img.src = layer.dataURL;
                 ctx.drawImage(img, 0, 0);
+                ctx.restore();
             });
         }
 
         addLayerBtn?.addEventListener("click", () => {
-            layers.push({ name: `Слой ${layers.length+1}`, visible: true, dataURL: canvas.toDataURL() });
+            layers.push({
+                name: `Слой ${layers.length+1}`,
+                visible: true,
+                dataURL: canvas.toDataURL(),
+                offsetX: 0,
+                offsetY: 0
+            });
             activeLayerIndex = layers.length - 1;
             renderLayers();
         });
@@ -812,7 +959,6 @@
             document.getElementById("greenInput").value = parseInt(hex.slice(3,5),16);
             document.getElementById("blueInput").value = parseInt(hex.slice(5,7),16);
         }
-
         function updateFromRGB() {
             const r = +document.getElementById("redInput").value;
             const g = +document.getElementById("greenInput").value;
@@ -823,7 +969,6 @@
             setupContext();
         }
 
-        // Сохранение файлов
         function downloadCanvas(format) {
             const tmp = document.createElement("canvas");
             tmp.width = canvas.width;
@@ -845,7 +990,6 @@
 
         // Инициализация
         window.addEventListener("load", () => {
-            // Согласие
             if (!sessionStorage.getItem("consentBannerClosed")) {
                 document.getElementById("dataConsentBanner").style.display = "flex";
                 document.getElementById("consentButton").addEventListener("click", () => {
@@ -862,7 +1006,7 @@
             const darkThemeCheckbox = document.getElementById("darkThemeCheckbox");
 
             if (isDevVersion) {
-                verText.textContent = "HTMPen 9.0 ";
+                verText.textContent = "HTMPen 9.1 ";
                 beta.textContent = "beta!";
                 beta.classList.remove("hidden");
                 switchContainer.innerHTML = '<button id="switchToStableBtn" class="btn btn-stable-switch">Стабильная версия</button>';
@@ -875,14 +1019,20 @@
                     document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname;
                 });
 
-                // Включаем dev-фичи
+                // Показываем кнопку "Что нового?"
+                whatsNewBtn.style.display = "inline-block";
+
+                // Показываем попап при первом заходе после обновления
+                if (!localStorage.getItem("seenWhatsNewV9")) {
+                    showModal("whatsNewModal");
+                }
+
                 devToolsContainer.style.display = "block";
                 layersContainer.style.display = "block";
                 advancedColorContainer.style.display = "block";
                 settingsBtn.style.display = "block";
                 stableExportImport.style.display = "none";
 
-                // Кнопка сохранения открывает модалку
                 saveContainer.innerHTML = '<button id="saveButton" class="btn btn-save">Сохранить как</button>';
                 document.getElementById("saveButton").addEventListener("click", showSaveFormatModal);
 
@@ -920,9 +1070,11 @@
                 fillTool.addEventListener("click", () => activateTool("fill"));
                 sprayTool.addEventListener("click", () => activateTool("spray"));
                 textTool.addEventListener("click", () => activateTool("text"));
+                importImageTool.addEventListener("click", importImageAsLayer);
+                moveTool.addEventListener("click", () => activateTool("move"));
             } else {
                 // Stable
-                verText.textContent = "HTMPen 8.1, устаревшая версия";
+                verText.textContent = "HTMPen 8, ПРОЕКТ ЗАБРОШЕН";
                 beta.classList.add("hidden");
                 switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev‑версия</button>';
                 document.getElementById("switchToDevBtn").addEventListener("click", () => {
@@ -942,22 +1094,21 @@
                 });
             }
 
-            // Обработчики для модалки сохранения
-            document.getElementById("savePngBtn").addEventListener("click", () => {
-                downloadCanvas("png");
-                hideModal("saveFormatModal");
+            // Обработчики модалки "Что нового"
+            whatsNewBtn.addEventListener("click", () => showModal("whatsNewModal"));
+            document.getElementById("whatsNewOkBtn").addEventListener("click", () => {
+                hideModal("whatsNewModal");
+                if (isDevVersion) localStorage.setItem("seenWhatsNewV9", "true");
             });
-            document.getElementById("saveJpgBtn").addEventListener("click", () => {
-                downloadCanvas("jpg");
-                hideModal("saveFormatModal");
+            document.getElementById("whatsNewClose").addEventListener("click", () => {
+                hideModal("whatsNewModal");
+                if (isDevVersion) localStorage.setItem("seenWhatsNewV9", "true");
             });
-            document.getElementById("saveWebpBtn").addEventListener("click", () => {
-                downloadCanvas("webp");
-                hideModal("saveFormatModal");
-            });
-            document.getElementById("closeSaveFormatBtn").addEventListener("click", () => {
-                hideModal("saveFormatModal");
-            });
+
+            document.getElementById("savePngBtn").addEventListener("click", () => { downloadCanvas("png"); hideModal("saveFormatModal"); });
+            document.getElementById("saveJpgBtn").addEventListener("click", () => { downloadCanvas("jpg"); hideModal("saveFormatModal"); });
+            document.getElementById("saveWebpBtn").addEventListener("click", () => { downloadCanvas("webp"); hideModal("saveFormatModal"); });
+            document.getElementById("closeSaveFormatBtn").addEventListener("click", () => hideModal("saveFormatModal"));
 
             document.getElementById("cancelSwitchBtn").addEventListener("click", () => hideModal("versionSwitchModal"));
             document.getElementById("settingsModalClose").addEventListener("click", () => hideModal("settingsModal"));
@@ -972,18 +1123,6 @@
             });
             document.getElementById("newDrawingBtn").addEventListener("click", () => openEditor(null));
 
-            canvas.addEventListener("mousedown", startDrawing);
-            canvas.addEventListener("mousemove", e => {
-                if (currentTool !== "eyedropper") {
-                    customCursor.style.left = e.clientX + "px";
-                    customCursor.style.top = e.clientY + "px";
-                }
-                if (isDrawing && (currentTool === "pencil" || currentTool === "eraser")) drawFreehand(e);
-            });
-            canvas.addEventListener("mouseup", stopDrawing);
-            canvas.addEventListener("touchstart", e => { e.preventDefault(); startDrawing(e); });
-            canvas.addEventListener("touchmove", e => { e.preventDefault(); drawFreehand(e); });
-            canvas.addEventListener("touchend", e => { e.preventDefault(); stopDrawing(e); });
             window.addEventListener("resize", resizeCanvas);
             Object.keys(toolButtons).forEach(name => toolButtons[name].addEventListener("click", () => activateTool(name)));
             lineWidth.addEventListener("input", e => {
@@ -1002,7 +1141,6 @@
             a.download = "backup.json";
             a.click();
         }
-
         function importData(file) {
             const reader = new FileReader();
             reader.onload = e => {
@@ -1014,9 +1152,7 @@
                         renderGallery();
                         showNotification("Импорт выполнен");
                     });
-                } catch {
-                    showNotification("Ошибка чтения файла");
-                }
+                } catch { showNotification("Ошибка чтения файла"); }
             };
             reader.readAsText(file);
         }
