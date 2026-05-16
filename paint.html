@@ -241,6 +241,13 @@
 
         .tool-icon { width: 20px; height: 20px; margin-right: 6px; }
 
+        /* Футер в галерее */
+        .gallery-footer {
+            margin-top: 2rem;
+            text-align: center;
+            padding-bottom: 1rem;
+        }
+
         @media (max-width: 768px) {
             #drawingScreen.active { flex-direction: column; }
             .left-panel { width: 100%; order: 2; }
@@ -302,7 +309,7 @@
     </div>
 
     <!-- Экран Галереи -->
-    <div id="galleryScreen" class="screen active relative">
+    <div id="galleryScreen" class="screen active" style="min-height: calc(100vh - 40px); display: flex; flex-direction: column;">
         <div class="flex justify-between items-center flex-wrap gap-4">
             <h1 class="text-4xl font-extrabold text-gray-800">
                 <span class="text-blue-600">Ваша</span> Галерея
@@ -320,12 +327,15 @@
                 <button id="newDrawingBtn" class="btn btn-primary">Новый рисунок</button>
             </div>
         </div>
-        <div id="drawingGrid"></div>
-        <div class="absolute bottom-0 left-0 text-sm" style="color: var(--text-secondary);">
-            <span id="versionText"></span>
-            <span id="betaText" class="text-orange-500 font-bold hidden">beta!</span>
+        <div id="drawingGrid" class="flex-grow"></div>
+        <!-- Футер с версией и кнопкой, прижатый к низу -->
+        <div class="gallery-footer">
+            <div class="text-sm" style="color: var(--text-secondary);">
+                <span id="versionText"></span>
+                <span id="betaText" class="text-orange-500 font-bold hidden">beta!</span>
+            </div>
+            <div id="versionSwitchContainer" class="mt-2"></div>
         </div>
-        <div id="versionSwitchContainer" class="absolute bottom-5 left-1/2 -translate-x-1/2"></div>
     </div>
 
     <!-- Экран Рисования -->
@@ -770,7 +780,6 @@
                 advancedColorContainer.style.display = "flex";
                 settingsBtn.style.display = "block";
                 stableExportImport.style.display = "none";
-                // Кнопки сохранения
                 saveContainer.innerHTML = `
                     <button id="savePngBtn" class="btn btn-save">PNG</button>
                     <button id="saveJpgBtn" class="btn btn-save">JPG</button>
@@ -780,14 +789,12 @@
                 document.getElementById("saveJpgBtn").addEventListener("click", () => downloadCanvas("jpg"));
                 document.getElementById("saveWebpBtn").addEventListener("click", () => downloadCanvas("webp"));
 
-                // Слои
                 renderLayers();
                 addLayerBtn.addEventListener("click", () => {
                     layers.push({ name: `Слой ${layers.length+1}` });
                     activeLayer = layers.length-1;
                     renderLayers();
                 });
-                // Цвет
                 document.getElementById("redInput").addEventListener("input", updateFromRGB);
                 document.getElementById("greenInput").addEventListener("input", updateFromRGB);
                 document.getElementById("blueInput").addEventListener("input", updateFromRGB);
@@ -797,7 +804,6 @@
                 });
                 colorPicker.addEventListener("input", syncAdvColor);
                 syncAdvColor();
-                // Тёмная тема из localStorage
                 if (localStorage.getItem("darkTheme") === "true") {
                     document.documentElement.setAttribute("data-theme", "dark");
                     darkThemeCheckbox.checked = true;
@@ -811,27 +817,22 @@
                         localStorage.setItem("darkTheme", "false");
                     }
                 });
-                // Настройки (экспорт/импорт)
-                settingsBtn.addEventListener("click", () => {
-                    document.getElementById("settingsModal").classList.add("show");
-                });
+                settingsBtn.addEventListener("click", () => document.getElementById("settingsModal").classList.add("show"));
                 document.getElementById("exportDataBtn").addEventListener("click", exportData);
                 document.getElementById("importDataInput").addEventListener("change", e => {
                     if (e.target.files[0]) importData(e.target.files[0]);
                     e.target.value = "";
                 });
-                // AI отключён
                 document.getElementById("geminiIdeaButton").addEventListener("click", e => {
                     e.preventDefault(); showNotification("AI отключён в dev‑версии");
                 });
                 document.getElementById("ideaListContainer").innerHTML = '<p class="text-center p-4">Недоступно в dev‑версии</p>';
                 document.getElementById("clearLibraryButton").style.display = "none";
-                // Dev-инструменты
                 fillTool.addEventListener("click", () => activateTool("fill"));
                 sprayTool.addEventListener("click", () => activateTool("spray"));
                 textTool.addEventListener("click", () => activateTool("text"));
             } else {
-                // Stable-режим (как оригинал)
+                // Stable-режим
                 verText.textContent = "HTMPen 8, ПРОЕКТ ЗАБРОШЕН";
                 beta.classList.add("hidden");
                 switchContainer.innerHTML = '<button id="switchToDevBtn" class="btn btn-dev-switch">Dev‑версия</button>';
@@ -843,20 +844,16 @@
                     document.getElementById("versionSwitchModal").classList.add("show");
                     document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname + "?env=dev";
                 });
-
-                // Stable: экспорт/импорт на месте
                 document.getElementById("exportDataBtnStable").addEventListener("click", exportData);
                 document.getElementById("importDataInputStable").addEventListener("change", e => {
                     if (e.target.files[0]) importData(e.target.files[0]);
                     e.target.value = "";
                 });
-                // Stable AI
                 document.getElementById("geminiIdeaButton").addEventListener("click", () => {
                     document.getElementById("geminiPrompt").innerHTML = "";
                     document.getElementById("geminiModal").classList.add("show");
                 });
                 renderIdeaLibrary();
-                // Stable save PNG
                 document.getElementById("saveButton").addEventListener("click", () => {
                     const tmp = document.createElement("canvas");
                     tmp.width = canvas.width; tmp.height = canvas.height;
@@ -868,13 +865,8 @@
                 });
             }
 
-            // Общие обработчики
-            document.getElementById("cancelSwitchBtn").addEventListener("click", () => {
-                document.getElementById("versionSwitchModal").classList.remove("show");
-            });
-            document.getElementById("settingsModalClose").addEventListener("click", () => {
-                document.getElementById("settingsModal").classList.remove("show");
-            });
+            document.getElementById("cancelSwitchBtn").addEventListener("click", () => document.getElementById("versionSwitchModal").classList.remove("show"));
+            document.getElementById("settingsModalClose").addEventListener("click", () => document.getElementById("settingsModal").classList.remove("show"));
 
             showScreen("galleryScreen");
             activateTool("pencil");
@@ -889,9 +881,7 @@
                 showScreen("galleryScreen");
             });
             window.addEventListener("resize", resizeCanvas);
-            Object.keys(toolButtons).forEach(name => {
-                toolButtons[name].addEventListener("click", () => activateTool(name));
-            });
+            Object.keys(toolButtons).forEach(name => toolButtons[name].addEventListener("click", () => activateTool(name)));
             lineWidth.addEventListener("input", e => {
                 lineWidthValue.textContent = e.target.value;
                 customCursor.style.width = `${e.target.value}px`;
@@ -900,7 +890,6 @@
             });
         });
 
-        // Библиотека идей (stable)
         function renderIdeaLibrary() {
             const ideas = JSON.parse(localStorage.getItem(ideasKey) || "[]");
             const cont = document.getElementById("ideaListContainer");
