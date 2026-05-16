@@ -80,7 +80,12 @@
         const REPULSION = 800;
         const ATTRACTION = 0.005;
         const DAMPING = 0.85;
-        let mouseX = 0, mouseY = 0, mouseDown = false, selectedNode = null;
+        const DRAG_THRESHOLD = 5; // минимальное смещение в пикселях, чтобы считать перетаскиванием
+
+        let mouseX = 0, mouseY = 0;
+        let selectedNode = null;
+        let dragStartX = 0, dragStartY = 0;
+        let isDragging = false; // флаг, показывающий, что было движение
 
         // ---------- Загрузка карты ----------
         async function buildMap() {
@@ -103,11 +108,9 @@
                         const links = doc.querySelectorAll('a[href]');
                         links.forEach(a => {
                             let href = a.getAttribute('href');
-                            // Приводим к абсолютному URL
                             try {
                                 href = new URL(href, window.location.origin + '/' + url).href;
                             } catch (e) { return; }
-                            // Проверяем, что ссылка ведёт на страницу из нашего списка
                             const relative = href.replace(window.location.origin + '/', '');
                             if (pageList.includes(relative) && relative !== EXCLUDE_SELF && relative !== url) {
                                 rawEdges.push({ from: url, to: relative });
@@ -118,7 +121,7 @@
                     }
                 }
 
-                // Формируем узлы (только те, что реально удалось добавить)
+                // Формируем узлы
                 const nodeMap = new Map();
                 nodes = [];
                 for (let url of pageList) {
@@ -196,13 +199,13 @@
 
             // Применение скоростей и затухание
             nodes.forEach(node => {
-                if (node === selectedNode && mouseDown) return; // зажатый мышью узел не двигается
+                if (node === selectedNode && isDragging) return; // перетаскиваемый узел не обновляется физикой
                 node.x += node.vx;
                 node.y += node.vy;
                 node.vx *= DAMPING;
                 node.vy *= DAMPING;
 
-                // Границы, чтобы не улетали за экран
+                // Границы
                 const margin = NODE_SIZE;
                 if (node.x < margin) { node.x = margin; node.vx *= -0.2; }
                 if (node.x > canvas.width - margin) { node.x = canvas.width - margin; node.vx *= -0.2; }
@@ -215,7 +218,7 @@
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Провода (ссылки)
+            // Провода
             ctx.strokeStyle = '#4a4e69';
             ctx.lineWidth = 2;
             edges.forEach(edge => {
@@ -229,20 +232,18 @@
                 }
             });
 
-            // Узлы (клетки)
+            // Узлы
             nodes.forEach(node => {
-                const size = (node === selectedNode && mouseDown) ? HOVER_SIZE : NODE_SIZE;
+                const size = (node === selectedNode && isDragging) ? HOVER_SIZE : NODE_SIZE;
                 const x = node.x - size/2;
                 const y = node.y - size/2;
 
-                // Подложка
                 ctx.fillStyle = (node === selectedNode) ? '#e94560' : '#0f3460';
                 ctx.fillRect(x, y, size, size);
                 ctx.strokeStyle = '#ffffff';
                 ctx.lineWidth = 2;
                 ctx.strokeRect(x, y, size, size);
 
-                // Название страницы
                 ctx.fillStyle = '#ffffff';
                 ctx.font = '12px system-ui';
                 ctx.textAlign = 'center';
@@ -271,8 +272,10 @@
             const my = e.clientY - rect.top;
             const node = getNodeAt(mx, my);
             if (node) {
-                mouseDown = true;
                 selectedNode = node;
+                dragStartX = mx;
+                dragStartY = my;
+                isDragging = false; // пока движение не началось
                 node.vx = 0;
                 node.vy = 0;
             }
@@ -282,9 +285,18 @@
             const rect = canvas.getBoundingClientRect();
             mouseX = e.clientX - rect.left;
             mouseY = e.clientY - rect.top;
-            if (mouseDown && selectedNode) {
+
+            if (selectedNode) {
+                // если узел выбран, перемещаем его
                 selectedNode.x = mouseX;
                 selectedNode.y = mouseY;
+
+                // проверяем, сместились ли мы достаточно, чтобы считать это перетаскиванием
+                const dx = mouseX - dragStartX;
+                const dy = mouseY - dragStartY;
+                if (Math.sqrt(dx*dx + dy*dy) > DRAG_THRESHOLD) {
+                    isDragging = true;
+                }
             } else {
                 const hovered = getNodeAt(mouseX, mouseY);
                 canvas.style.cursor = hovered ? 'pointer' : 'grab';
@@ -292,14 +304,20 @@
         });
 
         window.addEventListener('mouseup', () => {
-            if (mouseDown && selectedNode) {
-                // Открыть страницу при отпускании (если не было сильного перетаскивания)
-                const node = selectedNode;
-                mouseDown = false;
+            if (selectedNode) {
+                // если не было перетаскивания (т.е. клик), то переходим на страницу
+                if (!isDragging) {
+                    const url = selectedNode.url;
+                    selectedNode = null;
+                    isDragging = false;
+                    canvas.style.cursor = 'grab';
+                    window.location.href = url;
+                    return;
+                }
+                // иначе просто отпускаем узел, оставляем на месте
                 selectedNode = null;
+                isDragging = false;
                 canvas.style.cursor = 'grab';
-                // Переход по ссылке
-                window.location.href = node.url;
             }
         });
 
