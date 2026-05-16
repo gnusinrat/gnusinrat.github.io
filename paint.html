@@ -341,6 +341,19 @@
         </div>
     </div>
 
+    <!-- Модалка выбора формата сохранения (dev) -->
+    <div id="saveFormatModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="text-2xl font-bold mb-4">Выбери формат</h3>
+            <div class="flex gap-4 justify-center">
+                <button id="savePngBtn" class="btn btn-save">PNG</button>
+                <button id="saveJpgBtn" class="btn btn-save">JPG</button>
+                <button id="saveWebpBtn" class="btn btn-save">WebP</button>
+            </div>
+            <button id="closeSaveFormatBtn" class="btn btn-secondary mt-4 w-full">Отмена</button>
+        </div>
+    </div>
+
     <!-- Экран Галереи -->
     <div id="galleryScreen" class="screen active">
         <div class="flex justify-between items-center flex-wrap gap-4">
@@ -590,7 +603,7 @@
         function showEditor() {
             editorModal.classList.add("show");
             galleryScreen.classList.remove("active");
-            resizeCanvas();  // после восстановления картинки подгоним размер, но сохраним содержимое
+            resizeCanvas();
             if (isDevVersion && layers.length === 0) {
                 layers.push({ name: "Фон", visible: true, dataURL: canvas.toDataURL() });
                 activeLayerIndex = 0;
@@ -622,7 +635,6 @@
             const newWidth = area.clientWidth - 40;
             const newHeight = area.clientHeight - ctrlsHeight - 80;
             if (newWidth === canvas.width && newHeight === canvas.height) return;
-            // Сохраняем содержимое
             const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
             canvas.width = newWidth;
             canvas.height = newHeight;
@@ -827,6 +839,10 @@
             a.click();
         }
 
+        function showSaveFormatModal() {
+            showModal("saveFormatModal");
+        }
+
         // Инициализация
         window.addEventListener("load", () => {
             // Согласие
@@ -866,19 +882,9 @@
                 settingsBtn.style.display = "block";
                 stableExportImport.style.display = "none";
 
-                // Замена кнопки сохранения на выпадающее меню
-                saveContainer.innerHTML = `
-                    <div class="dropdown">
-                        <button id="saveButton" class="btn btn-save">Сохранить как</button>
-                        <div class="dropdown-content">
-                            <button id="savePngBtn">PNG</button>
-                            <button id="saveJpgBtn">JPG</button>
-                            <button id="saveWebpBtn">WebP</button>
-                        </div>
-                    </div>`;
-                document.getElementById("savePngBtn").addEventListener("click", () => downloadCanvas("png"));
-                document.getElementById("saveJpgBtn").addEventListener("click", () => downloadCanvas("jpg"));
-                document.getElementById("saveWebpBtn").addEventListener("click", () => downloadCanvas("webp"));
+                // Кнопка сохранения открывает модалку
+                saveContainer.innerHTML = '<button id="saveButton" class="btn btn-save">Сохранить как</button>';
+                document.getElementById("saveButton").addEventListener("click", showSaveFormatModal);
 
                 document.getElementById("redInput").addEventListener("input", updateFromRGB);
                 document.getElementById("greenInput").addEventListener("input", updateFromRGB);
@@ -928,7 +934,6 @@
                     document.getElementById("confirmSwitchBtn").onclick = () => location.href = location.pathname + "?env=dev";
                 });
 
-                // Stable: простая кнопка "Скачать PNG"
                 document.getElementById("saveButton").addEventListener("click", () => downloadCanvas("png"));
                 document.getElementById("exportDataBtnStable").addEventListener("click", exportData);
                 document.getElementById("importDataInputStable").addEventListener("change", e => {
@@ -936,6 +941,23 @@
                     e.target.value = "";
                 });
             }
+
+            // Обработчики для модалки сохранения
+            document.getElementById("savePngBtn").addEventListener("click", () => {
+                downloadCanvas("png");
+                hideModal("saveFormatModal");
+            });
+            document.getElementById("saveJpgBtn").addEventListener("click", () => {
+                downloadCanvas("jpg");
+                hideModal("saveFormatModal");
+            });
+            document.getElementById("saveWebpBtn").addEventListener("click", () => {
+                downloadCanvas("webp");
+                hideModal("saveFormatModal");
+            });
+            document.getElementById("closeSaveFormatBtn").addEventListener("click", () => {
+                hideModal("saveFormatModal");
+            });
 
             document.getElementById("cancelSwitchBtn").addEventListener("click", () => hideModal("versionSwitchModal"));
             document.getElementById("settingsModalClose").addEventListener("click", () => hideModal("settingsModal"));
