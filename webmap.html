@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webmap сайта</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a1a2e;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas {
+            flex: 1;
+            cursor: grab;
+        }
+        .info-bar {
+            background: #16213e;
+            color: #e0e0e0;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            gap: 1rem;
+        }
+        .counter {
+            font-size: 1rem;
+            background: #0f3460;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+        }
+        button {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 20px;
+            background: #e94560;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mapCanvas"></canvas>
+    <div class="info-bar">
+        <span class="counter" id="nodeCount">Страниц: 0</span>
+        <span class="counter" id="linkCount">Ссылок: 0</span>
+        <button id="rescanBtn">🔄 Пересканировать</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('mapCanvas');
+        const ctx = canvas.getContext('2d');
+        const nodeCountSpan = document.getElementById('nodeCount');
+        const linkCountSpan = document.getElementById('linkCount');
+        const rescanBtn = document.getElementById('rescanBtn');
+
+        // ---------- Глобальное состояние ----------
+        let nodes = [];               // { id, url, x, y, vx, vy, label }
+        let edges = [];               // { from, to }
+        const EXCLUDE_SELF = 'webmap.html';
+        let animationId = null;
+
+        // Параметры отрисовки
+        const NODE_SIZE = 40;
+        const HOVER_SIZE = 48;
+        const REPULSION = 800;
+        const ATTRACTION = 0.005;
+        const DAMPING = 0.85;
+        let mouseX = 0, mouseY = 0, mouseDown = false, selectedNode = null;
+
+        // ---------- Загрузка карты ----------
+        async function buildMap() {
+            try {
+                const response = await fetch('sitemap.json');
+                if (!response.ok) throw new Error('sitemap.json не найден');
+                const pageList = await response.json();
+
+                // Сканируем каждую страницу, собираем ссылки
+                const rawEdges = [];
+                const scanned = new Set();
+
+                for (let url of pageList) {
+                    if (url === EXCLUDE_SELF) continue;
+                    try {
+                        const resp = await fetch(url);
+                        const html = await resp.text();
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const links = doc.querySelectorAll('a[href]');
+                        links.forEach(a => {
+                            let href = a.getAttribute('href');
+                            // Приводим к абсолютному URL
+                            try {
+                                href = new URL(href, window.location.origin + '/' + url).href;
+                            } catch (e) { return; }
+                            // Проверяем, что ссылка ведёт на страницу из нашего списка
+                            const relative = href.replace(window.location.origin + '/', '');
+                            if (pageList.includes(relative) && relative !== EXCLUDE_SELF && relative !== url) {
+                                rawEdges.push({ from: url, to: relative });
+                            }
+                        });
+                    } catch (e) {
+                        console.warn(`Не удалось просканировать ${url}: ${e.message}`);
+                    }
+                }
+
+                // Формируем узлы (только те, что реально удалось добавить)
+                const nodeMap = new Map();
+                nodes = [];
+                for (let url of pageList) {
+                    if (url === EXCLUDE_SELF) continue;
+                    if (!nodeMap.has(url)) {
+                        nodeMap.set(url, {
+                            id: url,
+                            url: url,
+                            label: url.replace('.html','').replace('_',' '),
+                            x: Math.random() * canvas.width * 0.8 + canvas.width * 0.1,
+                            y: Math.random() * canvas.height * 0.8 + canvas.height * 0.1,
+                            vx: 0,
+                            vy: 0
+                        });
+                        nodes.push(nodeMap.get(url));
+                    }
+                }
+
+                // Уникальные рёбра
+                edges = [];
+                const edgeSet = new Set();
+                rawEdges.forEach(e => {
+                    const key = [e.from, e.to].sort().join('->');
+                    if (!edgeSet.has(key) && nodeMap.has(e.from) && nodeMap.has(e.to)) {
+                        edgeSet.add(key);
+                        edges.push({ from: e.from, to: e.to });
+                    }
+                });
+
+                nodeCountSpan.textContent = `Страниц: ${nodes.length}`;
+                linkCountSpan.textContent = `Ссылок: ${edges.length}`;
+            } catch (err) {
+                console.error(err);
+                nodeCountSpan.textContent = 'Ошибка загрузки';
+                linkCountSpan.textContent = '';
+            }
+        }
+
+        // ---------- Физика (force-directed) ----------
+        function updatePhysics() {
+            // Отталкивание между узлами
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i];
+                    const b = nodes[j];
+                    let dx = b.x - a.x;
+                    let dy = b.y - a.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const force = REPULSION / (dist * dist);
+                    const fx = dx / dist * force;
+                    const fy = dy / dist * force;
+                    a.vx -= fx;
+                    a.vy -= fy;
+                    b.vx += fx;
+                    b.vy += fy;
+                }
+            }
+
+            // Притяжение по рёбрам
+            edges.forEach(edge => {
+                const fromNode = nodes.find(n => n.id === edge.from);
+                const toNode = nodes.find(n => n.id === edge.to);
+                if (!fromNode || !toNode) return;
+                const dx = toNode.x - fromNode.x;
+                const dy = toNode.y - fromNode.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const force = (dist - 150) * ATTRACTION;
+                const fx = dx / dist * force;
+                const fy = dy / dist * force;
+                fromNode.vx += fx;
+                fromNode.vy += fy;
+                toNode.vx -= fx;
+                toNode.vy -= fy;
+            });
+
+            // Применение скоростей и затухание
+            nodes.forEach(node => {
+                if (node === selectedNode && mouseDown) return; // зажатый мышью узел не двигается
+                node.x += node.vx;
+                node.y += node.vy;
+                node.vx *= DAMPING;
+                node.vy *= DAMPING;
+
+                // Границы, чтобы не улетали за экран
+                const margin = NODE_SIZE;
+                if (node.x < margin) { node.x = margin; node.vx *= -0.2; }
+                if (node.x > canvas.width - margin) { node.x = canvas.width - margin; node.vx *= -0.2; }
+                if (node.y < margin) { node.y = margin; node.vy *= -0.2; }
+                if (node.y > canvas.height - margin) { node.y = canvas.height - margin; node.vy *= -0.2; }
+            });
+        }
+
+        // ---------- Отрисовка ----------
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Провода (ссылки)
+            ctx.strokeStyle = '#4a4e69';
+            ctx.lineWidth = 2;
+            edges.forEach(edge => {
+                const from = nodes.find(n => n.id === edge.from);
+                const to = nodes.find(n => n.id === edge.to);
+                if (from && to) {
+                    ctx.beginPath();
+                    ctx.moveTo(from.x, from.y);
+                    ctx.lineTo(to.x, to.y);
+                    ctx.stroke();
+                }
+            });
+
+            // Узлы (клетки)
+            nodes.forEach(node => {
+                const size = (node === selectedNode && mouseDown) ? HOVER_SIZE : NODE_SIZE;
+                const x = node.x - size/2;
+                const y = node.y - size/2;
+
+                // Подложка
+                ctx.fillStyle = (node === selectedNode) ? '#e94560' : '#0f3460';
+                ctx.fillRect(x, y, size, size);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, size, size);
+
+                // Название страницы
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.label, node.x, node.y);
+            });
+        }
+
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+
+        // ---------- Взаимодействие с мышью ----------
+        function getNodeAt(mx, my) {
+            return nodes.find(node => {
+                const size = NODE_SIZE;
+                return mx >= node.x - size/2 && mx <= node.x + size/2 &&
+                       my >= node.y - size/2 && my <= node.y + size/2;
+            });
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mx = e.clientX - rect.left;
+            const my = e.clientY - rect.top;
+            const node = getNodeAt(mx, my);
+            if (node) {
+                mouseDown = true;
+                selectedNode = node;
+                node.vx = 0;
+                node.vy = 0;
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            if (mouseDown && selectedNode) {
+                selectedNode.x = mouseX;
+                selectedNode.y = mouseY;
+            } else {
+                const hovered = getNodeAt(mouseX, mouseY);
+                canvas.style.cursor = hovered ? 'pointer' : 'grab';
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (mouseDown && selectedNode) {
+                // Открыть страницу при отпускании (если не было сильного перетаскивания)
+                const node = selectedNode;
+                mouseDown = false;
+                selectedNode = null;
+                canvas.style.cursor = 'grab';
+                // Переход по ссылке
+                window.location.href = node.url;
+            }
+        });
+
+        // ---------- Игровой цикл ----------
+        function loop() {
+            updatePhysics();
+            draw();
+            animationId = requestAnimationFrame(loop);
+        }
+
+        // ---------- Инициализация ----------
+        async function init() {
+            resizeCanvas();
+            await buildMap();
+            loop();
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+
+        rescanBtn.addEventListener('click', async () => {
+            if (animationId) cancelAnimationFrame(animationId);
+            await buildMap();
+            loop();
+        });
+
+        init();
+    </script>
+</body>
+</html>
