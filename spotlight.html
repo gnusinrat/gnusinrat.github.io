@@ -356,10 +356,15 @@
                     deleteBtnHtml = `<button class="delete-btn" onclick="deletePost('${post.id}')">[X]</button>`;
                 }
 
+                let displayAuthor = post.author || "СИСТЕМА";
+                if (displayAuthor === 'DrGnusin') {
+                    displayAuthor = 'DrGnusin <span style="color: var(--hd-cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);">[DEV]</span>';
+                }
+
                 card.innerHTML = `
                     <div class="post-header">
                         <div>
-                            <span class="post-author">[ ${post.author || "СИСТЕМА"} ]</span>
+                            <span class="post-author">[ ${displayAuthor} ]</span>
                             <span class="post-time">${formatTimestamp(post.timestamp)}</span>
                         </div>
                         ${deleteBtnHtml}
@@ -396,7 +401,12 @@
             if (currentUser) {
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('post-section').style.display = 'flex';
-                document.getElementById('current-user-display').innerText = currentUser;
+                
+                let displayName = currentUser;
+                if (currentUser === 'DrGnusin') {
+                    displayName = 'DrGnusin <span style="color: var(--hd-cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);">[DEV]</span>';
+                }
+                document.getElementById('current-user-display').innerHTML = displayName;
 
                 // Показываем чекбокс СИСТЕМЫ только для DrGnusin
                 const sysToggle = document.getElementById('system-post-toggle');
