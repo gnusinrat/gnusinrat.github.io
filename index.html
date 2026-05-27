@@ -1,33 +1,369 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>badgester's cool amazing website</title>
-    <link rel="stylesheet" href="styles_index.css" />
+    <title>badgester's galactic wide web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hd-yellow: #ffe80a;
+            --hd-yellow-dim: #998b06;
+            --hd-bg: #0a0c10;
+            --hd-bg-panel: #14171c;
+            --hd-red: #ff2a2a;
+            --hd-cyan: #00f0ff;
+            --text-color: var(--hd-yellow);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--hd-bg);
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Subtle Screen Flicker */
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            5% { opacity: 0.85; }
+            10% { opacity: 0.95; }
+            15% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            z-index: 1;
+            animation: flicker 4s infinite;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        /* Header Style */
+        .header {
+            border-bottom: 2px solid var(--hd-yellow);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            text-transform: uppercase;
+        }
+
+        .header-left .system-status {
+            font-size: 0.8rem;
+            color: var(--hd-cyan);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(255, 232, 10, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        .auth-user {
+            color: var(--hd-yellow-dim);
+            margin-bottom: 5px;
+        }
+
+        .status-blip {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--hd-yellow);
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Description */
+        .description-box {
+            background-color: var(--hd-bg-panel);
+            border-left: 4px solid var(--hd-yellow);
+            padding: 15px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        /* Cards Grid */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: var(--hd-bg-panel);
+            border: 1px solid var(--hd-yellow-dim);
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s ease;
+            position: relative;
+            /* Helldivers style cut corners */
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            background-color: var(--hd-yellow);
+            color: var(--hd-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 232, 10, 0.2);
+            cursor: pointer;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .card:hover .card-desc {
+            opacity: 1;
+        }
+
+        /* Language Switcher Card */
+        .lang-card {
+            border-color: var(--hd-cyan);
+            background-color: rgba(0, 240, 255, 0.05);
+        }
+        
+        .lang-card .card-title {
+            color: var(--hd-cyan);
+        }
+
+        .lang-card:hover {
+            background-color: var(--hd-cyan);
+            color: var(--hd-bg);
+        }
+        
+        .lang-card:hover .card-title {
+            color: var(--hd-bg);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .header-right {
+                text-align: left;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>what's up?</h1>
-    <p>this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:</p>
 
-    <div class="cards">
-        <a href="https://gnusinrat.github.io/paint.html" class="card">
-            <span class="card-title">HTMPen</span>
-            <span class="card-desc">Drawing thing made with Gemini [RUSSIAN]</span>
-        </a>
-        <a href="https://gnusinrat.github.io/maxclicker.html" class="card">
-            <span class="card-title">MaxClicker</span>
-            <span class="card-desc">Clicker game</span>
-        </a>
-        <a href="https://badgester.neocities.org" class="card">
-            <span class="card-title">Old Website</span>
-            <span class="card-desc">Archived on Neocities</span>
-        </a>
-        <a href="https://gnusinrat.github.io/index_ru.html" class="card">
-            <span class="card-title">🇷🇺 Русская версия</span>
-            <span class="card-desc">Поменять на русский</span>
-        </a>
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <div class="system-status">GALACTIC WIDE WEB // TERMINAL SECURE</div>
+                <h1 id="t-title">чё как?</h1>
+            </div>
+            <div class="header-right">
+                <div class="auth-user">[AUTH: RATIBOR]</div>
+                <div><span class="status-blip"></span> <span id="t-status">ОНЛАЙН</span></div>
+            </div>
+        </header>
+
+        <!-- DESCRIPTION -->
+        <div class="description-box">
+            <p id="t-desc">новый сайт значкестера/mostlyengineer/пилота. другие страницы:</p>
+        </div>
+
+        <!-- CARDS / DIRECTORY -->
+        <div class="cards">
+            <a href="https://gnusinrat.github.io/paint.html" class="card">
+                <span class="card-title">HTMPen</span>
+                <span class="card-desc" id="t-htm">Рисовалка с Gemini API</span>
+            </a>
+            
+            <a href="https://gnusinrat.github.io/maxclicker.html" class="card">
+                <span class="card-title">MaxClicker</span>
+                <span class="card-desc" id="t-clicker">Кликер</span>
+            </a>
+            
+            <a href="https://badgester.neocities.org" class="card">
+                <span class="card-title" id="t-old-title">Старый сайт</span>
+                <span class="card-desc" id="t-old-desc">Архив на Neocities</span>
+            </a>
+            
+            <a href="https://gnusinrat.github.io/top.html" class="card">
+                <span class="card-title" id="t-top-title">Мои топы</span>
+                <span class="card-desc" id="t-top-desc">Любимые блюда и животные</span>
+            </a>
+            
+            <a href="https://gnusinrat.github.io/rabbits.html" class="card">
+                <span class="card-title" id="t-rab-title">Кролики</span>
+                <span class="card-desc" id="t-rab-desc">кролики</span>
+            </a>
+
+            <a href="https://gnusinrat.github.io/procedural.html" class="card">
+                <span class="card-title" id="t-zen-title">дзен</span>
+                <span class="card-desc">💖☮️⚛️</span>
+            </a>
+
+            <a href="https://gnusinrat.github.io/webmap.html" class="card">
+                <span class="card-title" id="t-map-title">Карта сайта</span>
+                <span class="card-desc" id="t-map-desc">Визуальная карта всех страниц</span>
+            </a>
+
+            <!-- LANGUAGE SWITCHER -->
+            <a href="#" class="card lang-card" id="lang-switch">
+                <span class="card-title" id="t-lang-title">US English version</span>
+                <span class="card-desc" id="t-lang-desc">Switch to English</span>
+            </a>
+        </div>
     </div>
+
+    <script>
+        // Dictionary for translation
+        const dict = {
+            ru: {
+                title: "чё как?",
+                status: "ОНЛАЙН",
+                desc: "новый сайт значкестера/mostlyengineer/пилота. другие страницы:",
+                htm: "Рисовалка с Gemini API",
+                clicker: "Кликер",
+                oldTitle: "Старый сайт",
+                oldDesc: "Архив на Neocities",
+                topTitle: "Мои топы",
+                topDesc: "Любимые блюда и животные",
+                rabTitle: "Кролики",
+                rabDesc: "кролики",
+                zenTitle: "дзен",
+                mapTitle: "Карта сайта",
+                mapDesc: "Визуальная карта всех страниц",
+                langTitle: "US English version",
+                langDesc: "Switch to English"
+            },
+            en: {
+                title: "what's up?",
+                status: "ONLINE",
+                desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
+                htm: "Drawing thing made with Gemini [RUSSIAN]",
+                clicker: "Clicker game",
+                oldTitle: "Old Website",
+                oldDesc: "Archived on Neocities",
+                topTitle: "My Tops",
+                topDesc: "Favorite food and animals",
+                rabTitle: "Rabbits",
+                rabDesc: "rabbits",
+                zenTitle: "zen",
+                mapTitle: "Sitemap",
+                mapDesc: "Visual map of all pages",
+                langTitle: "🇷🇺 Русская версия",
+                langDesc: "Поменять на русский"
+            }
+        };
+
+        let currentLang = 'ru'; // Default language
+
+        const langBtn = document.getElementById('lang-switch');
+
+        langBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            // Toggle language
+            currentLang = currentLang === 'ru' ? 'en' : 'ru';
+            
+            // Update UI elements
+            document.documentElement.lang = currentLang;
+            document.title = currentLang === 'ru' ? "крутой прикольный сайт значкестера" : "badgester's cool amazing website";
+            
+            document.getElementById('t-title').innerText = dict[currentLang].title;
+            document.getElementById('t-status').innerText = dict[currentLang].status;
+            
+            // Adding a small terminal typing effect for the description
+            const descElement = document.getElementById('t-desc');
+            descElement.innerText = "";
+            let i = 0;
+            const text = dict[currentLang].desc;
+            
+            function typeWriter() {
+                if (i < text.length) {
+                    descElement.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, 15);
+                }
+            }
+            typeWriter();
+
+            document.getElementById('t-htm').innerText = dict[currentLang].htm;
+            document.getElementById('t-clicker').innerText = dict[currentLang].clicker;
+            document.getElementById('t-old-title').innerText = dict[currentLang].oldTitle;
+            document.getElementById('t-old-desc').innerText = dict[currentLang].oldDesc;
+            document.getElementById('t-top-title').innerText = dict[currentLang].topTitle;
+            document.getElementById('t-top-desc').innerText = dict[currentLang].topDesc;
+            document.getElementById('t-rab-title').innerText = dict[currentLang].rabTitle;
+            document.getElementById('t-rab-desc').innerText = dict[currentLang].rabDesc;
+            document.getElementById('t-zen-title').innerText = dict[currentLang].zenTitle;
+            document.getElementById('t-map-title').innerText = dict[currentLang].mapTitle;
+            document.getElementById('t-map-desc').innerText = dict[currentLang].mapDesc;
+            
+            document.getElementById('t-lang-title').innerText = dict[currentLang].langTitle;
+            document.getElementById('t-lang-desc').innerText = dict[currentLang].langDesc;
+        });
+    </script>
 </body>
 </html>

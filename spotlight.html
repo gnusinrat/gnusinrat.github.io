@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>GWW:Raylit // SPOTLIGHT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        /* --- СТИЛИ HELLDIVERS --- */
+        :root {
+            --hd-yellow: #ffe80a;
+            --hd-yellow-dim: #998b06;
+            --hd-bg: #0a0c10;
+            --hd-bg-panel: #14171c;
+            --hd-red: #ff2a2a;
+            --hd-cyan: #00f0ff;
+            --text-color: var(--hd-yellow);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--hd-bg);
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2; background-size: 100% 4px, 3px 100%; pointer-events: none;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.95; } 5% { opacity: 0.85; } 10% { opacity: 0.95; } 15% { opacity: 1; } 100% { opacity: 1; }
+        }
+
+        .container {
+            width: 100%; max-width: 1000px; z-index: 1;
+            animation: flicker 4s infinite; display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .header {
+            border-bottom: 2px solid var(--hd-yellow); padding-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end; text-transform: uppercase;
+        }
+
+        .system-status { font-size: 0.8rem; color: var(--hd-cyan); margin-bottom: 5px; letter-spacing: 2px; }
+        h1 { font-size: 2.2rem; text-shadow: 0 0 10px rgba(255, 232, 10, 0.5); letter-spacing: 1px; }
+        
+        .header-right { text-align: right; }
+        .nav-link { color: var(--hd-cyan); text-decoration: none; border-bottom: 1px solid transparent; transition: 0.2s; }
+        .nav-link:hover { border-bottom: 1px solid var(--hd-cyan); text-shadow: 0 0 8px var(--hd-cyan); }
+
+        /* --- ЛЕЙАУТ СТРАНИЦЫ --- */
+        .main-grid {
+            display: grid; grid-template-columns: 300px 1fr; gap: 20px; align-items: start;
+        }
+        @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+
+        /* --- ПАНЕЛИ И ФОРМЫ --- */
+        .panel {
+            background-color: var(--hd-bg-panel); border: 1px solid var(--hd-yellow-dim);
+            padding: 20px; display: flex; flex-direction: column; gap: 15px;
+            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+        }
+
+        .panel-title { font-size: 1.2rem; font-weight: bold; border-bottom: 1px solid var(--hd-yellow-dim); padding-bottom: 5px; margin-bottom: 10px; }
+
+        input, textarea {
+            background: rgba(0,0,0,0.5); border: 1px solid var(--hd-yellow-dim); color: var(--hd-cyan);
+            font-family: inherit; font-size: 1rem; padding: 10px; width: 100%; outline: none; transition: 0.2s;
+        }
+        input:focus, textarea:focus { border-color: var(--hd-cyan); box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+        textarea { resize: vertical; min-height: 100px; }
+
+        button {
+            background: transparent; border: 1px solid var(--hd-yellow); color: var(--hd-yellow);
+            padding: 10px; font-family: inherit; font-size: 1rem; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.2s;
+        }
+        button:hover { background: var(--hd-yellow); color: var(--hd-bg); box-shadow: 0 0 10px rgba(255, 232, 10, 0.4); }
+        
+        .btn-danger { border-color: var(--hd-red); color: var(--hd-red); }
+        .btn-danger:hover { background: var(--hd-red); color: white; box-shadow: 0 0 10px rgba(255, 42, 42, 0.4); }
+
+        .sys-msg { font-size: 0.85rem; min-height: 20px; }
+        .msg-error { color: var(--hd-red); animation: blink 1s infinite; }
+        .msg-success { color: var(--hd-cyan); }
+
+        /* --- ЛЕНТА ПОСТОВ --- */
+        .feed { display: flex; flex-direction: column; gap: 15px; }
+        
+        .post-card {
+            background-color: var(--hd-bg-panel); border-left: 4px solid var(--hd-cyan);
+            padding: 15px; position: relative; transition: 0.3s;
+        }
+        .post-card.admin-post { border-left-color: var(--hd-yellow); background: linear-gradient(90deg, rgba(255, 232, 10, 0.05) 0%, transparent 50%); }
+
+        .post-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            font-size: 0.85rem; color: var(--hd-yellow-dim); margin-bottom: 10px; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 5px;
+        }
+        .post-author { color: var(--hd-yellow); font-weight: bold; }
+        .post-time { opacity: 0.7; }
+        .post-content { font-size: 1rem; line-height: 1.4; color: #fff; white-space: pre-wrap; }
+        
+        .delete-btn {
+            background: transparent; border: 1px solid var(--hd-red); color: var(--hd-red);
+            cursor: pointer; padding: 2px 8px; font-family: inherit; font-size: 0.8rem; font-weight: bold; margin-left: 10px; transition: 0.2s;
+        }
+        .delete-btn:hover { background: var(--hd-red); color: #000; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <div class="system-status">GWW:RAYLIT // COMMUNICATIONS LINK</div>
+                <h1>TEAM RAYLIT SPOTLIGHT</h1>
+            </div>
+            <div class="header-right">
+                <a href="index.html" class="nav-link">&lt; ВЕРНУТЬСЯ В ГЛАВНОЕ МЕНЮ</a>
+                <div style="margin-top: 10px; color: var(--hd-cyan); font-size: 0.8rem;">
+                    [ENCRYPTION: ACTIVE]
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN GRID -->
+        <main class="main-grid">
+            
+            <!-- Секция Управления (Левая панель) -->
+            <aside>
+                <!-- Форма Входа -->
+                <div id="login-section" class="panel">
+                    <div class="panel-title">АВТОРИЗАЦИЯ ОФИЦЕРА</div>
+                    <div>
+                        <label style="font-size: 0.8rem; opacity: 0.7;">ИДЕНТИФИКАТОР</label>
+                        <input type="text" id="login-username" placeholder="DrGnusin">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; opacity: 0.7;">PIN КОД ДОСТУПА</label>
+                        <input type="password" id="login-pin" placeholder="****">
+                    </div>
+                    <button onclick="attemptLogin()">ПОДТВЕРДИТЬ</button>
+                    <div id="login-sys-msg" class="sys-msg"></div>
+                </div>
+
+                <!-- Форма Постинга (Скрыта до входа) -->
+                <div id="post-section" class="panel" style="display: none;">
+                    <div class="panel-title">ТРАНСЛЯЦИЯ СТАТУСА</div>
+                    <div style="color: var(--hd-cyan); font-size: 0.9rem;">
+                        ОПЕРАТОР: <span id="current-user-display" style="color: var(--hd-yellow); font-weight: bold;"></span>
+                    </div>
+                    <textarea id="post-text" placeholder="Введите сообщение для трансляции..."></textarea>
+                    <button onclick="submitPost()">ОПУБЛИКОВАТЬ В СЕТЬ</button>
+                    <button class="btn-danger" onclick="logout()" style="margin-top: 10px; font-size: 0.8rem;">ЗАВЕРШИТЬ СЕАНС</button>
+                    <div id="post-sys-msg" class="sys-msg"></div>
+                </div>
+            </aside>
+
+            <!-- Лента постов (Правая панель) -->
+            <section class="feed" id="feed-container">
+                <div class="post-card">
+                    <div class="post-content" style="opacity:0.5;">СИСТЕМА: УСТАНОВКА СВЯЗИ СО СПУТНИКОМ SUPER EARTH... ПОЖАЛУЙСТА ПОДОЖДИТЕ.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- FIREBASE СКРИПТЫ -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // РАТИБОР: ВОТ СЮДА ВСТАВЬ СВОИ ДАННЫЕ ИЗ FIREBASE CONSOLE!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
+            authDomain: "gwwraylitspotlight.firebaseapp.com",
+            projectId: "gwwraylitspotlight",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        
+        // Название папки в базе данных для твоих постов
+        const dbCollectionName = 'raylit_posts';
+
+        const VALID_USER = "DrGnusin";
+        const VALID_PIN = "3357";
+        let posts = [];
+
+        function formatTimestamp(ts) {
+            const date = new Date(ts);
+            const pad = (n) => n.toString().padStart(2, '0');
+            return `CYCLE ${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} // ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+        }
+
+        function showMessage(elementId, text, isError = false) {
+            const el = document.getElementById(elementId);
+            el.innerText = text;
+            el.className = `sys-msg ${isError ? 'msg-error' : 'msg-success'}`;
+            setTimeout(() => { el.innerText = ''; }, 3000);
+        }
+
+        function renderPosts() {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = '';
+
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="post-card"><div class="post-content" style="opacity:0.5;">СИСТЕМА: СВЯЗЬ УСТАНОВЛЕНА. НЕТ АКТИВНЫХ ТРАНСЛЯЦИЙ.</div></div>';
+                return;
+            }
+
+            const isLoggedIn = sessionStorage.getItem('gww_logged_in') === 'true';
+
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = `post-card ${post.author === VALID_USER ? 'admin-post' : ''}`;
+                
+                // Простая защита от ломания HTML
+                const safeText = post.text ? post.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+
+                // Кнопка удаления (показывается только если вошел)
+                let deleteBtnHtml = '';
+                if (isLoggedIn) {
+                    deleteBtnHtml = `<button class="delete-btn" onclick="deletePost('${post.id}')">[X]</button>`;
+                }
+
+                card.innerHTML = `
+                    <div class="post-header">
+                        <div>
+                            <span class="post-author">[ ${post.author || "СИСТЕМА"} ]</span>
+                            <span class="post-time">${formatTimestamp(post.timestamp)}</span>
+                        </div>
+                        ${deleteBtnHtml}
+                    </div>
+                    <div class="post-content">${safeText}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function checkSession() {
+            const isLoggedIn = sessionStorage.getItem('gww_logged_in') === 'true';
+            
+            if (isLoggedIn) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('post-section').style.display = 'flex';
+                document.getElementById('current-user-display').innerText = VALID_USER;
+            } else {
+                document.getElementById('login-section').style.display = 'flex';
+                document.getElementById('post-section').style.display = 'none';
+            }
+            renderPosts(); // Перерисовываем, чтобы скрыть/показать кнопки [X]
+        }
+
+        // Делаем функции глобальными для HTML
+        window.attemptLogin = function() {
+            const user = document.getElementById('login-username').value;
+            const pin = document.getElementById('login-pin').value;
+
+            if (user === VALID_USER && pin === VALID_PIN) {
+                sessionStorage.setItem('gww_logged_in', 'true');
+                document.getElementById('login-username').value = '';
+                document.getElementById('login-pin').value = '';
+                checkSession();
+            } else {
+                showMessage('login-sys-msg', 'ОШИБКА: ДОСТУП ЗАПРЕЩЕН.', true);
+            }
+        }
+
+        window.logout = function() {
+            sessionStorage.removeItem('gww_logged_in');
+            checkSession();
+        }
+
+        window.submitPost = async function() {
+            const textarea = document.getElementById('post-text');
+            const text = textarea.value.trim();
+
+            if (!text) {
+                showMessage('post-sys-msg', 'ОШИБКА: ПУСТОЕ СООБЩЕНИЕ', true);
+                return;
+            }
+
+            const newPost = {
+                author: VALID_USER,
+                text: text,
+                timestamp: Date.now()
+            };
+
+            try {
+                const postsCol = collection(db, dbCollectionName);
+                await addDoc(postsCol, newPost);
+                textarea.value = '';
+                showMessage('post-sys-msg', 'СТАТУС УСПЕШНО ТРАНСЛИРОВАН', false);
+            } catch (e) {
+                console.error("Ошибка при отправке:", e);
+                showMessage('post-sys-msg', 'ОШИБКА СВЯЗИ С БАЗОЙ (Проверь ключи или Firestore Rules)', true);
+            }
+        }
+
+        window.deletePost = async function(postId) {
+            try {
+                const docRef = doc(db, dbCollectionName, postId);
+                await deleteDoc(docRef);
+            } catch (e) {
+                console.error("Ошибка при удалении:", e);
+            }
+        }
+
+        async function initAuth() {
+            try {
+                // Анонимный вход для чтения базы
+                await signInAnonymously(auth);
+            } catch (e) {
+                console.error("Ошибка авторизации БД", e);
+            }
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) return;
+            
+            const postsCol = collection(db, dbCollectionName);
+            
+            // Слушаем базу в реальном времени!
+            onSnapshot(postsCol, (snapshot) => {
+                posts = [];
+                snapshot.forEach((doc) => {
+                    posts.push({ id: doc.id, ...doc.data() });
+                });
+                
+                // Сортируем: новые сверху
+                posts.sort((a, b) => b.timestamp - a.timestamp);
+                renderPosts();
+            }, (error) => {
+                console.error("Сбой чтения БД. Проверь Firestore Rules в консоли Firebase:", error);
+            });
+        });
+
+        window.onload = () => {
+            checkSession();
+            initAuth(); 
+
+            // Вход по кнопке Enter
+            document.getElementById('login-pin').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') window.attemptLogin();
+            });
+        };
+    </script>
+</body>
+</html>
