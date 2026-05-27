@@ -127,6 +127,8 @@
             padding: 15px; position: relative; transition: 0.3s;
         }
         .post-card.admin-post { border-left-color: var(--hd-yellow); background: linear-gradient(90deg, rgba(255, 232, 10, 0.05) 0%, transparent 50%); }
+        .post-card.system-post { border-left-color: var(--hd-red); background: linear-gradient(90deg, rgba(255, 42, 42, 0.05) 0%, transparent 50%); }
+        .post-card.system-post .post-author { color: var(--hd-red); text-shadow: 0 0 5px rgba(255, 42, 42, 0.5); }
 
         .post-header {
             display: flex; justify-content: space-between; align-items: flex-start;
@@ -204,6 +206,14 @@
                         <img id="image-preview" src="" alt="Preview">
                     </div>
 
+                    <!-- Тоггл для публикации от СИСТЕМЫ (скрыт по умолчанию) -->
+                    <div id="system-post-toggle" style="display: none; margin-top: 5px; margin-bottom: 5px;">
+                        <label style="color: var(--hd-red); font-size: 0.85rem; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="is-system-post" style="width: auto; margin: 0; padding: 0;">
+                            ТРАНСЛИРОВАТЬ ОТ ЛИЦА СИСТЕМЫ
+                        </label>
+                    </div>
+
                     <button onclick="submitPost()">ОПУБЛИКОВАТЬ В СЕТЬ</button>
                     <button class="btn-danger" onclick="logout()" style="margin-top: 10px; font-size: 0.8rem;">ЗАВЕРШИТЬ СЕАНС</button>
                     <div id="post-sys-msg" class="sys-msg"></div>
@@ -232,7 +242,7 @@
             firebaseConfig = {
                 apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
                 authDomain: "gwwraylitspotlight.firebaseapp.com",
-                projectId: "gwwraylitspotlight"
+                projectId: "gwwraylitspotlight",
             };
         }
 
@@ -326,8 +336,15 @@
             const isLoggedIn = !!currentUser;
 
             posts.forEach(post => {
+                let cardClass = '';
+                if (post.author === 'СИСТЕМА') {
+                    cardClass = 'system-post';
+                } else if (VALID_USERS.hasOwnProperty(post.author)) {
+                    cardClass = 'admin-post';
+                }
+
                 const card = document.createElement('div');
-                card.className = `post-card ${VALID_USERS.hasOwnProperty(post.author) ? 'admin-post' : ''}`;
+                card.className = `post-card ${cardClass}`;
                 
                 const safeText = post.text ? post.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
                 
@@ -380,6 +397,17 @@
                 document.getElementById('login-section').style.display = 'none';
                 document.getElementById('post-section').style.display = 'flex';
                 document.getElementById('current-user-display').innerText = currentUser;
+
+                // Показываем чекбокс СИСТЕМЫ только для DrGnusin
+                const sysToggle = document.getElementById('system-post-toggle');
+                if (sysToggle) {
+                    if (currentUser === 'DrGnusin') {
+                        sysToggle.style.display = 'block';
+                    } else {
+                        sysToggle.style.display = 'none';
+                        document.getElementById('is-system-post').checked = false;
+                    }
+                }
             } else {
                 document.getElementById('login-section').style.display = 'flex';
                 document.getElementById('post-section').style.display = 'none';
@@ -410,15 +438,22 @@
             const textarea = document.getElementById('post-text');
             const text = textarea.value.trim();
             const currentUser = sessionStorage.getItem('gww_user');
+            const isSystemCheck = document.getElementById('is-system-post');
+            const isSystem = isSystemCheck ? isSystemCheck.checked : false;
 
             if (!text && !currentImageBase64) {
                 showMessage('post-sys-msg', 'ОШИБКА: ПУСТОЕ СООБЩЕНИЕ ИЛИ ФАЙЛ', true);
                 return;
             }
 
+            let authorName = currentUser;
+            if (isSystem && currentUser === 'DrGnusin') {
+                authorName = 'СИСТЕМА';
+            }
+
             // Формируем пост. Если есть фото — прикрепляем его
             const newPost = {
-                author: currentUser,
+                author: authorName,
                 text: text,
                 timestamp: Date.now()
             };
@@ -434,6 +469,7 @@
                 
                 // Очищаем форму
                 textarea.value = '';
+                if (isSystemCheck) isSystemCheck.checked = false;
                 resetImageUpload();
                 showMessage('post-sys-msg', 'СТАТУС УСПЕШНО ТРАНСЛИРОВАН', false);
             } catch (e) {
