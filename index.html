@@ -95,7 +95,7 @@
             text-align: right;
             font-size: 0.9rem;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             gap: 15px;
         }
 
@@ -117,8 +117,15 @@
             text-decoration: none;
             transition: all 0.2s ease;
             clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+            /* Reset SVG default margins */
+            padding: 0;
         }
         
+        .spotlight-btn svg {
+            display: block;
+            margin: auto;
+        }
+
         .spotlight-btn:hover {
             background-color: var(--hd-yellow);
             color: var(--hd-bg);
@@ -254,7 +261,7 @@
                 </div>
                 <a href="spotlight.html" class="spotlight-btn" title="Team Raylit Spotlight">
                     <!-- Иконка радара/связи -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 10a14 14 0 0 1 14 14"></path>
                         <path d="M4 17a7 7 0 0 1 7 7"></path>
                         <circle cx="4" cy="20" r="1"></circle>
