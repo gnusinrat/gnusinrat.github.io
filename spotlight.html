@@ -111,9 +111,7 @@
             padding: 8px; cursor: pointer; font-size: 0.85rem; transition: 0.2s; text-transform: uppercase;
         }
         .file-upload-btn:hover { background: rgba(0, 240, 255, 0.1); }
-        #image-preview {
-            max-width: 100%; margin-top: 10px; border: 1px solid var(--hd-yellow-dim); display: none;
-        }
+        #image-preview { max-width: 100%; margin-top: 10px; border: 1px solid var(--hd-yellow-dim); display: none; }
 
         .sys-msg { font-size: 0.85rem; min-height: 20px; }
         .msg-error { color: var(--hd-red); animation: blink 1s infinite; }
@@ -136,7 +134,7 @@
         }
         .post-author { color: var(--hd-yellow); font-weight: bold; }
         .post-time { opacity: 0.7; }
-        .post-content { font-size: 1rem; line-height: 1.4; color: #fff; white-space: pre-wrap; }
+        .post-content { font-size: 1rem; line-height: 1.4; color: #fff; white-space: pre-wrap; word-wrap: break-word; }
         .post-img { max-width: 100%; border: 1px solid var(--hd-cyan); margin-top: 15px; box-shadow: 0 0 10px rgba(0, 240, 255, 0.1); }
         
         .delete-btn {
@@ -144,6 +142,17 @@
             cursor: pointer; padding: 2px 8px; font-family: inherit; font-size: 0.8rem; font-weight: bold; margin-left: 10px; transition: 0.2s;
         }
         .delete-btn:hover { background: var(--hd-red); color: #000; }
+
+        /* --- ОТВЕТЫ (REPLIES) --- */
+        .replies-section { margin-top: 15px; border-top: 1px dashed rgba(255, 232, 10, 0.3); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .reply-card { background: rgba(0, 0, 0, 0.3); border-left: 2px solid var(--hd-yellow-dim); padding: 8px 12px; font-size: 0.9rem; }
+        .reply-card.system-post { border-left-color: var(--hd-red); background: linear-gradient(90deg, rgba(255, 42, 42, 0.1) 0%, transparent 80%); }
+        .reply-header { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--hd-yellow-dim); margin-bottom: 5px; }
+        .reply-form { display: flex; gap: 10px; margin-top: 5px; }
+        .reply-input { flex-grow: 1; padding: 5px 10px; min-height: 30px; font-size: 0.9rem; background: rgba(0,0,0,0.5); border: 1px solid var(--hd-yellow-dim); color: var(--hd-cyan); outline: none; transition: 0.2s; }
+        .reply-input:focus { border-color: var(--hd-cyan); box-shadow: 0 0 5px rgba(0, 240, 255, 0.3); }
+        .reply-btn { padding: 5px 15px; font-size: 0.8rem; background: transparent; border: 1px solid var(--hd-yellow); color: var(--hd-yellow); cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.2s; }
+        .reply-btn:hover { background: var(--hd-yellow); color: var(--hd-bg); box-shadow: 0 0 10px rgba(255, 232, 10, 0.4); }
 
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     </style>
@@ -232,7 +241,7 @@
     <!-- FIREBASE СКРИПТЫ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // РАТИБОР: Вставь сюда свой конфиг от Firebase!
         let firebaseConfig;
@@ -263,6 +272,7 @@
 
         // --- УТИЛИТЫ ---
         function formatTimestamp(ts) {
+            if (!ts) return "UNKNOWN TIME";
             const date = new Date(ts);
             const pad = (n) => n.toString().padStart(2, '0');
             return `CYCLE ${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} // ${pad(date.getHours())}:${pad(date.getMinutes())}`;
@@ -284,7 +294,6 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // Сжимаем картинку через Canvas, чтобы она влезла в базу данных (лимит 1мб)
                     const canvas = document.createElement('canvas');
                     const MAX_WIDTH = 800;
                     const MAX_HEIGHT = 800;
@@ -302,7 +311,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Переводим в Base64 с качеством 70%
+                    // Переводим в Base64
                     currentImageBase64 = canvas.toDataURL('image/jpeg', 0.7);
                     
                     const preview = document.getElementById('image-preview');
@@ -348,7 +357,6 @@
                 
                 const safeText = post.text ? post.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
                 
-                // Рендерим картинку, если она есть в базе
                 const imgHtml = post.image ? `<img src="${post.image}" class="post-img" alt="Прикрепленный файл">` : '';
 
                 let deleteBtnHtml = '';
@@ -361,6 +369,54 @@
                     displayAuthor = 'DrGnusin <span style="color: var(--hd-cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);">[DEV]</span>';
                 }
 
+                // --- БЛОК ОТВЕТОВ ---
+                let repliesHtml = '';
+                const replies = post.replies || [];
+
+                if (replies.length > 0 || isLoggedIn) {
+                    repliesHtml += '<div class="replies-section">';
+                    
+                    if (replies.length > 0) {
+                        replies.forEach(reply => {
+                            let rAuthor = reply.author || 'АНОНИМ';
+                            if (rAuthor === 'DrGnusin') {
+                                rAuthor = 'DrGnusin <span style="color: var(--hd-cyan); text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);">[DEV]</span>';
+                            }
+                            let rClass = reply.author === 'СИСТЕМА' ? 'system-post' : '';
+                            const safeReplyText = reply.text ? reply.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+                            
+                            let replyDeleteBtnHtml = '';
+                            if (isLoggedIn) {
+                                const replyId = reply.id || reply.timestamp;
+                                replyDeleteBtnHtml = `<button class="delete-btn" onclick="deleteReply('${post.id}', '${replyId}')">[X]</button>`;
+                            }
+
+                            repliesHtml += `
+                                <div class="reply-card ${rClass}">
+                                    <div class="reply-header">
+                                        <div>
+                                            <span class="post-author">[ ${rAuthor} ]</span>
+                                            <span class="post-time">${formatTimestamp(reply.timestamp)}</span>
+                                        </div>
+                                        ${replyDeleteBtnHtml}
+                                    </div>
+                                    <div class="post-content">${safeReplyText}</div>
+                                </div>
+                            `;
+                        });
+                    }
+                    
+                    if (isLoggedIn) {
+                        repliesHtml += `
+                            <div class="reply-form">
+                                <input type="text" id="reply-input-${post.id}" class="reply-input" placeholder="Написать ответ...">
+                                <button class="reply-btn" onclick="submitReply('${post.id}')">ОТВЕТИТЬ</button>
+                            </div>
+                        `;
+                    }
+                    repliesHtml += '</div>';
+                }
+
                 card.innerHTML = `
                     <div class="post-header">
                         <div>
@@ -371,6 +427,7 @@
                     </div>
                     <div class="post-content">${safeText}</div>
                     ${imgHtml}
+                    ${repliesHtml}
                 `;
                 container.appendChild(card);
             });
@@ -380,17 +437,14 @@
         window.switchBranch = function(branchName) {
             currentBranch = branchName;
             
-            // Обновляем кнопки
             document.getElementById('btn-raylit').classList.remove('active');
             document.getElementById('btn-solar').classList.remove('active');
             
             if (branchName === 'raylit_posts') document.getElementById('btn-raylit').classList.add('active');
             if (branchName === 'solar_posts') document.getElementById('btn-solar').classList.add('active');
             
-            // Показываем загрузку
             document.getElementById('feed-container').innerHTML = '<div class="post-card"><div class="post-content" style="opacity:0.5;">ПЕРЕКЛЮЧЕНИЕ ЧАСТОТЫ СВЯЗИ...</div></div>';
             
-            // Переподключаемся к нужной коллекции
             listenToDatabase();
         }
 
@@ -408,7 +462,6 @@
                 }
                 document.getElementById('current-user-display').innerHTML = displayName;
 
-                // Показываем чекбокс СИСТЕМЫ только для DrGnusin
                 const sysToggle = document.getElementById('system-post-toggle');
                 if (sysToggle) {
                     if (currentUser === 'DrGnusin') {
@@ -461,11 +514,11 @@
                 authorName = 'СИСТЕМА';
             }
 
-            // Формируем пост. Если есть фото — прикрепляем его
             const newPost = {
                 author: authorName,
                 text: text,
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                replies: []
             };
             
             if (currentImageBase64) {
@@ -473,18 +526,16 @@
             }
 
             try {
-                // Сохраняем в текущую выбранную ветку (raylit или solar)
                 const postsCol = collection(db, currentBranch);
                 await addDoc(postsCol, newPost);
                 
-                // Очищаем форму
                 textarea.value = '';
                 if (isSystemCheck) isSystemCheck.checked = false;
                 resetImageUpload();
                 showMessage('post-sys-msg', 'СТАТУС УСПЕШНО ТРАНСЛИРОВАН', false);
             } catch (e) {
                 console.error("Ошибка при отправке:", e);
-                showMessage('post-sys-msg', 'ОШИБКА СВЯЗИ С БАЗОЙ (возможно слишком большое фото)', true);
+                showMessage('post-sys-msg', 'ОШИБКА СВЯЗИ С БАЗОЙ', true);
             }
         }
 
@@ -497,9 +548,59 @@
             }
         }
 
+        window.submitReply = async function(postId) {
+            const input = document.getElementById(`reply-input-${postId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const currentUser = sessionStorage.getItem('gww_user');
+            
+            const isSystemCheck = document.getElementById('is-system-post');
+            const isSystem = isSystemCheck ? isSystemCheck.checked : false;
+            let authorName = currentUser;
+            if (isSystem && currentUser === 'DrGnusin') {
+                authorName = 'СИСТЕМА';
+            }
+
+            const newReply = {
+                id: Date.now().toString() + Math.random().toString(36).substring(2, 8),
+                author: authorName,
+                text: text,
+                timestamp: Date.now()
+            };
+
+            try {
+                const docRef = doc(db, currentBranch, postId);
+                await updateDoc(docRef, {
+                    replies: arrayUnion(newReply)
+                });
+                input.value = '';
+            } catch (e) {
+                console.error("Ошибка при отправке ответа:", e);
+            }
+        }
+
+        window.deleteReply = async function(postId, replyIdentifier) {
+            try {
+                const post = posts.find(p => p.id === postId);
+                if (!post || !post.replies) return;
+
+                const updatedReplies = post.replies.filter(r => {
+                    if (r.id) return r.id !== replyIdentifier;
+                    return r.timestamp.toString() !== replyIdentifier.toString();
+                });
+
+                const docRef = doc(db, currentBranch, postId);
+                await updateDoc(docRef, {
+                    replies: updatedReplies
+                });
+            } catch (e) {
+                console.error("Ошибка при удалении ответа:", e);
+            }
+        }
+
         // --- ПОДКЛЮЧЕНИЕ К БД ---
         function listenToDatabase() {
-            // Если мы уже слушаем старую ветку — отключаемся от неё
             if (unsubscribeSnapshot) {
                 unsubscribeSnapshot();
             }
@@ -512,7 +613,6 @@
                     posts.push({ id: doc.id, ...doc.data() });
                 });
                 
-                // Сортируем: новые сверху
                 posts.sort((a, b) => b.timestamp - a.timestamp);
                 renderPosts();
             }, (error) => {
@@ -523,7 +623,7 @@
         // --- ЗАПУСК ---
         window.onload = () => {
             checkSession();
-            listenToDatabase(); // Подключаемся к базе по умолчанию (Raylit)
+            listenToDatabase(); 
 
             document.getElementById('login-pin').addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') window.attemptLogin();
