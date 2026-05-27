@@ -99,6 +99,12 @@
             gap: 15px;
         }
 
+        .header-right > div:first-child {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
         .auth-user {
             color: var(--hd-yellow-dim);
             margin-bottom: 5px;
@@ -117,13 +123,18 @@
             text-decoration: none;
             transition: all 0.2s ease;
             clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            /* Reset SVG default margins */
             padding: 0;
+            margin: 0;
+            box-sizing: border-box;
         }
         
         .spotlight-btn svg {
             display: block;
-            margin: auto;
+            margin: 0;
+            padding: 0;
+            /* Force exact sizing to prevent weird bounding box issues */
+            width: 24px;
+            height: 24px;
         }
 
         .spotlight-btn:hover {
@@ -255,7 +266,7 @@
                 <h1 id="t-title">чё как?</h1>
             </div>
             <div class="header-right">
-                <div style="text-align: right;">
+                <div>
                     <div class="auth-user">[AUTH: RATIBOR]</div>
                     <div><span class="status-blip"></span> <span id="t-status">ОНЛАЙН</span></div>
                 </div>
