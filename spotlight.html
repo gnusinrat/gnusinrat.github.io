@@ -147,7 +147,7 @@
                     <div class="panel-title">АВТОРИЗАЦИЯ ОФИЦЕРА</div>
                     <div>
                         <label style="font-size: 0.8rem; opacity: 0.7;">ИДЕНТИФИКАТОР</label>
-                        <input type="text" id="login-username" placeholder="DrGnusin">
+                        <input type="text" id="login-username" placeholder="ЛОГИН">
                     </div>
                     <div>
                         <label style="font-size: 0.8rem; opacity: 0.7;">PIN КОД ДОСТУПА</label>
@@ -182,7 +182,6 @@
     <!-- FIREBASE СКРИПТЫ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // РАТИБОР: ВОТ СЮДА ВСТАВЬ СВОИ ДАННЫЕ ИЗ FIREBASE CONSOLE!
@@ -193,10 +192,9 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // Название папки в базе данных для твоих постов
+        // Название коллекции в базе данных для твоих постов
         const dbCollectionName = 'raylit_posts';
 
         const VALID_USER = "DrGnusin";
@@ -265,10 +263,9 @@
                 document.getElementById('login-section').style.display = 'flex';
                 document.getElementById('post-section').style.display = 'none';
             }
-            renderPosts(); // Перерисовываем, чтобы скрыть/показать кнопки [X]
+            renderPosts();
         }
 
-        // Делаем функции глобальными для HTML
         window.attemptLogin = function() {
             const user = document.getElementById('login-username').value;
             const pin = document.getElementById('login-pin').value;
@@ -310,7 +307,7 @@
                 showMessage('post-sys-msg', 'СТАТУС УСПЕШНО ТРАНСЛИРОВАН', false);
             } catch (e) {
                 console.error("Ошибка при отправке:", e);
-                showMessage('post-sys-msg', 'ОШИБКА СВЯЗИ С БАЗОЙ (Проверь ключи или Firestore Rules)', true);
+                showMessage('post-sys-msg', 'ОШИБКА СВЯЗИ С БАЗОЙ', true);
             }
         }
 
@@ -323,38 +320,24 @@
             }
         }
 
-        async function initAuth() {
-            try {
-                // Анонимный вход для чтения базы
-                await signInAnonymously(auth);
-            } catch (e) {
-                console.error("Ошибка авторизации БД", e);
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (!user) return;
-            
-            const postsCol = collection(db, dbCollectionName);
-            
-            // Слушаем базу в реальном времени!
-            onSnapshot(postsCol, (snapshot) => {
-                posts = [];
-                snapshot.forEach((doc) => {
-                    posts.push({ id: doc.id, ...doc.data() });
-                });
-                
-                // Сортируем: новые сверху
-                posts.sort((a, b) => b.timestamp - a.timestamp);
-                renderPosts();
-            }, (error) => {
-                console.error("Сбой чтения БД. Проверь Firestore Rules в консоли Firebase:", error);
+        // Подключаемся к базе напрямую, без Firebase Auth
+        const postsCol = collection(db, dbCollectionName);
+        
+        onSnapshot(postsCol, (snapshot) => {
+            posts = [];
+            snapshot.forEach((doc) => {
+                posts.push({ id: doc.id, ...doc.data() });
             });
+            
+            // Сортируем: новые сверху
+            posts.sort((a, b) => b.timestamp - a.timestamp);
+            renderPosts();
+        }, (error) => {
+            console.error("Сбой чтения БД. Проверь Firestore Rules в консоли Firebase:", error);
         });
 
         window.onload = () => {
             checkSession();
-            initAuth(); 
 
             // Вход по кнопке Enter
             document.getElementById('login-pin').addEventListener('keypress', function (e) {
