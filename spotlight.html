@@ -456,7 +456,7 @@
         if (typeof __firebase_config !== 'undefined') {
             firebaseConfig = JSON.parse(__firebase_config);
         } else {
-            const firebaseConfig = {
+            firebaseConfig = {
                 apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
                 authDomain: "gwwraylitspotlight.firebaseapp.com",
                 projectId: "gwwraylitspotlight",
@@ -808,7 +808,11 @@
         }
 
         function listenToDatabase() {
-            if (!auth.currentUser) return; // Защита: не читаем базу без авторизации
+            // Защита: не читаем базу, пока нет авторизации
+            if (!auth.currentUser) {
+                console.warn("Ожидание проверки ключей Firebase...");
+                return; 
+            }
             
             if (unsubscribeSnapshot) {
                 unsubscribeSnapshot();
@@ -826,9 +830,26 @@
                 renderPosts();
             }, (error) => {
                 console.error("Сбой чтения БД:", error);
-                document.getElementById('feed-container').innerHTML = `<div class="dr-box post-card"><div class="post-content msg-error" style="font-size: 1rem;">* ОШИБКА: НЕТ ДОСТУПА К БАЗЕ.</div></div>`;
+                document.getElementById('feed-container').innerHTML = `
+                    <div class="dr-box post-card">
+                        <div class="post-content msg-error" style="font-size: 1rem;">
+                            * ОШИБКА: НЕТ ДОСТУПА К БАЗЕ FIREBASE.<br><br>
+                            1. Зайди в Firebase Console.<br>
+                            2. Перейди в Firestore Database.<br>
+                            3. Нажми "Create database" (Создать базу).<br>
+                            4. ОБЯЗАТЕЛЬНО выбери "Start in test mode" (Тестовый режим)!
+                        </div>
+                    </div>`;
             });
         }
+
+        // Самый надежный способ - ждем, пока Firebase сам скажет, что авторизация пройдена
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log("Firebase: Авторизация пройдена, загружаем посты...");
+                listenToDatabase();
+            }
+        });
 
         async function initFirebase() {
             try {
@@ -838,10 +859,16 @@
                 } else {
                     await signInAnonymously(auth);
                 }
-                listenToDatabase(); 
             } catch (error) {
                 console.error("Ошибка авторизации:", error);
-                document.getElementById('feed-container').innerHTML = `<div class="dr-box post-card"><div class="post-content msg-error" style="font-size: 1rem;">* ОШИБКА АВТОРИЗАЦИИ В FIREBASE.</div></div>`;
+                document.getElementById('feed-container').innerHTML = `
+                    <div class="dr-box post-card">
+                        <div class="post-content msg-error" style="font-size: 1rem;">
+                            * ОШИБКА АВТОРИЗАЦИИ В FIREBASE.<br><br>
+                            Причина: ${error.message}<br><br>
+                            Убедись, что в Firebase Console -> Authentication -> вкладка Sign-in method включен "Anonymous" (Анонимный)!
+                        </div>
+                    </div>`;
             }
         }
 
