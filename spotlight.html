@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Team Raylit Spotlight</title>
-    <!-- Пиксельные шрифты с поддержкой кириллицы -->
+    <!-- Подключаем Press Start 2P для ретро-акцентов и Share Tech Mono для отличной читаемости текста -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
             --dr-bg: #020208;
@@ -36,8 +36,8 @@
             background-size: 50px 50px;
             animation: scrollGrid 3s linear infinite;
             color: var(--dr-text);
-            font-family: 'Pixelify Sans', sans-serif;
-            font-size: 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.25rem;
             overflow-x: hidden;
             display: flex;
             justify-content: center;
@@ -159,8 +159,8 @@
             border: 2px solid var(--dr-border);
             border-radius: 4px;
             color: var(--dr-text);
-            font-family: 'Pixelify Sans', sans-serif;
-            font-size: 1.2rem;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.25rem;
             padding: 10px;
             width: 100%;
             outline: none;
@@ -231,7 +231,7 @@
             display: none;
         }
 
-        .sys-msg { font-size: 1rem; min-height: 20px; margin-top: 10px; }
+        .sys-msg { font-size: 1.1rem; min-height: 20px; margin-top: 10px; }
         .msg-error { color: var(--dr-pink); animation: bob 1s infinite alternate; }
         .msg-success { color: var(--dr-green); }
 
@@ -280,10 +280,10 @@
 
         .admin-post .post-author { color: var(--dr-yellow); }
         .system-post .post-author { color: var(--dr-pink); text-shadow: 2px 2px 0px #000; }
-        .post-time { font-size: 0.9rem; opacity: 0.6; }
+        .post-time { font-size: 0.95rem; opacity: 0.6; }
 
         .post-content {
-            font-size: 1.4rem;
+            font-size: 1.35rem;
             line-height: 1.5;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -332,7 +332,7 @@
         .reply-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             margin-bottom: 8px;
         }
 
@@ -346,7 +346,7 @@
         .reply-form input {
             margin-bottom: 0;
             padding: 8px;
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
 
         .reply-btn {
@@ -426,8 +426,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // РАТИБОР: Я вырезал проверку системных ключей. Теперь скрипт ЖЕЛЕЗНО 
-        // использует твои ключи, никаких больше обманов и пустых баз!
         const firebaseConfig = {
             apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
             authDomain: "gwwraylitspotlight.firebaseapp.com",
@@ -568,7 +566,7 @@
                                 <div class="reply-card ${rClass}">
                                     <div class="reply-header">
                                         <div>
-                                            <span class="post-author" style="font-size: 0.7rem;">${rAuthor}</span>
+                                            <span class="post-author" style="font-size: 0.75rem;">${rAuthor}</span>
                                             <span class="post-time" style="margin-left: 10px;">${formatTimestamp(reply.timestamp)}</span>
                                         </div>
                                         ${replyDeleteBtnHtml}
@@ -698,7 +696,6 @@
 
             try {
                 if (!auth.currentUser) throw new Error("Нет авторизации для записи");
-                // РАТИБОР: Теперь пишем прямо в корень базы, без дурацких папок!
                 const postsCol = collection(db, currentBranch);
                 await addDoc(postsCol, newPost);
                 
@@ -715,7 +712,6 @@
         window.deletePost = async function(postId) {
             try {
                 if (!auth.currentUser) return;
-                // И удаляем тоже из корня
                 const docRef = doc(db, currentBranch, postId);
                 await deleteDoc(docRef);
             } catch (e) {
@@ -781,7 +777,6 @@
                 unsubscribeSnapshot();
             }
 
-            // Читаем посты из корня базы!
             const postsCol = collection(db, currentBranch);
             
             document.getElementById('feed-container').innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Загрузка постов...</div></div>';
@@ -798,7 +793,7 @@
                 console.error("Сбой чтения БД:", error);
                 document.getElementById('feed-container').innerHTML = `
                     <div class="dr-box post-card">
-                        <div class="post-content msg-error" style="font-size: 1rem;">
+                        <div class="post-content msg-error" style="font-size: 1.1rem;">
                             * ОШИБКА БАЗЫ ДАННЫХ.<br><br>
                             Причина: ${error.message}<br><br>
                             Убедись, что твоя база Firestore в консоли Firebase переведена в ТЕСТОВЫЙ РЕЖИМ (Start in test mode).
@@ -812,15 +807,13 @@
             container.innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Установка защищенного соединения...</div></div>';
 
             try {
-                // Подключаемся к ТВОЕЙ базе анонимно
                 await signInAnonymously(auth);
-                // Если успешно - сразу читаем посты
                 listenToDatabase();
             } catch (error) {
                 console.error("Ошибка авторизации:", error);
                 container.innerHTML = `
                     <div class="dr-box post-card">
-                        <div class="post-content msg-error" style="font-size: 1rem;">
+                        <div class="post-content msg-error" style="font-size: 1.1rem;">
                             * ОШИБКА АВТОРИЗАЦИИ.<br><br>
                             Причина: ${error.message}<br><br>
                             Обязательно зайди в Firebase Console -> Authentication -> Sign-in method и включи "Anonymous" (Анонимный)! Без этого база не отдаст данные.
@@ -829,7 +822,6 @@
             }
         }
 
-        // Запуск
         checkSession();
         startApp(); 
 
