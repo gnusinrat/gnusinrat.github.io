@@ -4,17 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>badgester's galactic wide web</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>badgester's cyber world</title>
+    <!-- Пиксельные шрифты с поддержкой кириллицы -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         :root {
-            --hd-yellow: #ffe80a;
-            --hd-yellow-dim: #998b06;
-            --hd-bg: #0a0c10;
-            --hd-bg-panel: #14171c;
-            --hd-red: #ff2a2a;
-            --hd-cyan: #00f0ff;
-            --text-color: var(--hd-yellow);
+            --dr-bg: #020208;
+            --dr-grid: #004d4d;
+            --dr-text: #ffffff;
+            --dr-border: #ffffff;
+            --dr-green: #00ff00; /* Ralsei/Heal green */
+            --dr-pink: #ff00ff; /* Susie magenta */
+            --dr-cyan: #00ffff; /* Kris blue */
+            --dr-yellow: #ffff00;
+            --dr-soul: #ff0000;
         }
 
         * {
@@ -24,9 +29,16 @@
         }
 
         body {
-            background-color: var(--hd-bg);
-            color: var(--text-color);
-            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--dr-bg);
+            /* Кибер-сетка на фоне */
+            background-image: 
+                linear-gradient(var(--dr-grid) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
+            background-size: 50px 50px;
+            background-position: center center;
+            color: var(--dr-text);
+            font-family: 'Pixelify Sans', sans-serif;
+            font-size: 1.4rem;
             overflow-x: hidden;
             display: flex;
             justify-content: center;
@@ -34,224 +46,172 @@
             padding: 20px;
         }
 
-        /* CRT Scanline Effect */
-        body::after {
-            content: " ";
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            z-index: 2;
-            background-size: 100% 4px, 3px 100%;
-            pointer-events: none;
-        }
-
-        /* Subtle Screen Flicker */
-        @keyframes flicker {
-            0% { opacity: 0.95; }
-            5% { opacity: 0.85; }
-            10% { opacity: 0.95; }
-            15% { opacity: 1; }
-            100% { opacity: 1; }
-        }
-
         .container {
             width: 100%;
             max-width: 900px;
             z-index: 1;
-            animation: flicker 4s infinite;
             display: flex;
             flex-direction: column;
-            gap: 30px;
+            gap: 25px;
+            margin-top: 20px;
         }
 
-        /* Header Style */
-        .header {
-            border-bottom: 2px solid var(--hd-yellow);
-            padding-bottom: 10px;
+        .dr-box {
+            background-color: #000;
+            border: 4px solid var(--dr-border);
+            border-radius: 8px; /* Слегка скругленные углы в стиле Deltarune */
+            padding: 20px;
+            box-shadow: inset 0 0 0 2px #000, 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .header-top {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            text-transform: uppercase;
-        }
-
-        .header-left .system-status {
+            align-items: center;
+            margin-bottom: 15px;
+            font-family: 'Press Start 2P', monospace;
             font-size: 0.8rem;
-            color: var(--hd-cyan);
-            margin-bottom: 5px;
-            letter-spacing: 2px;
+            color: var(--dr-yellow);
         }
 
-        h1 {
-            font-size: 2.5rem;
-            text-shadow: 0 0 10px rgba(255, 232, 10, 0.5);
-            letter-spacing: 1px;
-        }
-
-        .header-right {
-            text-align: right;
-            font-size: 0.9rem;
+        .stat-bar {
+            color: var(--dr-cyan);
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .header-right > div:first-child {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
+        .hp-text { color: var(--dr-text); }
+        .hp-val { color: var(--dr-green); }
+
+        h1 {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 2rem;
+            color: var(--dr-text);
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0px var(--dr-pink);
+            margin-bottom: 10px;
         }
 
-        .auth-user {
-            color: var(--hd-yellow-dim);
-            margin-bottom: 5px;
-        }
-
-        /* Spotlight Square Button */
-        .spotlight-btn {
+        /* Кнопка Спотлайта (в стиле ДЕЙСТВИЯ) */
+        .act-btn {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.8rem;
+            color: var(--dr-yellow);
+            text-decoration: none;
+            border: 2px solid var(--dr-yellow);
+            padding: 8px 12px;
+            background: #000;
+            transition: 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
-            width: 45px;
-            height: 45px;
-            border: 1px solid var(--hd-yellow-dim);
-            color: var(--hd-yellow-dim);
-            background-color: var(--hd-bg-panel);
-            text-decoration: none;
-            transition: all 0.2s ease;
-            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
+            gap: 10px;
         }
         
-        .spotlight-btn svg {
-            display: block;
-            margin: 0;
-            padding: 0;
-            /* Force exact sizing to prevent weird bounding box issues */
-            width: 24px;
-            height: 24px;
+        .act-btn:hover {
+            background: var(--dr-yellow);
+            color: #000;
         }
 
-        .spotlight-btn:hover {
-            background-color: var(--hd-yellow);
-            color: var(--hd-bg);
-            border-color: var(--hd-yellow);
-            box-shadow: 0 0 10px rgba(255, 232, 10, 0.4);
-            transform: translateY(-2px);
+        .dialogue-box {
+            display: flex;
+            gap: 15px;
+            font-size: 1.8rem;
+            line-height: 1.4;
+            min-height: 120px;
         }
 
-        .status-blip {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: var(--hd-yellow);
-            border-radius: 50%;
-            margin-right: 5px;
-            animation: blink 1.5s infinite;
+        .dialogue-asterisk {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 1.2rem;
+            margin-top: 5px;
+            animation: bob 1s infinite alternate;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        @keyframes bob {
+            from { transform: translateY(0); }
+            to { transform: translateY(3px); }
         }
 
-        /* Description */
-        .description-box {
-            background-color: var(--hd-bg-panel);
-            border-left: 4px solid var(--hd-yellow);
-            padding: 15px;
-            font-size: 1.1rem;
-            line-height: 1.5;
-            position: relative;
-        }
-
-        /* Cards Grid */
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            gap: 15px;
         }
 
         .card {
-            background-color: var(--hd-bg-panel);
-            border: 1px solid var(--hd-yellow-dim);
-            color: var(--text-color);
+            background-color: #000;
+            border: 4px solid var(--dr-border);
+            color: var(--dr-text);
             text-decoration: none;
-            padding: 20px;
+            padding: 20px 20px 20px 45px; /* Отступ слева для души */
             display: flex;
             flex-direction: column;
             gap: 10px;
-            transition: all 0.2s ease;
             position: relative;
-            /* Helldivers style cut corners */
-            clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+            transition: all 0.1s;
         }
 
+        /* Красная душа появляется при наведении */
         .card::before {
-            content: '';
+            content: '❤';
+            color: var(--dr-soul);
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border: 2px solid transparent;
-            transition: all 0.2s ease;
-            pointer-events: none;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            opacity: 0;
+            transition: 0.1s;
         }
 
         .card:hover {
-            background-color: var(--hd-yellow);
-            color: var(--hd-bg);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 232, 10, 0.2);
+            border-color: var(--dr-cyan);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
+            transform: scale(1.02);
             cursor: pointer;
         }
 
-        .card-title {
-            font-size: 1.4rem;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .card-desc {
-            font-size: 0.95rem;
-            opacity: 0.8;
-        }
-
-        .card:hover .card-desc {
+        .card:hover::before {
             opacity: 1;
         }
 
-        /* Language Switcher Card */
-        .lang-card {
-            border-color: var(--hd-cyan);
-            background-color: rgba(0, 240, 255, 0.05);
-        }
-        
-        .lang-card .card-title {
-            color: var(--hd-cyan);
+        .card-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            line-height: 1.4;
         }
 
+        .card-desc {
+            font-size: 1.3rem;
+            opacity: 0.8;
+            color: #b3b3b3;
+        }
+
+        .card:hover .card-desc {
+            color: var(--dr-text);
+        }
+
+        /* Спец. цвет для переключения языка */
+        .lang-card {
+            border-color: var(--dr-pink);
+        }
+        
         .lang-card:hover {
-            background-color: var(--hd-cyan);
-            color: var(--hd-bg);
+            border-color: var(--dr-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
         }
         
         .lang-card:hover .card-title {
-            color: var(--hd-bg);
+            color: var(--dr-pink);
         }
 
-        /* Responsive */
         @media (max-width: 600px) {
-            .header {
+            .header-top {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 15px;
-            }
-            .header-right {
-                text-align: left;
             }
         }
     </style>
@@ -259,31 +219,29 @@
 <body>
 
     <div class="container">
-        <!-- HEADER -->
-        <header class="header">
-            <div class="header-left">
-                <div class="system-status">GALACTIC WIDE WEB // TERMINAL SECURE</div>
-                <h1 id="t-title">чё как?</h1>
-            </div>
-            <div class="header-right">
-                <div>
-                    <div class="auth-user">[AUTH: RATIBOR]</div>
-                    <div><span class="status-blip"></span> <span id="t-status">ОНЛАЙН</span></div>
+        <!-- HEADER BOX -->
+        <div class="dr-box">
+            <div class="header-top">
+                <div class="stat-bar">
+                    <span>NAME: RATIBOR</span>
+                    <span>LV 1</span>
+                    <span class="hp-text">HP</span>
+                    <span class="hp-val">100/100</span>
                 </div>
-                <a href="spotlight.html" class="spotlight-btn" title="Team Raylit Spotlight">
-                    <!-- Иконка глобальной сети -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
+                <a href="spotlight.html" class="act-btn" title="Team Raylit Spotlight">
+                    <span>[ РАДАР ]</span>
                 </a>
             </div>
-        </header>
+            <h1 id="t-title">чё как?</h1>
+            <div style="font-family: 'Press Start 2P', monospace; font-size: 0.6rem; color: var(--dr-green);">
+                GWW // CYBER AREA
+            </div>
+        </div>
 
-        <!-- DESCRIPTION -->
-        <div class="description-box">
-            <p id="t-desc">новый сайт значкестера/mostlyengineer/пилота. другие страницы:</p>
+        <!-- DIALOGUE BOX (Description) -->
+        <div class="dr-box dialogue-box">
+            <div class="dialogue-asterisk">*</div>
+            <p id="t-desc"></p>
         </div>
 
         <!-- CARDS / DIRECTORY -->
@@ -332,12 +290,10 @@
     </div>
 
     <script>
-        // Dictionary for translation
         const dict = {
             ru: {
                 title: "чё как?",
-                status: "ОНЛАЙН",
-                desc: "новый сайт значкестера/mostlyengineer/пилота. другие страницы:",
+                desc: "новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
                 htm: "Рисовалка с Gemini API",
                 clicker: "Кликер",
                 oldTitle: "Старый сайт",
@@ -354,7 +310,6 @@
             },
             en: {
                 title: "what's up?",
-                status: "ONLINE",
                 desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
                 htm: "Drawing thing made with Gemini [RUSSIAN]",
                 clicker: "Clicker game",
@@ -372,36 +327,45 @@
             }
         };
 
-        let currentLang = 'ru'; // Default language
+        let currentLang = 'ru'; 
+        let typingTimeout; // Для остановки печати, если быстро переключить язык
+
+        function typeWriterEffect(text) {
+            const descElement = document.getElementById('t-desc');
+            descElement.innerHTML = ""; // Очищаем поле
+            clearTimeout(typingTimeout); // Сбрасываем прошлую анимацию
+            
+            let i = 0;
+            function typeNext() {
+                if (i < text.length) {
+                    descElement.innerHTML += text.charAt(i);
+                    i++;
+                    // Задержка печати. В Deltarune она быстрая и ритмичная
+                    typingTimeout = setTimeout(typeNext, 30);
+                }
+            }
+            typeNext();
+        }
+
+        // Запуск при первой загрузке
+        window.onload = () => {
+            typeWriterEffect(dict[currentLang].desc);
+        };
 
         const langBtn = document.getElementById('lang-switch');
 
         langBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            // Toggle language
+            
             currentLang = currentLang === 'ru' ? 'en' : 'ru';
             
-            // Update UI elements
             document.documentElement.lang = currentLang;
-            document.title = currentLang === 'ru' ? "крутой прикольный сайт значкестера" : "badgester's cool amazing website";
+            document.title = currentLang === 'ru' ? "badgester's cyber world" : "badgester's cyber world";
             
             document.getElementById('t-title').innerText = dict[currentLang].title;
-            document.getElementById('t-status').innerText = dict[currentLang].status;
             
-            // Adding a small terminal typing effect for the description
-            const descElement = document.getElementById('t-desc');
-            descElement.innerText = "";
-            let i = 0;
-            const text = dict[currentLang].desc;
-            
-            function typeWriter() {
-                if (i < text.length) {
-                    descElement.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(typeWriter, 15);
-                }
-            }
-            typeWriter();
+            // Запускаем эффект печати для нового языка
+            typeWriterEffect(dict[currentLang].desc);
 
             document.getElementById('t-htm').innerText = dict[currentLang].htm;
             document.getElementById('t-clicker').innerText = dict[currentLang].clicker;
