@@ -12,12 +12,12 @@
     <style>
         :root {
             --dr-bg: #020208;
-            --dr-grid: #800080; /* Фиолетовая сетка */
+            --dr-grid: #800080;
             --dr-text: #ffffff;
             --dr-border: #ffffff;
-            --dr-green: #00ff00; /* Ralsei green */
-            --dr-pink: #ff00ff; /* Susie magenta */
-            --dr-cyan: #00ffff; /* Kris blue */
+            --dr-green: #00ff00;
+            --dr-pink: #ff00ff;
+            --dr-cyan: #00ffff;
             --dr-yellow: #ffff00;
             --dr-red: #ff0000;
         }
@@ -30,12 +30,10 @@
 
         body {
             background-color: var(--dr-bg);
-            /* Кибер-сетка на фоне */
             background-image: 
                 linear-gradient(var(--dr-grid) 2px, transparent 2px),
                 linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
             background-size: 50px 50px;
-            /* Анимация движения сетки как в битвах */
             animation: scrollGrid 3s linear infinite;
             color: var(--dr-text);
             font-family: 'Pixelify Sans', sans-serif;
@@ -64,7 +62,7 @@
         .dr-box {
             background-color: #000;
             border: 4px solid var(--dr-border);
-            border-radius: 8px; /* Скругления как в Deltarune */
+            border-radius: 8px;
             padding: 20px;
             box-shadow: inset 0 0 0 2px #000, 0 0 10px rgba(128, 0, 128, 0.4);
         }
@@ -95,7 +93,6 @@
             color: var(--dr-yellow);
         }
 
-        /* --- ПЕРЕКЛЮЧАТЕЛЬ ВЕТОК --- */
         .branch-selector {
             display: flex;
             gap: 15px;
@@ -224,9 +221,7 @@
             border-radius: 4px;
         }
 
-        .file-upload-btn:hover {
-            background: rgba(0, 255, 255, 0.1);
-        }
+        .file-upload-btn:hover { background: rgba(0, 255, 255, 0.1); }
 
         #image-preview {
             max-width: 100%;
@@ -285,7 +280,6 @@
 
         .admin-post .post-author { color: var(--dr-yellow); }
         .system-post .post-author { color: var(--dr-pink); text-shadow: 2px 2px 0px #000; }
-
         .post-time { font-size: 0.9rem; opacity: 0.6; }
 
         .post-content {
@@ -312,12 +306,8 @@
             transition: 0.2s;
         }
 
-        .delete-btn:hover {
-            color: #fff;
-            transform: scale(1.2);
-        }
+        .delete-btn:hover { color: #fff; transform: scale(1.2); }
 
-        /* --- ОТВЕТЫ (REPLIES) --- */
         .replies-section {
             margin-top: 15px;
             border-top: 2px solid #444;
@@ -379,36 +369,26 @@
 <body>
 
     <div class="container">
-        <!-- HEADER -->
         <header class="dr-box header">
             <h1>TEAM RAYLIT SPOTLIGHT</h1>
             <a href="index.html" class="nav-link">[ ВЕРНУТЬСЯ ]</a>
         </header>
 
-        <!-- BRANCH SELECTOR -->
         <div class="dr-box branch-selector">
             <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">SPOTLIGHT: RAYLIT</button>
             <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">SPOTLIGHT: SOLAR</button>
         </div>
 
-        <!-- MAIN GRID -->
         <main class="main-grid">
-            <!-- Секция Управления (Левая панель) -->
             <aside>
-                <!-- Форма Входа -->
                 <div id="login-section" class="dr-box">
                     <div class="panel-title">ВХОД</div>
-                    <div>
-                        <input type="text" id="login-username" placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ">
-                    </div>
-                    <div>
-                        <input type="password" id="login-pin" placeholder="PIN КОД">
-                    </div>
+                    <div><input type="text" id="login-username" placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ"></div>
+                    <div><input type="password" id="login-pin" placeholder="PIN КОД"></div>
                     <button class="act-btn" onclick="attemptLogin()">[ ВОЙТИ ]</button>
                     <div id="login-sys-msg" class="sys-msg"></div>
                 </div>
 
-                <!-- Форма Постинга (Скрыта до входа) -->
                 <div id="post-section" class="dr-box" style="display: none;">
                     <div class="panel-title">ЗАПИСЬ</div>
                     <div style="font-family: 'Press Start 2P', monospace; font-size: 0.7rem; color: var(--dr-text); margin-bottom: 15px;">
@@ -422,7 +402,6 @@
                         <img id="image-preview" src="" alt="Preview">
                     </div>
 
-                    <!-- Тоггл для публикации от СИСТЕМЫ (скрыт по умолчанию) -->
                     <div id="system-post-toggle" style="display: none; margin-bottom: 15px;">
                         <label style="color: var(--dr-pink); font-family: 'Press Start 2P', monospace; font-size: 0.6rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="is-system-post" style="width: auto; margin: 0;">
@@ -436,38 +415,32 @@
                 </div>
             </aside>
 
-            <!-- Лента постов (Правая панель) -->
             <section class="feed" id="feed-container">
-                <div class="dr-box post-card">
-                    <div class="post-content" style="opacity:0.5;">* Ожидание загрузки данных...</div>
-                </div>
+                <!-- Контейнер для загрузки -->
             </section>
         </main>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Твои ключи
-        let firebaseConfig;
-        if (typeof __firebase_config !== 'undefined') {
-            firebaseConfig = JSON.parse(__firebase_config);
-        } else {
-            firebaseConfig = {
-                apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
-                authDomain: "gwwraylitspotlight.firebaseapp.com",
-                projectId: "gwwraylitspotlight",
-            };
-        }
+        // РАТИБОР: Я вырезал проверку системных ключей. Теперь скрипт ЖЕЛЕЗНО 
+        // использует твои ключи, никаких больше обманов и пустых баз!
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
+            authDomain: "gwwraylitspotlight.firebaseapp.com",
+            projectId: "gwwraylitspotlight",
+        };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app); // Инициализация Auth
+        const auth = getAuth(app); 
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gww-raylit';
         
-        // --- КОНСТАНТЫ СИСТЕМЫ ---
+        // Используем жесткий ID, чтобы посты всегда сохранялись в одно и то же место
+        const appId = 'gww-raylit';
+        
         const VALID_USERS = {
             "DrGnusin": "3357",
             "mamanya": "120999",
@@ -493,7 +466,6 @@
             setTimeout(() => { el.innerText = ''; }, 3000);
         }
 
-        // --- ЛОГИКА ИЗОБРАЖЕНИЙ ---
         window.handleImageSelect = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -574,7 +546,6 @@
                     displayAuthor = 'DrGnusin <span style="color: var(--dr-cyan); text-shadow: 2px 2px 0px #000;">[DEV]</span>';
                 }
 
-                // --- БЛОК ОТВЕТОВ ---
                 let repliesHtml = '';
                 const replies = post.replies || [];
 
@@ -605,7 +576,7 @@
                                         </div>
                                         ${replyDeleteBtnHtml}
                                     </div>
-                                    <div class="post-content" style="font-size: 1.2rem;">${safeReplyText}</div>
+                                    <div class="post-content" style="font-size: 1.2rem;">* ${safeReplyText}</div>
                                 </div>
                             `;
                         });
@@ -647,7 +618,7 @@
             if (branchName === 'raylit_posts') document.getElementById('btn-raylit').classList.add('active');
             if (branchName === 'solar_posts') document.getElementById('btn-solar').classList.add('active');
             
-            document.getElementById('feed-container').innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Загрузка...</div></div>';
+            document.getElementById('feed-container').innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Смена частоты... Загрузка...</div></div>';
             
             listenToDatabase();
         }
@@ -759,9 +730,9 @@
             if (!text) return;
 
             const currentUser = sessionStorage.getItem('gww_user');
-            
             const isSystemCheck = document.getElementById('is-system-post');
             const isSystem = isSystemCheck ? isSystemCheck.checked : false;
+            
             let authorName = currentUser;
             if (isSystem && currentUser === 'DrGnusin') {
                 authorName = 'СИСТЕМА';
@@ -798,20 +769,14 @@
                 });
 
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
-                await updateDoc(docRef, {
-                    replies: updatedReplies
-                });
+                await updateDoc(docRef, { replies: updatedReplies });
             } catch (e) {
                 console.error("Ошибка при удалении ответа:", e);
             }
         }
 
         function listenToDatabase() {
-            // Защита: не читаем базу, пока нет авторизации
-            if (!auth.currentUser) {
-                console.warn("Ожидание проверки ключей Firebase...");
-                return; 
-            }
+            if (!auth.currentUser) return; 
             
             if (unsubscribeSnapshot) {
                 unsubscribeSnapshot();
@@ -819,6 +784,8 @@
 
             const postsCol = collection(db, 'artifacts', appId, 'public', 'data', currentBranch);
             
+            document.getElementById('feed-container').innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Загрузка постов...</div></div>';
+
             unsubscribeSnapshot = onSnapshot(postsCol, (snapshot) => {
                 posts = [];
                 snapshot.forEach((doc) => {
@@ -832,48 +799,39 @@
                 document.getElementById('feed-container').innerHTML = `
                     <div class="dr-box post-card">
                         <div class="post-content msg-error" style="font-size: 1rem;">
-                            * ОШИБКА: НЕТ ДОСТУПА К БАЗЕ FIREBASE.<br><br>
-                            1. Зайди в Firebase Console.<br>
-                            2. Перейди в Firestore Database.<br>
-                            3. Нажми "Create database" (Создать базу).<br>
-                            4. ОБЯЗАТЕЛЬНО выбери "Start in test mode" (Тестовый режим)!
+                            * ОШИБКА БАЗЫ ДАННЫХ.<br><br>
+                            Причина: ${error.message}<br><br>
+                            Убедись, что твоя база Firestore в консоли Firebase переведена в ТЕСТОВЫЙ РЕЖИМ (Start in test mode).
                         </div>
                     </div>`;
             });
         }
 
-        // Самый надежный способ - ждем, пока Firebase сам скажет, что авторизация пройдена
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("Firebase: Авторизация пройдена, загружаем посты...");
-                listenToDatabase();
-            }
-        });
+        async function startApp() {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Установка защищенного соединения...</div></div>';
 
-        async function initFirebase() {
             try {
-                // Пытаемся авторизоваться. Без этого Firebase не отдаст посты!
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                // Подключаемся к ТВОЕЙ базе анонимно
+                await signInAnonymously(auth);
+                // Если успешно - сразу читаем посты
+                listenToDatabase();
             } catch (error) {
                 console.error("Ошибка авторизации:", error);
-                document.getElementById('feed-container').innerHTML = `
+                container.innerHTML = `
                     <div class="dr-box post-card">
                         <div class="post-content msg-error" style="font-size: 1rem;">
-                            * ОШИБКА АВТОРИЗАЦИИ В FIREBASE.<br><br>
+                            * ОШИБКА АВТОРИЗАЦИИ.<br><br>
                             Причина: ${error.message}<br><br>
-                            Убедись, что в Firebase Console -> Authentication -> вкладка Sign-in method включен "Anonymous" (Анонимный)!
+                            Обязательно зайди в Firebase Console -> Authentication -> Sign-in method и включи "Anonymous" (Анонимный)! Без этого база не отдаст данные.
                         </div>
                     </div>`;
             }
         }
 
-        // --- ЗАПУСК ---
+        // Запуск
         checkSession();
-        initFirebase(); 
+        startApp(); 
 
         document.getElementById('login-pin').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') window.attemptLogin();
