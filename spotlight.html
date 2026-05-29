@@ -447,8 +447,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // ВОЗВРАЩАЕМ АВТОРИЗАЦИЮ (без нее Firebase блокирует посты!)
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Твои ключи
@@ -873,14 +872,12 @@
         }
 
         // --- ЗАПУСК ---
-        window.onload = () => {
-            checkSession();
-            initFirebase(); 
+        checkSession();
+        initFirebase(); 
 
-            document.getElementById('login-pin').addEventListener('keypress', function (e) {
-                if (e.key === 'Enter') window.attemptLogin();
-            });
-        };
+        document.getElementById('login-pin').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') window.attemptLogin();
+        });
     </script>
 </body>
 </html>
