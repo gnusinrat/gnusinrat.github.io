@@ -438,9 +438,6 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
         
-        // Используем жесткий ID, чтобы посты всегда сохранялись в одно и то же место
-        const appId = 'gww-raylit';
-        
         const VALID_USERS = {
             "DrGnusin": "3357",
             "mamanya": "120999",
@@ -701,7 +698,8 @@
 
             try {
                 if (!auth.currentUser) throw new Error("Нет авторизации для записи");
-                const postsCol = collection(db, 'artifacts', appId, 'public', 'data', currentBranch);
+                // РАТИБОР: Теперь пишем прямо в корень базы, без дурацких папок!
+                const postsCol = collection(db, currentBranch);
                 await addDoc(postsCol, newPost);
                 
                 textarea.value = '';
@@ -717,7 +715,8 @@
         window.deletePost = async function(postId) {
             try {
                 if (!auth.currentUser) return;
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
+                // И удаляем тоже из корня
+                const docRef = doc(db, currentBranch, postId);
                 await deleteDoc(docRef);
             } catch (e) {
                 console.error("Ошибка при удалении:", e);
@@ -747,7 +746,7 @@
 
             try {
                 if (!auth.currentUser) return;
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
+                const docRef = doc(db, currentBranch, postId);
                 await updateDoc(docRef, {
                     replies: arrayUnion(newReply)
                 });
@@ -768,7 +767,7 @@
                     return r.timestamp.toString() !== replyIdentifier.toString();
                 });
 
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
+                const docRef = doc(db, currentBranch, postId);
                 await updateDoc(docRef, { replies: updatedReplies });
             } catch (e) {
                 console.error("Ошибка при удалении ответа:", e);
@@ -782,7 +781,8 @@
                 unsubscribeSnapshot();
             }
 
-            const postsCol = collection(db, 'artifacts', appId, 'public', 'data', currentBranch);
+            // Читаем посты из корня базы!
+            const postsCol = collection(db, currentBranch);
             
             document.getElementById('feed-container').innerHTML = '<div class="dr-box post-card"><div class="post-content" style="opacity:0.5;">* Загрузка постов...</div></div>';
 
