@@ -381,7 +381,7 @@
     <div class="container">
         <!-- HEADER -->
         <header class="dr-box header">
-            <h1>TEAM RAYLIT</h1>
+            <h1>TEAM RAYLIT SPOTLIGHT</h1>
             <a href="index.html" class="nav-link">[ ВЕРНУТЬСЯ ]</a>
         </header>
 
@@ -449,21 +449,16 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // РАТИБОР: Вставь сюда свой конфиг от Firebase!
-        let firebaseConfig;
-        if (typeof __firebase_config !== 'undefined') {
-            firebaseConfig = JSON.parse(__firebase_config);
-        } else {
-            firebaseConfig = {
-                apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
-                authDomain: "gwwraylitspotlight.firebaseapp.com",
-                projectId: "gwwraylitspotlight",
-            };
-        }
+        // ТВОИ КЛЮЧИ ЖЕСТКО ВШИТЫ СЮДА
+        const firebaseConfig = {
+            apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
+            authDomain: "gwwraylitspotlight.firebaseapp.com",
+            projectId: "gwwraylitspotlight"
+        };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gww-raylit';
+        const appId = 'gww-raylit'; // ID папки в базе данных оставил старым, чтобы старые посты не пропали
         
         // --- КОНСТАНТЫ СИСТЕМЫ ---
         const VALID_USERS = {
