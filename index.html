@@ -12,14 +12,13 @@
     <style>
         :root {
             --dr-bg: #020208;
-            --dr-grid: #004d4d;
+            --dr-grid: #800080; /* Фиолетовая сетка боёв */
             --dr-text: #ffffff;
             --dr-border: #ffffff;
             --dr-green: #00ff00; /* Ralsei/Heal green */
             --dr-pink: #ff00ff; /* Susie magenta */
             --dr-cyan: #00ffff; /* Kris blue */
             --dr-yellow: #ffff00;
-            --dr-soul: #ff0000;
         }
 
         * {
@@ -35,7 +34,8 @@
                 linear-gradient(var(--dr-grid) 2px, transparent 2px),
                 linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
             background-size: 50px 50px;
-            background-position: center center;
+            /* Анимация движения сетки как в битвах */
+            animation: scrollGrid 3s linear infinite;
             color: var(--dr-text);
             font-family: 'Pixelify Sans', sans-serif;
             font-size: 1.4rem;
@@ -44,6 +44,11 @@
             justify-content: center;
             min-height: 100vh;
             padding: 20px;
+        }
+
+        @keyframes scrollGrid {
+            0% { background-position: 0px 0px; }
+            100% { background-position: -50px 50px; }
         }
 
         .container {
@@ -61,28 +66,14 @@
             border: 4px solid var(--dr-border);
             border-radius: 8px; /* Слегка скругленные углы в стиле Deltarune */
             padding: 20px;
-            box-shadow: inset 0 0 0 2px #000, 0 0 10px rgba(0, 255, 255, 0.2);
+            box-shadow: inset 0 0 0 2px #000, 0 0 10px rgba(128, 0, 128, 0.4);
         }
 
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.8rem;
-            color: var(--dr-yellow);
         }
-
-        .stat-bar {
-            color: var(--dr-cyan);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .hp-text { color: var(--dr-text); }
-        .hp-val { color: var(--dr-green); }
 
         h1 {
             font-family: 'Press Start 2P', monospace;
@@ -90,7 +81,6 @@
             color: var(--dr-text);
             text-transform: uppercase;
             text-shadow: 3px 3px 0px var(--dr-pink);
-            margin-bottom: 10px;
         }
 
         /* Кнопка Спотлайта (в стиле ДЕЙСТВИЯ) */
@@ -152,15 +142,18 @@
             transition: all 0.1s;
         }
 
-        /* Красная душа появляется при наведении */
+        /* Векторный спрайт Красной Души */
         .card::before {
-            content: '❤';
-            color: var(--dr-soul);
+            content: '';
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23ff0000" d="M8,15 L1,8 L1,3 L4,0 L7,0 L8,2 L9,0 L12,0 L15,3 L15,8 Z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            width: 18px;
+            height: 18px;
             position: absolute;
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 1.5rem;
             opacity: 0;
             transition: 0.1s;
         }
@@ -222,19 +215,10 @@
         <!-- HEADER BOX -->
         <div class="dr-box">
             <div class="header-top">
-                <div class="stat-bar">
-                    <span>NAME: RATIBOR</span>
-                    <span>LV 1</span>
-                    <span class="hp-text">HP</span>
-                    <span class="hp-val">100/100</span>
-                </div>
+                <h1 id="t-title">чё как?</h1>
                 <a href="spotlight.html" class="act-btn" title="Team Raylit Spotlight">
                     <span>[ РАДАР ]</span>
                 </a>
-            </div>
-            <h1 id="t-title">чё как?</h1>
-            <div style="font-family: 'Press Start 2P', monospace; font-size: 0.6rem; color: var(--dr-green);">
-                GWW // CYBER AREA
             </div>
         </div>
 
