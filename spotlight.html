@@ -447,18 +447,26 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // ВОЗВРАЩАЕМ АВТОРИЗАЦИЮ (без нее Firebase блокирует посты!)
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ТВОИ КЛЮЧИ ЖЕСТКО ВШИТЫ СЮДА
-        const firebaseConfig = {
-            apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
-            authDomain: "gwwraylitspotlight.firebaseapp.com",
-            projectId: "gwwraylitspotlight"
-        };
+        // Твои ключи
+        let firebaseConfig;
+        if (typeof __firebase_config !== 'undefined') {
+            firebaseConfig = JSON.parse(__firebase_config);
+        } else {
+            firebaseConfig = {
+                apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
+                authDomain: "gwwraylitspotlight.firebaseapp.com",
+                projectId: "gwwraylitspotlight",
+            };
+        }
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); // Инициализация Auth
         const db = getFirestore(app);
-        const appId = 'gww-raylit'; // ID папки в базе данных оставил старым, чтобы старые посты не пропали
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'gww-raylit';
         
         // --- КОНСТАНТЫ СИСТЕМЫ ---
         const VALID_USERS = {
@@ -472,7 +480,6 @@
         let unsubscribeSnapshot = null; 
         let currentImageBase64 = null; 
 
-        // --- УТИЛИТЫ ---
         function formatTimestamp(ts) {
             if (!ts) return "??.??.????";
             const date = new Date(ts);
@@ -532,7 +539,6 @@
             preview.style.display = 'none';
         }
 
-        // --- РЕНДЕР ИНТЕРФЕЙСА ---
         function renderPosts() {
             const container = document.getElementById('feed-container');
             container.innerHTML = '';
@@ -633,7 +639,6 @@
             });
         }
 
-        // --- ЛОГИКА ВЕТОК ---
         window.switchBranch = function(branchName) {
             currentBranch = branchName;
             
@@ -648,7 +653,6 @@
             listenToDatabase();
         }
 
-        // --- ЛОГИКА АВТОРИЗАЦИИ И ПОСТИНГА ---
         function checkSession() {
             const currentUser = sessionStorage.getItem('gww_user');
             
@@ -726,6 +730,7 @@
             }
 
             try {
+                if (!auth.currentUser) throw new Error("Нет авторизации для записи");
                 const postsCol = collection(db, 'artifacts', appId, 'public', 'data', currentBranch);
                 await addDoc(postsCol, newPost);
                 
@@ -741,6 +746,7 @@
 
         window.deletePost = async function(postId) {
             try {
+                if (!auth.currentUser) return;
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
                 await deleteDoc(docRef);
             } catch (e) {
@@ -770,6 +776,7 @@
             };
 
             try {
+                if (!auth.currentUser) return;
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', currentBranch, postId);
                 await updateDoc(docRef, {
                     replies: arrayUnion(newReply)
@@ -782,6 +789,7 @@
 
         window.deleteReply = async function(postId, replyIdentifier) {
             try {
+                if (!auth.currentUser) return;
                 const post = posts.find(p => p.id === postId);
                 if (!post || !post.replies) return;
 
@@ -799,8 +807,9 @@
             }
         }
 
-        // --- ПОДКЛЮЧЕНИЕ К БД ---
         function listenToDatabase() {
+            if (!auth.currentUser) return; // Защита: не читаем базу без авторизации
+            
             if (unsubscribeSnapshot) {
                 unsubscribeSnapshot();
             }
@@ -817,13 +826,29 @@
                 renderPosts();
             }, (error) => {
                 console.error("Сбой чтения БД:", error);
+                document.getElementById('feed-container').innerHTML = `<div class="dr-box post-card"><div class="post-content msg-error" style="font-size: 1rem;">* ОШИБКА: НЕТ ДОСТУПА К БАЗЕ.</div></div>`;
             });
+        }
+
+        async function initFirebase() {
+            try {
+                // Пытаемся авторизоваться. Без этого Firebase не отдаст посты!
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                listenToDatabase(); 
+            } catch (error) {
+                console.error("Ошибка авторизации:", error);
+                document.getElementById('feed-container').innerHTML = `<div class="dr-box post-card"><div class="post-content msg-error" style="font-size: 1rem;">* ОШИБКА АВТОРИЗАЦИИ В FIREBASE.</div></div>`;
+            }
         }
 
         // --- ЗАПУСК ---
         window.onload = () => {
             checkSession();
-            listenToDatabase(); 
+            initFirebase(); 
 
             document.getElementById('login-pin').addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') window.attemptLogin();
