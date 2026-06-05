@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>badgester's directory</title>
+    <title>VSKY</title>
     <!-- Подключаем Teko для заголовков и Roboto для текста -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +23,33 @@
             --tf-red: #B8383B;
             --tf-blu: #5885A2;
             --tf-orange: #E7B53B;
+        }
+
+        /* Экран загрузки */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--tf-bg-dark);
+            background-image: radial-gradient(circle at center, #3c3732 0%, #2A2725 100%);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .tf-spinner {
+            width: 100px;
+            height: 100px;
+            animation: spin 1.5s linear infinite;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
 
         * {
@@ -125,39 +152,28 @@
         }
 
         .card {
-            background-color: var(--tf-bg-paper);
-            border: 4px solid var(--tf-border-paper);
+            background: linear-gradient(180deg, #6a6259 0%, #453e38 100%);
+            border: 4px solid var(--tf-border-dark);
+            border-top-color: #8c8277;
+            border-left-color: #7a7268;
             border-radius: 6px;
-            color: var(--tf-text-dark);
+            color: var(--tf-text-light);
             text-decoration: none;
             padding: 15px 20px;
             display: flex;
             flex-direction: column;
             gap: 5px;
             transition: 0.1s;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(0,0,0,0.3);
             position: relative;
             overflow: hidden;
-        }
-
-        /* Декоративная скрепка/ярлык */
-        .card::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            right: 15px;
-            width: 20px;
-            height: 25px;
-            background: rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.2);
-            transform: rotate(15deg);
         }
 
         .card:hover {
             border-color: var(--tf-orange);
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
-            background-color: #F2ECDC;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 -2px 5px rgba(0,0,0,0.3);
+            background: linear-gradient(180deg, #7d746a 0%, #544c45 100%);
         }
 
         .card-title {
@@ -166,35 +182,35 @@
             text-transform: uppercase;
             line-height: 1;
             font-weight: 600;
+            text-shadow: 1px 1px 0px #000;
         }
 
         .card:hover .card-title {
-            color: var(--tf-red);
+            color: var(--tf-orange);
         }
 
         .card-desc {
             font-size: 1.05rem;
-            color: #4A443E;
+            color: #b5ac9d;
             font-weight: bold;
         }
 
         .lang-card {
-            background-color: var(--tf-border-dark);
-            border-color: #4A443E;
-            color: var(--tf-text-light);
+            background: linear-gradient(180deg, #3B3631 0%, #1D1B1A 100%);
+            border-color: #1D1B1A;
+            border-top-color: #4A443E;
+            border-left-color: #4A443E;
         }
 
-        .lang-card::before { display: none; }
-        
-        .lang-card .card-desc { color: #aaa; }
+        .lang-card .card-desc { color: #888; }
 
         .lang-card:hover {
-            background-color: var(--tf-orange);
+            background: var(--tf-orange);
             border-color: var(--tf-border-dark);
             color: var(--tf-border-dark);
         }
         
-        .lang-card:hover .card-title { color: var(--tf-border-dark); }
+        .lang-card:hover .card-title { color: var(--tf-border-dark); text-shadow: none; }
         .lang-card:hover .card-desc { color: #333; }
 
         @media (max-width: 600px) {
@@ -208,6 +224,11 @@
     </style>
 </head>
 <body>
+
+    <!-- ЭКРАН ЗАГРУЗКИ -->
+    <div id="loading-screen">
+        <img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" alt="Loading..." class="tf-spinner">
+    </div>
 
     <div class="container">
         <div class="tf-panel">
@@ -332,7 +353,15 @@
 
         // Запуск при первой загрузке
         window.onload = () => {
-            typeWriterEffect(dict[currentLang].desc);
+            // Прячем экран загрузки
+            const loader = document.getElementById('loading-screen');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                loader.style.visibility = 'hidden';
+                
+                // Начинаем эффект печати после скрытия загрузки
+                typeWriterEffect(dict[currentLang].desc);
+            }, 800); // Небольшая задержка, чтобы логотип успел покрутиться (можно поменять)
         };
 
         const langBtn = document.getElementById('lang-switch');
