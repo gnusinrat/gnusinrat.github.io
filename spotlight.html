@@ -697,7 +697,7 @@
             if (branchName === 'raylit_posts') document.getElementById('btn-raylit').classList.add('active');
             if (branchName === 'solar_posts') document.getElementById('btn-solar').classList.add('active');
             
-            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.5rem; opacity: 0.7;">ПОДКЛЮЧЕНИЕ К РАДИОЧАСТОТЕ...</div></div>';
+            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">ПОДКЛЮЧЕНИЕ К РАДИОЧАСТОТЕ...</div></div>';
             
             listenToDatabase();
         }
@@ -867,7 +867,7 @@
             // Слушаем корень базы (коллекции raylit_posts или solar_posts)
             const postsCol = collection(db, currentBranch);
             
-            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.5rem; opacity: 0.7;">ЗАГРУЗКА ДАННЫХ РАЗВЕДКИ...</div></div>';
+            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">ЗАГРУЗКА ДАННЫХ РАЗВЕДКИ...</div></div>';
 
             unsubscribeSnapshot = onSnapshot(postsCol, (snapshot) => {
                 posts = [];
@@ -890,7 +890,7 @@
 
         // Запуск
         const container = document.getElementById('feed-container');
-        container.innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.5rem; opacity: 0.7;">АВТОРИЗАЦИЯ В СИСТЕМЕ MANN CO...</div></div>';
+        container.innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">АВТОРИЗАЦИЯ В СИСТЕМЕ MANN CO...</div></div>';
 
         signInAnonymously(auth).catch((error) => {
             console.error("Ошибка авторизации:", error);
