@@ -4,21 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>badgester's cyber world</title>
-    <!-- Пиксельные шрифты с поддержкой кириллицы -->
+    <title>badgester's directory</title>
+    <!-- Подключаем Teko для заголовков и Roboto для текста -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dr-bg: #020208;
-            --dr-grid: #800080; /* Фиолетовая сетка боёв */
-            --dr-text: #ffffff;
-            --dr-border: #ffffff;
-            --dr-green: #00ff00; /* Ralsei/Heal green */
-            --dr-pink: #ff00ff; /* Susie magenta */
-            --dr-cyan: #00ffff; /* Kris blue */
-            --dr-yellow: #ffff00;
+            --tf-bg-dark: #2A2725;
+            --tf-bg-panel: #3B3631;
+            --tf-bg-paper: #EAE3C8;
+            --tf-border-dark: #1D1B1A;
+            --tf-border-paper: #8A7C6B;
+            
+            --tf-text-light: #EBE2CA;
+            --tf-text-dark: #2A2725;
+            
+            --tf-red: #B8383B;
+            --tf-blu: #5885A2;
+            --tf-orange: #E7B53B;
         }
 
         * {
@@ -28,45 +32,32 @@
         }
 
         body {
-            background-color: var(--dr-bg);
-            /* Кибер-сетка на фоне */
-            background-image: 
-                linear-gradient(var(--dr-grid) 2px, transparent 2px),
-                linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
-            background-size: 50px 50px;
-            /* Анимация движения сетки как в битвах */
-            animation: scrollGrid 3s linear infinite;
-            color: var(--dr-text);
-            font-family: 'Pixelify Sans', sans-serif;
-            font-size: 1.4rem;
-            overflow-x: hidden;
+            background-color: var(--tf-bg-dark);
+            background-image: radial-gradient(circle at center, #3c3732 0%, #2A2725 100%);
+            color: var(--tf-text-light);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1rem;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            min-height: 100vh;
             padding: 20px;
-        }
-
-        @keyframes scrollGrid {
-            0% { background-position: 0px 0px; }
-            100% { background-position: -50px 50px; }
         }
 
         .container {
             width: 100%;
             max-width: 900px;
-            z-index: 1;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             margin-top: 20px;
         }
 
-        .dr-box {
-            background-color: #000;
-            border: 4px solid var(--dr-border);
-            border-radius: 8px; /* Слегка скругленные углы в стиле Deltarune */
+        .tf-panel {
+            background-color: var(--tf-bg-panel);
+            border: 4px solid var(--tf-border-dark);
+            border-radius: 8px;
             padding: 20px;
-            box-shadow: inset 0 0 0 2px #000, 0 0 10px rgba(128, 0, 128, 0.4);
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .header-top {
@@ -75,52 +66,56 @@
             align-items: center;
         }
 
-        h1 {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 2rem;
-            color: var(--dr-text);
+        .header-subtitle {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: bold;
             text-transform: uppercase;
-            text-shadow: 3px 3px 0px var(--dr-pink);
         }
 
-        /* Кнопка Спотлайта (в стиле ДЕЙСТВИЯ) */
-        .act-btn {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.8rem;
-            color: var(--dr-yellow);
-            text-decoration: none;
-            border: 2px solid var(--dr-yellow);
-            padding: 8px 12px;
-            background: #000;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        h1 {
+            font-family: 'Teko', sans-serif;
+            font-size: 3.5rem;
+            color: var(--tf-text-light);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0,0,0,0.5);
+            line-height: 1;
+            letter-spacing: 1px;
         }
-        
+
+        .act-btn {
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            color: var(--tf-text-light);
+            background: #504841;
+            border: 2px solid var(--tf-border-dark);
+            border-radius: 4px;
+            padding: 5px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.1s;
+            text-shadow: 1px 1px 0px #000;
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3);
+            display: inline-block;
+        }
+
         .act-btn:hover {
-            background: var(--dr-yellow);
-            color: #000;
+            background: var(--tf-orange);
+            color: var(--tf-border-dark);
+            text-shadow: none;
         }
 
         .dialogue-box {
-            display: flex;
-            gap: 15px;
-            font-size: 1.8rem;
-            line-height: 1.4;
-            min-height: 120px;
-        }
-
-        .dialogue-asterisk {
-            font-family: 'Press Start 2P', monospace;
             font-size: 1.2rem;
-            margin-top: 5px;
-            animation: bob 1s infinite alternate;
-        }
-
-        @keyframes bob {
-            from { transform: translateY(0); }
-            to { transform: translateY(3px); }
+            line-height: 1.5;
+            min-height: 80px;
+            background: rgba(0,0,0,0.2);
+            border: 2px dashed rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 4px;
         }
 
         .cards {
@@ -130,80 +125,83 @@
         }
 
         .card {
-            background-color: #000;
-            border: 4px solid var(--dr-border);
-            color: var(--dr-text);
+            background-color: var(--tf-bg-paper);
+            border: 4px solid var(--tf-border-paper);
+            border-radius: 6px;
+            color: var(--tf-text-dark);
             text-decoration: none;
-            padding: 20px 20px 20px 45px; /* Отступ слева для души */
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 5px;
+            transition: 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             position: relative;
-            transition: all 0.1s;
+            overflow: hidden;
         }
 
-        /* Векторный спрайт Красной Души */
+        /* Декоративная скрепка/ярлык */
         .card::before {
             content: '';
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path fill="%23ff0000" d="M8,15 L1,8 L1,3 L4,0 L7,0 L8,2 L9,0 L12,0 L15,3 L15,8 Z"/></svg>');
-            background-size: contain;
-            background-repeat: no-repeat;
-            width: 18px;
-            height: 18px;
             position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            opacity: 0;
-            transition: 0.1s;
+            top: -10px;
+            right: 15px;
+            width: 20px;
+            height: 25px;
+            background: rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.2);
+            transform: rotate(15deg);
         }
 
         .card:hover {
-            border-color: var(--dr-cyan);
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.4);
-            transform: scale(1.02);
-            cursor: pointer;
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            border-color: var(--tf-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+            background-color: #F2ECDC;
         }
 
         .card-title {
-            font-family: 'Press Start 2P', monospace;
-            font-size: 0.9rem;
+            font-family: 'Teko', sans-serif;
+            font-size: 2.2rem;
             text-transform: uppercase;
-            line-height: 1.4;
+            line-height: 1;
+            font-weight: 600;
+        }
+
+        .card:hover .card-title {
+            color: var(--tf-red);
         }
 
         .card-desc {
-            font-size: 1.3rem;
-            opacity: 0.8;
-            color: #b3b3b3;
+            font-size: 1.05rem;
+            color: #4A443E;
+            font-weight: bold;
         }
 
-        .card:hover .card-desc {
-            color: var(--dr-text);
-        }
-
-        /* Спец. цвет для переключения языка */
         .lang-card {
-            border-color: var(--dr-pink);
+            background-color: var(--tf-border-dark);
+            border-color: #4A443E;
+            color: var(--tf-text-light);
         }
+
+        .lang-card::before { display: none; }
         
+        .lang-card .card-desc { color: #aaa; }
+
         .lang-card:hover {
-            border-color: var(--dr-pink);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+            background-color: var(--tf-orange);
+            border-color: var(--tf-border-dark);
+            color: var(--tf-border-dark);
         }
         
-        .lang-card:hover .card-title {
-            color: var(--dr-pink);
-        }
+        .lang-card:hover .card-title { color: var(--tf-border-dark); }
+        .lang-card:hover .card-desc { color: #333; }
 
         @media (max-width: 600px) {
             .header-top {
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: center;
+                text-align: center;
                 gap: 15px;
             }
         }
@@ -212,30 +210,29 @@
 <body>
 
     <div class="container">
-        <!-- HEADER BOX -->
-        <div class="dr-box">
+        <div class="tf-panel">
             <div class="header-top">
-                <h1 id="t-title">чё как?</h1>
-                <a href="spotlight.html" class="act-btn" title="Team Raylit Spotlight">
-                    <span>[ РАДАР ]</span>
+                <div>
+                    <div class="header-subtitle">[ ДОСЬЕ / MANN CO. ]</div>
+                    <h1 id="t-title">чё как?</h1>
+                </div>
+                <a href="spotlight.html" class="act-btn" title="VSKY Spotlight">
+                    РАДАР &raquo;
                 </a>
             </div>
         </div>
 
-        <!-- DIALOGUE BOX (Description) -->
-        <div class="dr-box dialogue-box">
-            <div class="dialogue-asterisk">*</div>
-            <p id="t-desc"></p>
+        <div class="dialogue-box">
+            <span id="t-desc"></span>
         </div>
 
-        <!-- CARDS / DIRECTORY -->
         <div class="cards">
-            <a href="https://gnusinrat.github.io/paint.html" class="card">
-                <span class="card-title">HTMPen</span>
-                <span class="card-desc" id="t-htm">Рисовалка с Gemini API</span>
+            <a href="https://gnusinrat.github.io/paint" class="card">
+                <span class="card-title" id="t-htm">HTMPen</span>
+                <span class="card-desc" id="t-htm-desc">Рисовалка с Gemini API</span>
             </a>
             
-            <a href="https://gnusinrat.github.io/maxclicker.html" class="card">
+            <a href="https://gnusinrat.github.io/maxclicker" class="card">
                 <span class="card-title">MaxClicker</span>
                 <span class="card-desc" id="t-clicker">Кликер</span>
             </a>
@@ -245,29 +242,29 @@
                 <span class="card-desc" id="t-old-desc">Архив на Neocities</span>
             </a>
             
-            <a href="https://gnusinrat.github.io/top.html" class="card">
+            <a href="https://gnusinrat.github.io/top" class="card">
                 <span class="card-title" id="t-top-title">Мои топы</span>
                 <span class="card-desc" id="t-top-desc">Любимые блюда и животные</span>
             </a>
             
-            <a href="https://gnusinrat.github.io/rabbits.html" class="card">
+            <a href="https://gnusinrat.github.io/rabbits" class="card">
                 <span class="card-title" id="t-rab-title">Кролики</span>
                 <span class="card-desc" id="t-rab-desc">кролики</span>
             </a>
 
-            <a href="https://gnusinrat.github.io/procedural.html" class="card">
+            <a href="https://gnusinrat.github.io/procedural" class="card">
                 <span class="card-title" id="t-zen-title">дзен</span>
                 <span class="card-desc">💖☮️⚛️</span>
             </a>
 
-            <a href="https://gnusinrat.github.io/webmap.html" class="card">
+            <a href="https://gnusinrat.github.io/webmap" class="card">
                 <span class="card-title" id="t-map-title">Карта сайта</span>
                 <span class="card-desc" id="t-map-desc">Визуальная карта всех страниц</span>
             </a>
 
             <!-- LANGUAGE SWITCHER -->
             <a href="#" class="card lang-card" id="lang-switch">
-                <span class="card-title" id="t-lang-title">US English version</span>
+                <span class="card-title" id="t-lang-title">US English</span>
                 <span class="card-desc" id="t-lang-desc">Switch to English</span>
             </a>
         </div>
@@ -277,8 +274,9 @@
         const dict = {
             ru: {
                 title: "чё как?",
-                desc: "новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
-                htm: "Рисовалка с Gemini API",
+                desc: "> новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
+                htm: "HTMPen",
+                htmDesc: "Рисовалка с Gemini API",
                 clicker: "Кликер",
                 oldTitle: "Старый сайт",
                 oldDesc: "Архив на Neocities",
@@ -289,13 +287,14 @@
                 zenTitle: "дзен",
                 mapTitle: "Карта сайта",
                 mapDesc: "Визуальная карта всех страниц",
-                langTitle: "US English version",
+                langTitle: "US English",
                 langDesc: "Switch to English"
             },
             en: {
                 title: "what's up?",
-                desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
-                htm: "Drawing thing made with Gemini [RUSSIAN]",
+                desc: "> this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
+                htm: "HTMPen",
+                htmDesc: "Drawing thing made with Gemini [RU]",
                 clicker: "Clicker game",
                 oldTitle: "Old Website",
                 oldDesc: "Archived on Neocities",
@@ -312,20 +311,20 @@
         };
 
         let currentLang = 'ru'; 
-        let typingTimeout; // Для остановки печати, если быстро переключить язык
+        let typingTimeout;
 
         function typeWriterEffect(text) {
             const descElement = document.getElementById('t-desc');
-            descElement.innerHTML = ""; // Очищаем поле
-            clearTimeout(typingTimeout); // Сбрасываем прошлую анимацию
+            descElement.innerHTML = "";
+            clearTimeout(typingTimeout);
             
             let i = 0;
             function typeNext() {
                 if (i < text.length) {
                     descElement.innerHTML += text.charAt(i);
                     i++;
-                    // Задержка печати. В Deltarune она быстрая и ритмичная
-                    typingTimeout = setTimeout(typeNext, 30);
+                    // Задержка имитирует печатную машинку или терминал
+                    typingTimeout = setTimeout(typeNext, 20);
                 }
             }
             typeNext();
@@ -344,7 +343,7 @@
             currentLang = currentLang === 'ru' ? 'en' : 'ru';
             
             document.documentElement.lang = currentLang;
-            document.title = currentLang === 'ru' ? "badgester's cyber world" : "badgester's cyber world";
+            document.title = currentLang === 'ru' ? "badgester's directory" : "badgester's directory";
             
             document.getElementById('t-title').innerText = dict[currentLang].title;
             
@@ -352,6 +351,7 @@
             typeWriterEffect(dict[currentLang].desc);
 
             document.getElementById('t-htm').innerText = dict[currentLang].htm;
+            document.getElementById('t-htm-desc').innerText = dict[currentLang].htmDesc;
             document.getElementById('t-clicker').innerText = dict[currentLang].clicker;
             document.getElementById('t-old-title').innerText = dict[currentLang].oldTitle;
             document.getElementById('t-old-desc').innerText = dict[currentLang].oldDesc;
