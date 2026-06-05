@@ -132,9 +132,10 @@
         }
 
         .branch-btn#btn-solar.active {
-            background: var(--tf-blu);
-            color: white;
-            box-shadow: inset 0 0 15px var(--tf-blu-dark);
+            background: #FFD700; /* Золотой цвет SOLAR */
+            color: #1D1B1A; /* Тёмный текст для контраста */
+            box-shadow: inset 0 0 15px #B8860B; /* Тёмно-золотое свечение внутри */
+            text-shadow: none; /* Убираем черную тень, чтобы текст лучше читался на светлом фоне */
         }
 
         .main-grid {
@@ -436,8 +437,8 @@
         </header>
 
         <div class="branch-selector">
-            <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">RED: RAYLIT</button>
-            <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">BLU: SOLAR</button>
+            <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">VSKY</button>
+            <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">SOLAR</button>
         </div>
 
         <main class="main-grid">
