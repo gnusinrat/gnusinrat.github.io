@@ -5,20 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>VSKY</title>
-    
-    <!-- Подключаем пиксельный шрифт для заголовков и читабельный для текста -->
+    <!-- Подключаем Teko для заголовков и Roboto для текста -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dr-bg: #000000;
-            --dr-grid: rgba(180, 0, 255, 0.4);
-            --dr-text: #ffffff;
-            --dr-border: #ffffff;
-            --dr-accent: #00ffff; /* Циановый (Крис) */
-            --dr-pink: #ff00ff; /* Неоновый розовый */
+            --tf-bg-dark: #2A2725;
+            --tf-bg-panel: #3B3631;
+            --tf-bg-paper: #EAE3C8;
+            --tf-border-dark: #1D1B1A;
+            --tf-border-paper: #8A7C6B;
+            
+            --tf-text-light: #EBE2CA;
+            --tf-text-dark: #2A2725;
+            
+            --tf-red: #B8383B;
+            --tf-blu: #5885A2;
+            --tf-orange: #E7B53B;
+        }
+
+        /* Экран загрузки */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--tf-bg-dark);
+            background-image: radial-gradient(circle at center, #3c3732 0%, #2A2725 100%);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+        }
+
+        .tf-spinner {
+            width: 100px;
+            height: 100px;
+            animation: spin 1.5s linear infinite;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
 
         * {
@@ -27,29 +58,16 @@
             padding: 0;
         }
 
-        /* Движущаяся фиолетовая сетка Cyber Field */
-        @keyframes gridMove {
-            0% { background-position: 0 0; }
-            100% { background-position: -40px -40px; }
-        }
-
         body {
-            background-color: var(--dr-bg);
-            /* Отрисовка пиксельной сетки */
-            background-image: 
-                linear-gradient(var(--dr-grid) 2px, transparent 2px),
-                linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
-            background-size: 40px 40px;
-            animation: gridMove 2s linear infinite;
-            
-            color: var(--dr-text);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 1.2rem;
+            background-color: var(--tf-bg-dark);
+            background-image: radial-gradient(circle at center, #3c3732 0%, #2A2725 100%);
+            color: var(--tf-text-light);
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1rem;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             padding: 20px;
-            overflow-x: hidden;
         }
 
         .container {
@@ -59,16 +77,14 @@
             flex-direction: column;
             gap: 20px;
             margin-top: 20px;
-            z-index: 10; /* Поверх сетки */
         }
 
-        /* Стиль окон диалогов из Deltarune */
-        .dr-box {
-            background-color: #000;
-            border: 4px solid var(--dr-border);
+        .tf-panel {
+            background-color: var(--tf-bg-panel);
+            border: 4px solid var(--tf-border-dark);
+            border-radius: 8px;
             padding: 20px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
-            position: relative;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.5);
         }
 
         .header-top {
@@ -77,53 +93,56 @@
             align-items: center;
         }
 
+        .header-subtitle {
+            font-family: 'Roboto', sans-serif;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
         h1 {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 2rem;
-            color: var(--dr-text);
-            line-height: 1.4;
-            text-shadow: 2px 2px 0px #ff00ff;
+            font-family: 'Teko', sans-serif;
+            font-size: 3.5rem;
+            color: var(--tf-text-light);
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0,0,0,0.5);
+            line-height: 1;
+            letter-spacing: 1px;
         }
 
         .act-btn {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
-            color: var(--dr-text);
-            background: #000;
-            border: 4px solid var(--dr-border);
-            padding: 10px 15px;
+            font-family: 'Teko', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            color: var(--tf-text-light);
+            background: #504841;
+            border: 2px solid var(--tf-border-dark);
+            border-radius: 4px;
+            padding: 5px 20px;
             cursor: pointer;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
             transition: 0.1s;
+            text-shadow: 1px 1px 0px #000;
+            box-shadow: inset 0 2px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3);
+            display: inline-block;
         }
 
         .act-btn:hover {
-            border-color: var(--dr-accent);
-            color: var(--dr-accent);
-            box-shadow: 0 0 15px var(--dr-accent);
+            background: var(--tf-orange);
+            color: var(--tf-border-dark);
+            text-shadow: none;
         }
 
         .dialogue-box {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            min-height: 100px;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        /* Анимация звездочки текста */
-        @keyframes starBop {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        .dialogue-star {
-            font-family: 'Press Start 2P', cursive;
-            animation: starBop 1s steps(2, end) infinite;
+            font-size: 1.2rem;
+            line-height: 1.5;
+            min-height: 80px;
+            background: rgba(0,0,0,0.2);
+            border: 2px dashed rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 4px;
         }
 
         .cards {
@@ -132,210 +151,142 @@
             gap: 15px;
         }
 
-        /* Карточки */
         .card {
-            background: #000;
-            border: 4px solid var(--dr-border);
-            color: var(--dr-text);
+            background: linear-gradient(180deg, #6a6259 0%, #453e38 100%);
+            border: 4px solid var(--tf-border-dark);
+            border-top-color: #8c8277;
+            border-left-color: #7a7268;
+            border-radius: 6px;
+            color: var(--tf-text-light);
             text-decoration: none;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: 0.1s;
-            position: relative;
-        }
-
-        .card-content {
+            padding: 15px 20px;
             display: flex;
             flex-direction: column;
             gap: 5px;
-        }
-
-        .card-title {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 1.1rem;
-            line-height: 1.3;
-        }
-
-        .card-desc {
-            color: #aaa;
-            font-size: 1rem;
-        }
-
-        /* Иконка души внутри кнопок */
-        .soul-icon {
-            width: 24px;
-            height: 24px;
-            opacity: 0; /* Скрыта по умолчанию */
-            transition: opacity 0.1s;
-            flex-shrink: 0;
+            transition: 0.1s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5), inset 0 -2px 5px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .card:hover {
-            border-color: var(--dr-pink);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
-            transform: scale(1.02);
-            z-index: 5;
+            border-color: var(--tf-orange);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 -2px 5px rgba(0,0,0,0.3);
+            background: linear-gradient(180deg, #7d746a 0%, #544c45 100%);
         }
 
-        .card:hover .soul-icon {
-            opacity: 1; /* Показываем Душу */
+        .card-title {
+            font-family: 'Teko', sans-serif;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            line-height: 1;
+            font-weight: 600;
+            text-shadow: 1px 1px 0px #000;
         }
-        
+
         .card:hover .card-title {
-            color: var(--dr-pink);
+            color: var(--tf-orange);
+        }
+
+        .card-desc {
+            font-size: 1.05rem;
+            color: #b5ac9d;
+            font-weight: bold;
         }
 
         .lang-card {
-            border-color: #555;
+            background: linear-gradient(180deg, #3B3631 0%, #1D1B1A 100%);
+            border-color: #1D1B1A;
+            border-top-color: #4A443E;
+            border-left-color: #4A443E;
         }
 
-        /* Экран загрузки */
-        #loading-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--dr-bg);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-        }
+        .lang-card .card-desc { color: #888; }
 
-        @keyframes pulseSoul {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        .lang-card:hover {
+            background: var(--tf-orange);
+            border-color: var(--tf-border-dark);
+            color: var(--tf-border-dark);
         }
-
-        .loading-soul {
-            width: 50px;
-            height: 50px;
-            animation: pulseSoul 1s infinite;
-        }
+        
+        .lang-card:hover .card-title { color: var(--tf-border-dark); text-shadow: none; }
+        .lang-card:hover .card-desc { color: #333; }
 
         @media (max-width: 600px) {
             .header-top {
                 flex-direction: column;
                 align-items: center;
                 text-align: center;
-                gap: 20px;
+                gap: 15px;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- ЭКРАН ЗАГРУЗКИ (Пульсирующая Душа) -->
+    <!-- ЭКРАН ЗАГРУЗКИ -->
     <div id="loading-screen">
-        <svg class="loading-soul" viewBox="0 0 16 16" shape-rendering="crispEdges" xmlns="http://www.w3.org/2000/svg">
-            <rect x="2" y="2" width="4" height="2" fill="red"/>
-            <rect x="10" y="2" width="4" height="2" fill="red"/>
-            <rect x="0" y="4" width="16" height="4" fill="red"/>
-            <rect x="2" y="8" width="12" height="2" fill="red"/>
-            <rect x="4" y="10" width="8" height="2" fill="red"/>
-            <rect x="6" y="12" width="4" height="2" fill="red"/>
-            <rect x="7" y="14" width="2" height="2" fill="red"/>
-        </svg>
-        <div style="font-family: 'Press Start 2P', cursive; color: white;">LOADING...</div>
+        <img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" alt="Loading..." class="tf-spinner">
     </div>
 
-    <!-- ВЕКТОРНАЯ ДУША ДЛЯ КНОПОК (многоразовая) -->
-    <svg style="display: none;">
-        <symbol id="red-soul" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <rect x="2" y="2" width="4" height="2" fill="red"/>
-            <rect x="10" y="2" width="4" height="2" fill="red"/>
-            <rect x="0" y="4" width="16" height="4" fill="red"/>
-            <rect x="2" y="8" width="12" height="2" fill="red"/>
-            <rect x="4" y="10" width="8" height="2" fill="red"/>
-            <rect x="6" y="12" width="4" height="2" fill="red"/>
-            <rect x="7" y="14" width="2" height="2" fill="red"/>
-        </symbol>
-    </svg>
-
     <div class="container">
-        <div class="dr-box">
+        <div class="tf-panel">
             <div class="header-top">
-                <h1 id="t-title">чё как?</h1>
+                <div>
+                    <div class="header-subtitle">[ ДОСЬЕ / MANN CO. ]</div>
+                    <h1 id="t-title">чё как?</h1>
+                </div>
                 <a href="spotlight.html" class="act-btn" title="VSKY Spotlight">
-                    <svg class="soul-icon" style="opacity: 1;"><use href="#red-soul"></use></svg>
-                    [ RADAR ]
+                    РАДАР &raquo;
                 </a>
             </div>
         </div>
 
-        <div class="dr-box dialogue-box">
-            <div class="dialogue-star">*</div>
+        <div class="dialogue-box">
             <span id="t-desc"></span>
         </div>
 
         <div class="cards">
             <a href="https://gnusinrat.github.io/paint" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-htm">HTMPen</span>
-                    <span class="card-desc" id="t-htm-desc">Рисовалка с Gemini API</span>
-                </div>
+                <span class="card-title" id="t-htm">HTMPen</span>
+                <span class="card-desc" id="t-htm-desc">Рисовалка с Gemini API</span>
             </a>
             
             <a href="https://gnusinrat.github.io/maxclicker" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title">MaxClicker</span>
-                    <span class="card-desc" id="t-clicker">Кликер</span>
-                </div>
+                <span class="card-title">MaxClicker</span>
+                <span class="card-desc" id="t-clicker">Кликер</span>
             </a>
             
             <a href="https://badgester.neocities.org" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-old-title">Старый сайт</span>
-                    <span class="card-desc" id="t-old-desc">Архив на Neocities</span>
-                </div>
+                <span class="card-title" id="t-old-title">Старый сайт</span>
+                <span class="card-desc" id="t-old-desc">Архив на Neocities</span>
             </a>
             
             <a href="https://gnusinrat.github.io/top" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-top-title">Мои топы</span>
-                    <span class="card-desc" id="t-top-desc">Любимые блюда и животные</span>
-                </div>
+                <span class="card-title" id="t-top-title">Мои топы</span>
+                <span class="card-desc" id="t-top-desc">Любимые блюда и животные</span>
             </a>
             
             <a href="https://gnusinrat.github.io/rabbits" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-rab-title">Кролики</span>
-                    <span class="card-desc" id="t-rab-desc">кролики</span>
-                </div>
+                <span class="card-title" id="t-rab-title">Кролики</span>
+                <span class="card-desc" id="t-rab-desc">кролики</span>
             </a>
 
             <a href="https://gnusinrat.github.io/procedural" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-zen-title">дзен</span>
-                    <span class="card-desc">💖☮️⚛️</span>
-                </div>
+                <span class="card-title" id="t-zen-title">дзен</span>
+                <span class="card-desc">💖☮️⚛️</span>
             </a>
 
             <a href="https://gnusinrat.github.io/webmap" class="card">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-map-title">Карта сайта</span>
-                    <span class="card-desc" id="t-map-desc">Визуальная карта всех страниц</span>
-                </div>
+                <span class="card-title" id="t-map-title">Карта сайта</span>
+                <span class="card-desc" id="t-map-desc">Визуальная карта всех страниц</span>
             </a>
 
             <!-- LANGUAGE SWITCHER -->
             <a href="#" class="card lang-card" id="lang-switch">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
-                <div class="card-content">
-                    <span class="card-title" id="t-lang-title">US English</span>
-                    <span class="card-desc" id="t-lang-desc">Switch to English</span>
-                </div>
+                <span class="card-title" id="t-lang-title">US English</span>
+                <span class="card-desc" id="t-lang-desc">Switch to English</span>
             </a>
         </div>
     </div>
@@ -344,7 +295,7 @@
         const dict = {
             ru: {
                 title: "чё как?",
-                desc: "новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
+                desc: "> новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
                 htm: "HTMPen",
                 htmDesc: "Рисовалка с Gemini API",
                 clicker: "Кликер",
@@ -362,7 +313,7 @@
             },
             en: {
                 title: "what's up?",
-                desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
+                desc: "> this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
                 htm: "HTMPen",
                 htmDesc: "Drawing thing made with Gemini [RU]",
                 clicker: "Clicker game",
@@ -393,19 +344,24 @@
                 if (i < text.length) {
                     descElement.innerHTML += text.charAt(i);
                     i++;
-                    typingTimeout = setTimeout(typeNext, 30); // Скорость печати
+                    // Задержка имитирует печатную машинку или терминал
+                    typingTimeout = setTimeout(typeNext, 20);
                 }
             }
             typeNext();
         }
 
+        // Запуск при первой загрузке
         window.onload = () => {
+            // Прячем экран загрузки
             const loader = document.getElementById('loading-screen');
             setTimeout(() => {
                 loader.style.opacity = '0';
                 loader.style.visibility = 'hidden';
+                
+                // Начинаем эффект печати после скрытия загрузки
                 typeWriterEffect(dict[currentLang].desc);
-            }, 600); 
+            }, 800); // Небольшая задержка, чтобы логотип успел покрутиться (можно поменять)
         };
 
         const langBtn = document.getElementById('lang-switch');
@@ -416,9 +372,11 @@
             currentLang = currentLang === 'ru' ? 'en' : 'ru';
             
             document.documentElement.lang = currentLang;
-            document.title = "VSKY";
+            document.title = currentLang === 'ru' ? "badgester's directory" : "badgester's directory";
             
             document.getElementById('t-title').innerText = dict[currentLang].title;
+            
+            // Запускаем эффект печати для нового языка
             typeWriterEffect(dict[currentLang].desc);
 
             document.getElementById('t-htm').innerText = dict[currentLang].htm;
