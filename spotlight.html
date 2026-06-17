@@ -5,27 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>VSKY SPOTLIGHT</title>
-    <!-- Подключаем Teko для заголовков (в стиле TF2 Build) и Roboto для читаемого текста -->
+    
+    <!-- Шрифты Deltarune: Пиксельный для заголовков, читабельный для постов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --tf-bg-dark: #2A2725;
-            --tf-bg-panel: #3B3631;
-            --tf-bg-paper: #EAE3C8;
-            --tf-border-dark: #1D1B1A;
-            --tf-border-paper: #8A7C6B;
+            --dr-bg: #000000;
+            --dr-grid: rgba(180, 0, 255, 0.4); /* Фиолетовая сетка */
             
-            --tf-text-light: #EBE2CA;
-            --tf-text-dark: #2A2725;
+            --dr-text: #ffffff;
+            --dr-border: #ffffff;
             
-            --tf-red: #B8383B;
-            --tf-red-dark: #8E2B2E;
-            --tf-blu: #5885A2;
-            --tf-blu-dark: #3F6076;
-            --tf-orange: #E7B53B;
-            --tf-admin-purple: #4A3A4A;
+            --dr-pink: #ff00ff; /* Системные / Агрессивные */
+            --dr-cyan: #00ffff; /* Игрок / Активные элементы */
+            --dr-yellow: #ffff00; /* Ветка Солар */
+            --dr-red: #ff0000; /* Ветка Рейлит */
         }
 
         * {
@@ -34,12 +31,23 @@
             padding: 0;
         }
 
+        /* Движущаяся сетка */
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: -40px -40px; }
+        }
+
         body {
-            background-color: var(--tf-bg-dark);
-            background-image: radial-gradient(circle at center, #3c3732 0%, #2A2725 100%);
-            color: var(--tf-text-light);
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.1rem;
+            background-color: var(--dr-bg);
+            background-image: 
+                linear-gradient(var(--dr-grid) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
+            background-size: 40px 40px;
+            animation: gridMove 2s linear infinite;
+            
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.15rem;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -52,90 +60,95 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            z-index: 10;
         }
 
-        h1, h2, h3, .tf-heading {
-            font-family: 'Teko', sans-serif;
-            text-transform: uppercase;
-            font-weight: 600;
+        /* Универсальный стиль окна (Text Box) */
+        .dr-box {
+            background-color: #000;
+            border: 4px solid var(--dr-border);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: var(--tf-bg-panel);
-            border: 4px solid var(--tf-border-dark);
-            border-radius: 8px;
             padding: 15px 25px;
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.5);
         }
 
         h1 {
-            font-size: 3.5rem;
-            color: var(--tf-text-light);
-            text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0,0,0,0.5);
-            line-height: 1;
-            letter-spacing: 1px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.8rem;
+            color: var(--dr-text);
+            line-height: 1.5;
+            text-shadow: 2px 2px 0px var(--dr-pink);
         }
 
         .nav-link {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
-            color: var(--tf-text-light);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1rem;
+            color: var(--dr-text);
             text-decoration: none;
-            background-color: var(--tf-border-dark);
-            padding: 5px 15px;
-            border-radius: 4px;
+            background-color: #000;
+            border: 2px solid var(--dr-border);
+            padding: 10px;
             transition: 0.1s;
         }
         
         .nav-link:hover {
-            background-color: var(--tf-orange);
-            color: var(--tf-border-dark);
+            border-color: var(--dr-cyan);
+            color: var(--dr-cyan);
+            box-shadow: 0 0 10px var(--dr-cyan);
         }
 
+        /* Переключатель веток */
         .branch-selector {
             display: flex;
-            gap: 0;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 4px solid var(--tf-border-dark);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            gap: 15px;
         }
 
         .branch-btn {
             flex: 1;
-            background: var(--tf-bg-panel);
-            border: none;
-            color: rgba(255,255,255,0.5);
-            font-family: 'Teko', sans-serif;
-            font-size: 2.2rem;
+            background: #000;
+            border: 4px solid #555;
+            color: #aaa;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
             cursor: pointer;
-            padding: 10px;
-            transition: 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 1px 1px 0px #000;
+            padding: 15px;
+            transition: 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .branch-btn:hover {
-            color: var(--tf-text-light);
-            background: #4A443E;
+        .soul-icon {
+            width: 20px;
+            height: 20px;
+            display: none; /* Скрыта, если не активна */
         }
 
-        /* Активные состояния RED и BLU */
+        /* Raylit = Красный, Solar = Желтый */
         .branch-btn#btn-raylit.active {
-            background: var(--tf-red);
-            color: white;
-            box-shadow: inset 0 0 15px var(--tf-red-dark);
+            border-color: var(--dr-red);
+            color: var(--dr-text);
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.5), 0 0 10px rgba(255,0,0,0.5);
         }
+        .branch-btn#btn-raylit.active .soul-icon { display: block; }
 
         .branch-btn#btn-solar.active {
-            background: #FFD700; /* Золотой цвет SOLAR */
-            color: #1D1B1A; /* Тёмный текст для контраста */
-            box-shadow: inset 0 0 15px #B8860B; /* Тёмно-золотое свечение внутри */
-            text-shadow: none; /* Убираем черную тень, чтобы текст лучше читался на светлом фоне */
+            border-color: var(--dr-yellow);
+            color: var(--dr-text);
+            box-shadow: inset 0 0 10px rgba(255,255,0,0.3), 0 0 10px rgba(255,255,0,0.3);
+        }
+        .branch-btn#btn-solar.active .soul-icon { display: block; }
+
+        .branch-btn:hover:not(.active) {
+            border-color: var(--dr-text);
+            color: var(--dr-text);
         }
 
         .main-grid {
@@ -148,44 +161,35 @@
         @media (max-width: 768px) {
             .main-grid { grid-template-columns: 1fr; }
             .header { flex-direction: column; text-align: center; gap: 15px; }
+            .branch-selector { flex-direction: column; gap: 10px; }
         }
 
-        .tf-sidebar-box {
-            background-color: var(--tf-bg-panel);
-            border: 4px solid var(--tf-border-dark);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: inset 0 2px 5px rgba(255,255,255,0.05), 0 4px 10px rgba(0,0,0,0.5);
-        }
-
+        /* Сайдбар */
         .panel-title {
-            font-family: 'Teko', sans-serif;
-            font-size: 2.5rem;
-            color: var(--tf-orange);
-            margin-bottom: 10px;
-            line-height: 1;
-            text-shadow: 1px 1px 0px #000;
-            border-bottom: 2px solid var(--tf-border-dark);
-            padding-bottom: 5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            color: var(--dr-cyan);
+            margin-bottom: 15px;
+            border-bottom: 2px dashed #555;
+            padding-bottom: 10px;
         }
 
         input[type="text"], input[type="password"], textarea {
-            background: var(--tf-border-dark);
-            border: 2px solid #111;
-            border-radius: 4px;
-            color: var(--tf-text-light);
-            font-family: 'Roboto', sans-serif;
-            font-size: 1rem;
+            background: #111;
+            border: 2px solid #555;
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
             padding: 10px;
             width: 100%;
             outline: none;
             margin-bottom: 15px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
             transition: 0.1s;
         }
 
         input:focus, textarea:focus {
-            border-color: var(--tf-orange);
+            border-color: var(--dr-cyan);
+            box-shadow: inset 0 0 5px rgba(0, 255, 255, 0.3);
         }
 
         textarea {
@@ -194,68 +198,65 @@
         }
 
         button.act-btn {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
-            letter-spacing: 1px;
-            color: var(--tf-text-light);
-            background: #504841;
-            border: 2px solid var(--tf-border-dark);
-            border-radius: 4px;
-            padding: 5px 10px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--dr-text);
+            background: #000;
+            border: 2px solid var(--dr-border);
+            padding: 12px;
             cursor: pointer;
             width: 100%;
             transition: 0.1s;
-            text-shadow: 1px 1px 0px #000;
-            box-shadow: inset 0 2px 2px rgba(255,255,255,0.1), 0 2px 4px rgba(0,0,0,0.3);
             margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
         }
 
         button.act-btn:hover {
-            background: var(--tf-orange);
-            color: var(--tf-border-dark);
-            text-shadow: none;
-        }
-
-        button.act-btn.danger {
-            background: #504841;
+            border-color: var(--dr-cyan);
+            color: var(--dr-cyan);
+            box-shadow: inset 0 0 10px rgba(0,255,255,0.2);
         }
 
         button.act-btn.danger:hover {
-            background: var(--tf-red);
-            color: white;
+            border-color: var(--dr-red);
+            color: var(--dr-red);
+            box-shadow: inset 0 0 10px rgba(255,0,0,0.2);
         }
+
+        button.act-btn:hover .btn-soul { display: block; }
+        .btn-soul { width: 12px; height: 12px; display: none; }
 
         .file-upload-btn {
             display: block;
             text-align: center;
-            background: var(--tf-border-dark);
-            border: 2px dashed #666;
+            background: #000;
+            border: 2px dashed #555;
             color: #aaa;
             padding: 10px;
             cursor: pointer;
-            font-family: 'Teko', sans-serif;
-            font-size: 1.5rem;
+            font-family: 'Share Tech Mono', monospace;
             margin-bottom: 15px;
-            border-radius: 4px;
             transition: 0.1s;
         }
 
         .file-upload-btn:hover { 
-            border-color: var(--tf-orange);
-            color: var(--tf-orange);
+            border-color: var(--dr-pink);
+            color: var(--dr-pink);
         }
 
         #image-preview {
             max-width: 100%;
             margin-bottom: 15px;
-            border: 4px solid var(--tf-border-dark);
-            border-radius: 4px;
+            border: 2px solid var(--dr-cyan);
             display: none;
         }
 
-        .sys-msg { font-size: 0.95rem; font-weight: bold; min-height: 20px; margin-top: 5px; }
-        .msg-error { color: var(--tf-red); }
-        .msg-success { color: #8FBC8B; }
+        .sys-msg { font-size: 0.95rem; min-height: 20px; margin-top: 5px; font-weight: bold; }
+        .msg-error { color: var(--dr-red); }
+        .msg-success { color: #00ff00; }
 
         .feed {
             display: flex;
@@ -263,126 +264,109 @@
             gap: 20px;
         }
         
+        /* Пост-бокс */
         .post-card {
-            background-color: var(--tf-bg-paper);
-            border: 4px solid var(--tf-border-paper);
-            border-radius: 8px;
+            background-color: #000;
+            border: 4px solid var(--dr-border);
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            color: var(--tf-text-dark);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
-            position: relative;
+            color: var(--dr-text);
+            box-shadow: 0 0 10px rgba(255,255,255,0.1);
         }
 
-        /* Стиль для админских постов (Офицеры) */
         .post-card.admin-post {
-            border-color: var(--tf-red);
+            border-color: #888;
         }
 
-        /* Стиль для сообщений СИСТЕМЫ (Администратор) */
+        /* Сообщения Администратора (Системы) */
         .post-card.system-post {
-            background-color: var(--tf-border-dark);
-            border-color: var(--tf-admin-purple);
-            color: var(--tf-text-light);
+            border-color: var(--dr-pink);
+            box-shadow: 0 0 15px rgba(255,0,255,0.2);
         }
 
         .post-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px dashed rgba(0,0,0,0.2);
+            border-bottom: 2px dashed #555;
             padding-bottom: 8px;
         }
 
         .system-post .post-header {
-            border-bottom-color: rgba(255,255,255,0.2);
+            border-bottom-color: rgba(255,0,255,0.4);
         }
 
         .post-author {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.1rem;
         }
 
-        .admin-post .post-author { color: var(--tf-red-dark); }
-        .system-post .post-author { color: var(--tf-orange); }
+        .admin-post .post-author { color: var(--dr-text); }
+        .system-post .post-author { color: var(--dr-pink); }
         
         .dev-badge {
-            color: var(--tf-orange);
-            background: var(--tf-border-dark);
+            color: var(--dr-bg);
+            background: var(--dr-cyan);
             padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 1.2rem;
-            margin-left: 5px;
-            vertical-align: middle;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            vertical-align: top;
         }
 
         .post-time { 
-            font-size: 0.9rem; 
-            opacity: 0.7; 
-            font-family: 'Roboto', sans-serif;
+            font-size: 1rem; 
+            color: #888; 
+            margin-left: 15px;
         }
 
         .post-content {
-            font-size: 1.15rem;
-            line-height: 1.5;
+            font-size: 1.25rem;
+            line-height: 1.6;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
 
         .post-img {
             max-width: 100%;
-            border: 4px solid var(--tf-border-dark);
-            border-radius: 4px;
+            border: 2px solid var(--dr-border);
             margin-top: 5px;
         }
         
         .delete-btn {
             background: transparent;
             border: none;
-            color: var(--tf-red);
+            color: var(--dr-red);
             cursor: pointer;
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
+            font-family: 'Press Start 2P', cursive;
             font-size: 1.2rem;
             transition: 0.1s;
         }
+        .delete-btn:hover { transform: scale(1.2); text-shadow: 0 0 5px red; }
 
-        .delete-btn:hover { color: #000; transform: scale(1.2); }
-        .system-post .delete-btn:hover { color: white; }
-
+        /* Комментарии */
         .replies-section {
             margin-top: 10px;
-            background: rgba(0,0,0,0.05);
-            border: 2px solid rgba(0,0,0,0.1);
-            padding: 15px;
-            border-radius: 6px;
+            border-top: 2px solid #333;
+            padding-top: 15px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .system-post .replies-section {
-            background: rgba(255,255,255,0.05);
-            border-color: rgba(255,255,255,0.1);
-        }
-
         .reply-card {
-            border-left: 4px solid var(--tf-border-paper);
+            border-left: 3px solid #555;
             padding-left: 12px;
         }
 
         .reply-card.system-post {
-            border-left-color: var(--tf-orange);
+            border-left-color: var(--dr-pink);
         }
 
         .reply-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
             margin-bottom: 5px;
             align-items: center;
         }
@@ -395,100 +379,115 @@
 
         .reply-form input {
             margin-bottom: 0;
-            background: #fff;
-            color: #000;
-            border: 2px solid var(--tf-border-paper);
-        }
-
-        .system-post .reply-form input {
-            background: var(--tf-border-dark);
-            color: white;
-            border-color: #555;
         }
 
         .reply-btn {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.4rem;
-            background: var(--tf-border-dark);
-            color: white;
-            border: none;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            background: #000;
+            color: var(--dr-text);
+            border: 2px solid #555;
             padding: 0 15px;
             cursor: pointer;
-            border-radius: 4px;
             transition: 0.1s;
-            white-space: nowrap;
         }
 
         .reply-btn:hover {
-            background: var(--tf-orange);
-            color: #000;
+            border-color: var(--dr-cyan);
+            color: var(--dr-cyan);
         }
         
-        /* Крутилка TF2 для загрузки */
-        .tf-spinner {
-            width: 50px;
-            height: 50px;
-            animation: spin 1.5s linear infinite;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5));
+        /* Душа загрузки */
+        @keyframes pulseSoul {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        .loading-soul {
+            width: 40px;
+            height: 40px;
+            animation: pulseSoul 1s infinite;
             display: block;
             margin: 0 auto;
-        }
-        @keyframes spin {
-            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
 
+    <!-- ВЕКТОРНАЯ ДУША (шаблон) -->
+    <svg style="display: none;">
+        <symbol id="red-soul" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <rect x="2" y="2" width="4" height="2" fill="red"/>
+            <rect x="10" y="2" width="4" height="2" fill="red"/>
+            <rect x="0" y="4" width="16" height="4" fill="red"/>
+            <rect x="2" y="8" width="12" height="2" fill="red"/>
+            <rect x="4" y="10" width="8" height="2" fill="red"/>
+            <rect x="6" y="12" width="4" height="2" fill="red"/>
+            <rect x="7" y="14" width="2" height="2" fill="red"/>
+        </symbol>
+    </svg>
+
     <div class="container">
-        <header class="header">
+        <header class="header dr-box">
             <div>
-                <div style="font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #888; margin-bottom: 5px; font-weight: bold;">[ ЗАСЕКРЕЧЕНО / MANN CO. ]</div>
+                <h1 style="font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: var(--dr-cyan); text-shadow: none; margin-bottom: 5px;">[ CYBER TERMINAL ]</h1>
                 <h1>VSKY SPOTLIGHT</h1>
             </div>
-            <a href="index.html" class="nav-link">НА БАЗУ &raquo;</a>
+            <a href="index.html" class="nav-link">&lt; ВЕРНУТЬСЯ</a>
         </header>
 
         <div class="branch-selector">
-            <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">VSKY</button>
-            <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">SOLAR</button>
+            <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">
+                <svg class="soul-icon"><use href="#red-soul"></use></svg>
+                VSKY
+            </button>
+            <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">
+                <svg class="soul-icon"><use href="#red-soul"></use></svg>
+                SOLAR
+            </button>
         </div>
 
         <main class="main-grid">
             <aside>
                 <!-- БЛОК ЛОГИНА -->
-                <div id="login-section" class="tf-sidebar-box">
+                <div id="login-section" class="dr-box">
                     <div class="panel-title">АВТОРИЗАЦИЯ</div>
-                    <div><input type="text" id="login-username" placeholder="ИМЯ НАЁМНИКА"></div>
-                    <div><input type="password" id="login-pin" placeholder="PIN-КОД"></div>
-                    <button class="act-btn" onclick="attemptLogin()">ВОЙТИ</button>
+                    <div><input type="text" id="login-username" placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ"></div>
+                    <div><input type="password" id="login-pin" placeholder="ПИН-КОД"></div>
+                    <button class="act-btn" onclick="attemptLogin()">
+                        <svg class="btn-soul"><use href="#red-soul"></use></svg>
+                        ВОЙТИ
+                    </button>
                     <div id="login-sys-msg" class="sys-msg"></div>
                 </div>
 
-                <!-- БЛОК ПУБЛИКАЦИИ (Скрыт для гостей) -->
-                <div id="post-section" class="tf-sidebar-box" style="display: none;">
+                <!-- БЛОК ПУБЛИКАЦИИ -->
+                <div id="post-section" class="dr-box" style="display: none;">
                     <div class="panel-title">СВЯЗЬ</div>
-                    <div style="font-family: 'Roboto', sans-serif; font-size: 0.85rem; color: #aaa; margin-bottom: 15px;">
-                        ОПЕРАТОР: <span id="current-user-display" style="color: var(--tf-orange); font-weight: bold;"></span>
+                    <div style="font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: #aaa; margin-bottom: 15px;">
+                        ОПЕРАТОР: <span id="current-user-display" style="color: var(--dr-cyan);"></span>
                     </div>
-                    <textarea id="post-text" placeholder="Введите сообщение для команды..."></textarea>
+                    <textarea id="post-text" placeholder="* Введите сообщение..."></textarea>
                     
                     <div>
-                        <label for="post-image-input" class="file-upload-btn">ПРИКРЕПИТЬ ФОТО</label>
+                        <label for="post-image-input" class="file-upload-btn">ПРИКРЕПИТЬ ИЗОБРАЖЕНИЕ</label>
                         <input type="file" id="post-image-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
                         <img id="image-preview" src="" alt="Preview">
                     </div>
 
                     <!-- Галочка СИСТЕМЫ (Только для DrGnusin) -->
-                    <div id="system-post-toggle" style="display: none; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px;">
-                        <label style="color: var(--tf-orange); font-family: 'Teko', sans-serif; font-size: 1.4rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="is-system-post" style="width: 20px; height: 20px; margin: 0;">
-                            ОТ ЛИЦА АДМИНИСТРАТОРА
+                    <div id="system-post-toggle" style="display: none; margin-bottom: 15px; background: rgba(255,0,255,0.1); padding: 10px; border: 1px solid var(--dr-pink);">
+                        <label style="color: var(--dr-pink); font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="is-system-post" style="width: 20px; height: 20px; margin: 0; accent-color: var(--dr-pink);">
+                            СИСТЕМНОЕ УВЕДОМЛЕНИЕ
                         </label>
                     </div>
 
-                    <button class="act-btn" onclick="submitPost()">ОТПРАВИТЬ</button>
-                    <button class="act-btn danger" onclick="logout()">ВЫЙТИ ИЗ ТЕРМИНАЛА</button>
+                    <button class="act-btn" onclick="submitPost()">
+                        <svg class="btn-soul"><use href="#red-soul"></use></svg>
+                        [ ОТПРАВИТЬ ]
+                    </button>
+                    <button class="act-btn danger" onclick="logout()">[ ОТКЛЮЧИТЬСЯ ]</button>
                     <div id="post-sys-msg" class="sys-msg"></div>
                 </div>
             </aside>
@@ -504,7 +503,7 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ключи от Firebase
+        // ключики мои родные идите сюда
         const firebaseConfig = {
             apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
             authDomain: "gwwraylitspotlight.firebaseapp.com",
@@ -515,7 +514,6 @@
         const auth = getAuth(app); 
         const db = getFirestore(app);
         
-        // База аккаунтов (Наёмники)
         const VALID_USERS = {
             "DrGnusin": "3357",
             "mamanya": "120999",
@@ -526,6 +524,16 @@
         let currentBranch = 'raylit_posts'; 
         let unsubscribeSnapshot = null; 
         let currentImageBase64 = null; 
+
+        // Функция показа экрана загрузки в стиле Deltarune
+        function showLoadingUI(text) {
+            const container = document.getElementById('feed-container');
+            container.innerHTML = `
+                <div class="dr-box" style="text-align: center; display:flex; flex-direction:column; gap:15px; align-items:center;">
+                    <svg class="loading-soul" viewBox="0 0 16 16" shape-rendering="crispEdges"><use href="#red-soul"></use></svg>
+                    <div style="font-family: 'Press Start 2P', cursive; font-size: 1.2rem; color: white;">* ${text}</div>
+                </div>`;
+        }
 
         function formatTimestamp(ts) {
             if (!ts) return "??.??.????";
@@ -541,7 +549,6 @@
             setTimeout(() => { el.innerText = ''; }, 3000);
         }
 
-        // Загрузка и сжатие изображений
         window.handleImageSelect = function(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -591,7 +598,7 @@
             container.innerHTML = '';
 
             if (posts.length === 0) {
-                container.innerHTML = '<div class="post-card"><div class="post-content" style="opacity:0.5; font-style: italic;">База данных пуста...</div></div>';
+                container.innerHTML = '<div class="dr-box"><div class="post-content" style="color:#888;">* Здесь пусто...</div></div>';
                 return;
             }
 
@@ -610,20 +617,21 @@
                 card.className = `post-card ${cardClass}`;
                 
                 const safeText = post.text ? post.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
-                const imgHtml = post.image ? `<img src="${post.image}" class="post-img" alt="Прикрепленный файл">` : '';
+                // Звездочка в начале текста, как в диалогах Deltarune
+                const displayDesc = safeText.startsWith('*') ? safeText : `* ${safeText}`;
+
+                const imgHtml = post.image ? `<img src="${post.image}" class="post-img" alt="Attached file">` : '';
 
                 let deleteBtnHtml = '';
                 if (isLoggedIn) {
-                    deleteBtnHtml = `<button class="delete-btn" onclick="deletePost('${post.id}')" title="Удалить пост">✖</button>`;
+                    deleteBtnHtml = `<button class="delete-btn" onclick="deletePost('${post.id}')" title="Удалить">✖</button>`;
                 }
 
-                // Логика бейджа разработчика (Strange Quality)
-                let displayAuthor = post.author || "НЕИЗВЕСТНЫЙ";
+                let displayAuthor = post.author || "UNKNOWN";
                 if (displayAuthor === 'DrGnusin') {
                     displayAuthor = 'DrGnusin <span class="dev-badge">DEV</span>';
                 }
 
-                // Комментарии
                 let repliesHtml = '';
                 const replies = post.replies || [];
 
@@ -634,27 +642,28 @@
                         replies.forEach(reply => {
                             let rAuthor = reply.author || 'АНОНИМ';
                             if (rAuthor === 'DrGnusin') {
-                                rAuthor = 'DrGnusin <span class="dev-badge" style="font-size: 1rem;">DEV</span>';
+                                rAuthor = 'DrGnusin <span class="dev-badge" style="font-size: 0.6rem; padding: 2px 4px;">DEV</span>';
                             }
                             let rClass = reply.author === 'АДМИНИСТРАТОР' ? 'system-post' : '';
                             const safeReplyText = reply.text ? reply.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
+                            const dispReply = safeReplyText.startsWith('*') ? safeReplyText : `* ${safeReplyText}`;
                             
                             let replyDeleteBtnHtml = '';
                             if (isLoggedIn) {
                                 const replyId = reply.id || reply.timestamp;
-                                replyDeleteBtnHtml = `<button class="delete-btn" onclick="deleteReply('${post.id}', '${replyId}')" title="Удалить ответ">✖</button>`;
+                                replyDeleteBtnHtml = `<button class="delete-btn" style="font-size: 1rem;" onclick="deleteReply('${post.id}', '${replyId}')" title="Удалить">✖</button>`;
                             }
 
                             repliesHtml += `
                                 <div class="reply-card ${rClass}">
                                     <div class="reply-header">
                                         <div>
-                                            <span class="post-author" style="font-size: 1.2rem;">${rAuthor}</span>
-                                            <span class="post-time" style="margin-left: 10px;">${formatTimestamp(reply.timestamp)}</span>
+                                            <span class="post-author" style="font-size: 0.9rem;">${rAuthor}</span>
+                                            <span class="post-time" style="font-size: 0.9rem;">${formatTimestamp(reply.timestamp)}</span>
                                         </div>
                                         ${replyDeleteBtnHtml}
                                     </div>
-                                    <div class="post-content" style="font-size: 1rem;">${safeReplyText}</div>
+                                    <div class="post-content" style="font-size: 1.1rem;">${dispReply}</div>
                                 </div>
                             `;
                         });
@@ -663,7 +672,7 @@
                     if (isLoggedIn) {
                         repliesHtml += `
                             <div class="reply-form">
-                                <input type="text" id="reply-input-${post.id}" placeholder="Оставить комментарий...">
+                                <input type="text" id="reply-input-${post.id}" placeholder="* Комментарий...">
                                 <button class="reply-btn" onclick="submitReply('${post.id}')">ОТВЕТИТЬ</button>
                             </div>
                         `;
@@ -675,11 +684,11 @@
                     <div class="post-header">
                         <div>
                             <span class="post-author">${displayAuthor}</span>
-                            <span class="post-time" style="margin-left: 15px;">${formatTimestamp(post.timestamp)}</span>
+                            <span class="post-time">${formatTimestamp(post.timestamp)}</span>
                         </div>
                         ${deleteBtnHtml}
                     </div>
-                    <div class="post-content">${safeText}</div>
+                    <div class="post-content">${displayDesc}</div>
                     ${imgHtml}
                     ${repliesHtml}
                 `;
@@ -687,7 +696,6 @@
             });
         }
 
-        // Переключение между RED и BLU ветками
         window.switchBranch = function(branchName) {
             currentBranch = branchName;
             
@@ -697,8 +705,7 @@
             if (branchName === 'raylit_posts') document.getElementById('btn-raylit').classList.add('active');
             if (branchName === 'solar_posts') document.getElementById('btn-solar').classList.add('active');
             
-            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">ПОДКЛЮЧЕНИЕ К РАДИОЧАСТОТЕ...</div></div>';
-            
+            showLoadingUI("Загрузка файлов...");
             listenToDatabase();
         }
 
@@ -710,17 +717,13 @@
                 document.getElementById('post-section').style.display = 'block';
                 
                 let displayName = currentUser;
-                if (currentUser === 'DrGnusin') {
-                    displayName = 'DrGnusin (ADMIN)';
-                }
+                if (currentUser === 'DrGnusin') displayName = 'DrGnusin (ADMIN)';
                 document.getElementById('current-user-display').innerText = displayName;
 
-                // Показываем галочку системы только для DrGnusin
                 const sysToggle = document.getElementById('system-post-toggle');
                 if (sysToggle) {
-                    if (currentUser === 'DrGnusin') {
-                        sysToggle.style.display = 'block';
-                    } else {
+                    if (currentUser === 'DrGnusin') sysToggle.style.display = 'block';
+                    else {
                         sysToggle.style.display = 'none';
                         document.getElementById('is-system-post').checked = false;
                     }
@@ -742,7 +745,7 @@
                 document.getElementById('login-pin').value = '';
                 checkSession();
             } else {
-                showMessage('login-sys-msg', 'ОТКАЗАНО В ДОСТУПЕ', true);
+                showMessage('login-sys-msg', '* ОШИБКА ДОСТУПА', true);
             }
         }
 
@@ -759,7 +762,7 @@
             const isSystem = isSystemCheck ? isSystemCheck.checked : false;
 
             if (!text && !currentImageBase64) {
-                showMessage('post-sys-msg', 'ПУСТОЕ ПОЛЕ!', true);
+                showMessage('post-sys-msg', '* НИЧЕГО НЕ ВВЕДЕНО', true);
                 return;
             }
 
@@ -774,36 +777,29 @@
                 timestamp: Date.now(),
                 replies: []
             };
-            
-            if (currentImageBase64) {
-                newPost.image = currentImageBase64;
-            }
+            if (currentImageBase64) newPost.image = currentImageBase64;
 
             try {
-                if (!auth.currentUser) throw new Error("Нет авторизации для записи");
-                // Пишем в корень базы, в выбранную ветку
+                if (!auth.currentUser) throw new Error("Нет соединения с ядром.");
                 const postsCol = collection(db, currentBranch);
                 await addDoc(postsCol, newPost);
                 
                 textarea.value = '';
                 if (isSystemCheck) isSystemCheck.checked = false;
                 resetImageUpload();
-                showMessage('post-sys-msg', 'СООБЩЕНИЕ ОТПРАВЛЕНО', false);
+                showMessage('post-sys-msg', '* УСПЕШНО ОТПРАВЛЕНО', false);
             } catch (e) {
-                console.error("Ошибка при отправке:", e);
-                showMessage('post-sys-msg', 'ОШИБКА СЕТИ', true);
+                console.error("Ошибка:", e);
+                showMessage('post-sys-msg', '* ОШИБКА СЕТИ', true);
             }
         }
 
-        // Удаление постов и ответов
         window.deletePost = async function(postId) {
             try {
                 if (!auth.currentUser) return;
                 const docRef = doc(db, currentBranch, postId);
                 await deleteDoc(docRef);
-            } catch (e) {
-                console.error("Ошибка при удалении:", e);
-            }
+            } catch (e) { console.error("Ошибка удаления:", e); }
         }
 
         window.submitReply = async function(postId) {
@@ -816,9 +812,7 @@
             const isSystem = isSystemCheck ? isSystemCheck.checked : false;
             
             let authorName = currentUser;
-            if (isSystem && currentUser === 'DrGnusin') {
-                authorName = 'АДМИНИСТРАТОР';
-            }
+            if (isSystem && currentUser === 'DrGnusin') authorName = 'АДМИНИСТРАТОР';
 
             const newReply = {
                 id: Date.now().toString() + Math.random().toString(36).substring(2, 8),
@@ -830,13 +824,9 @@
             try {
                 if (!auth.currentUser) return;
                 const docRef = doc(db, currentBranch, postId);
-                await updateDoc(docRef, {
-                    replies: arrayUnion(newReply)
-                });
+                await updateDoc(docRef, { replies: arrayUnion(newReply) });
                 input.value = '';
-            } catch (e) {
-                console.error("Ошибка при отправке ответа:", e);
-            }
+            } catch (e) { console.error("Ошибка ответа:", e); }
         }
 
         window.deleteReply = async function(postId, replyIdentifier) {
@@ -852,23 +842,15 @@
 
                 const docRef = doc(db, currentBranch, postId);
                 await updateDoc(docRef, { replies: updatedReplies });
-            } catch (e) {
-                console.error("Ошибка при удалении ответа:", e);
-            }
+            } catch (e) { console.error("Ошибка удаления:", e); }
         }
 
         function listenToDatabase() {
             if (!auth.currentUser) return; 
-            
-            if (unsubscribeSnapshot) {
-                unsubscribeSnapshot();
-            }
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
 
-            // Слушаем корень базы (коллекции raylit_posts или solar_posts)
             const postsCol = collection(db, currentBranch);
             
-            document.getElementById('feed-container').innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">ЗАГРУЗКА ДАННЫХ РАЗВЕДКИ...</div></div>';
-
             unsubscribeSnapshot = onSnapshot(postsCol, (snapshot) => {
                 posts = [];
                 snapshot.forEach((doc) => {
@@ -878,39 +860,33 @@
                 posts.sort((a, b) => b.timestamp - a.timestamp);
                 renderPosts();
             }, (error) => {
-                console.error("Сбой чтения БД:", error);
+                console.error("Сбой:", error);
                 document.getElementById('feed-container').innerHTML = `
-                    <div class="post-card">
+                    <div class="dr-box">
                         <div class="post-content msg-error">
-                            ОШИБКА БАЗЫ ДАННЫХ: ${error.message}
+                            * СБОЙ ЯДРА: ${error.message}
                         </div>
                     </div>`;
             });
         }
 
-        // Запуск
-        const container = document.getElementById('feed-container');
-        container.innerHTML = '<div class="post-card" style="text-align: center; background: transparent; border: none; box-shadow: none;"><img src="https://file.garden/aUk_YK3Gbmwc6_an/tf.png" class="tf-spinner" alt="Loading..."><div style="margin-top: 15px; font-family: Teko, sans-serif; font-size: 1.8rem; color: var(--tf-text-light); text-shadow: 1px 1px 2px #000;">АВТОРИЗАЦИЯ В СИСТЕМЕ MANN CO...</div></div>';
+        showLoadingUI("Подключение к Тёмному Фонтану...");
 
         signInAnonymously(auth).catch((error) => {
-            console.error("Ошибка авторизации:", error);
-            container.innerHTML = `
-                <div class="post-card">
+            document.getElementById('feed-container').innerHTML = `
+                <div class="dr-box">
                     <div class="post-content msg-error">
-                        ОШИБКА АВТОРИЗАЦИИ: ${error.message}<br>
+                        * ОШИБКА: ${error.message}
                     </div>
                 </div>`;
         });
 
         onAuthStateChanged(auth, (user) => {
-            if (user) {
-                listenToDatabase();
-            }
+            if (user) listenToDatabase();
         });
 
         checkSession();
 
-        // Отправка PIN-кода на Enter
         document.getElementById('login-pin').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') window.attemptLogin();
         });
