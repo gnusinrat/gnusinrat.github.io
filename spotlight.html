@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>VSKY SPOTLIGHT</title>
     
-    <!-- Шрифты Deltarune: Пиксельный для заголовков, читабельный для постов -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -14,15 +13,16 @@
     <style>
         :root {
             --dr-bg: #000000;
-            --dr-grid: rgba(180, 0, 255, 0.4); /* Фиолетовая сетка */
+            --dr-grid-front: rgba(180, 0, 255, 0.5);
+            --dr-grid-back: rgba(180, 0, 255, 0.15);
             
             --dr-text: #ffffff;
             --dr-border: #ffffff;
             
-            --dr-pink: #ff00ff; /* Системные / Агрессивные */
-            --dr-cyan: #00ffff; /* Игрок / Активные элементы */
-            --dr-yellow: #ffff00; /* Ветка Солар */
-            --dr-red: #ff0000; /* Ветка Рейлит */
+            --dr-pink: #ff00ff;
+            --dr-cyan: #00ffff;
+            --dr-yellow: #ffff00;
+            --dr-red: #ff0000;
         }
 
         * {
@@ -31,19 +31,24 @@
             padding: 0;
         }
 
-        /* Движущаяся сетка */
-        @keyframes gridMove {
+        @keyframes gridMoveFront {
             0% { background-position: 0 0; }
             100% { background-position: -40px -40px; }
+        }
+        
+        @keyframes gridMoveBack {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px -30px; }
         }
 
         body {
             background-color: var(--dr-bg);
             background-image: 
-                linear-gradient(var(--dr-grid) 2px, transparent 2px),
-                linear-gradient(90deg, var(--dr-grid) 2px, transparent 2px);
+                linear-gradient(var(--dr-grid-front) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-front) 2px, transparent 2px);
             background-size: 40px 40px;
-            animation: gridMove 2s linear infinite;
+            animation: gridMoveFront 1.5s linear infinite;
+            position: relative;
             
             color: var(--dr-text);
             font-family: 'Share Tech Mono', monospace;
@@ -52,6 +57,19 @@
             display: flex;
             justify-content: center;
             padding: 20px;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50px; left: -50px; right: -50px; bottom: -50px;
+            z-index: -1;
+            background-image: 
+                linear-gradient(var(--dr-grid-back) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-back) 2px, transparent 2px);
+            background-size: 30px 30px;
+            animation: gridMoveBack 2.5s linear infinite;
+            pointer-events: none;
         }
 
         .container {
@@ -63,7 +81,6 @@
             z-index: 10;
         }
 
-        /* Универсальный стиль окна (Text Box) */
         .dr-box {
             background-color: #000;
             border: 4px solid var(--dr-border);
@@ -103,7 +120,6 @@
             box-shadow: 0 0 10px var(--dr-cyan);
         }
 
-        /* Переключатель веток */
         .branch-selector {
             display: flex;
             gap: 15px;
@@ -126,12 +142,12 @@
         }
 
         .soul-icon {
-            width: 20px;
-            height: 20px;
-            display: none; /* Скрыта, если не активна */
+            width: 18px;
+            height: auto;
+            display: none; 
+            image-rendering: pixelated;
         }
 
-        /* Raylit = Красный, Solar = Желтый */
         .branch-btn#btn-raylit.active {
             border-color: var(--dr-red);
             color: var(--dr-text);
@@ -164,7 +180,6 @@
             .branch-selector { flex-direction: column; gap: 10px; }
         }
 
-        /* Сайдбар */
         .panel-title {
             font-family: 'Press Start 2P', cursive;
             font-size: 1.2rem;
@@ -227,7 +242,7 @@
         }
 
         button.act-btn:hover .btn-soul { display: block; }
-        .btn-soul { width: 12px; height: 12px; display: none; }
+        .btn-soul { width: 14px; height: auto; display: none; image-rendering: pixelated; }
 
         .file-upload-btn {
             display: block;
@@ -264,7 +279,6 @@
             gap: 20px;
         }
         
-        /* Пост-бокс */
         .post-card {
             background-color: #000;
             border: 4px solid var(--dr-border);
@@ -280,7 +294,6 @@
             border-color: #888;
         }
 
-        /* Сообщения Администратора (Системы) */
         .post-card.system-post {
             border-color: var(--dr-pink);
             box-shadow: 0 0 15px rgba(255,0,255,0.2);
@@ -345,7 +358,6 @@
         }
         .delete-btn:hover { transform: scale(1.2); text-shadow: 0 0 5px red; }
 
-        /* Комментарии */
         .replies-section {
             margin-top: 10px;
             border-top: 2px solid #333;
@@ -397,35 +409,22 @@
             color: var(--dr-cyan);
         }
         
-        /* Душа загрузки */
         @keyframes pulseSoul {
             0% { transform: scale(1); }
             50% { transform: scale(1.3); }
             100% { transform: scale(1); }
         }
         .loading-soul {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: auto;
             animation: pulseSoul 1s infinite;
             display: block;
             margin: 0 auto;
+            image-rendering: pixelated;
         }
     </style>
 </head>
 <body>
-
-    <!-- ВЕКТОРНАЯ ДУША (шаблон) -->
-    <svg style="display: none;">
-        <symbol id="red-soul" viewBox="0 0 16 16" shape-rendering="crispEdges">
-            <rect x="2" y="2" width="4" height="2" fill="red"/>
-            <rect x="10" y="2" width="4" height="2" fill="red"/>
-            <rect x="0" y="4" width="16" height="4" fill="red"/>
-            <rect x="2" y="8" width="12" height="2" fill="red"/>
-            <rect x="4" y="10" width="8" height="2" fill="red"/>
-            <rect x="6" y="12" width="4" height="2" fill="red"/>
-            <rect x="7" y="14" width="2" height="2" fill="red"/>
-        </symbol>
-    </svg>
 
     <div class="container">
         <header class="header dr-box">
@@ -438,30 +437,28 @@
 
         <div class="branch-selector">
             <button id="btn-raylit" class="branch-btn active" onclick="switchBranch('raylit_posts')">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
+                <img class="soul-icon" src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" alt="Soul">
                 VSKY
             </button>
             <button id="btn-solar" class="branch-btn" onclick="switchBranch('solar_posts')">
-                <svg class="soul-icon"><use href="#red-soul"></use></svg>
+                <img class="soul-icon" src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" alt="Soul">
                 SOLAR
             </button>
         </div>
 
         <main class="main-grid">
             <aside>
-                <!-- БЛОК ЛОГИНА -->
                 <div id="login-section" class="dr-box">
                     <div class="panel-title">АВТОРИЗАЦИЯ</div>
                     <div><input type="text" id="login-username" placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ"></div>
                     <div><input type="password" id="login-pin" placeholder="ПИН-КОД"></div>
                     <button class="act-btn" onclick="attemptLogin()">
-                        <svg class="btn-soul"><use href="#red-soul"></use></svg>
+                        <img class="btn-soul" src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" alt="Soul">
                         ВОЙТИ
                     </button>
                     <div id="login-sys-msg" class="sys-msg"></div>
                 </div>
 
-                <!-- БЛОК ПУБЛИКАЦИИ -->
                 <div id="post-section" class="dr-box" style="display: none;">
                     <div class="panel-title">СВЯЗЬ</div>
                     <div style="font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: #aaa; margin-bottom: 15px;">
@@ -475,7 +472,6 @@
                         <img id="image-preview" src="" alt="Preview">
                     </div>
 
-                    <!-- Галочка СИСТЕМЫ (Только для DrGnusin) -->
                     <div id="system-post-toggle" style="display: none; margin-bottom: 15px; background: rgba(255,0,255,0.1); padding: 10px; border: 1px solid var(--dr-pink);">
                         <label style="color: var(--dr-pink); font-family: 'Share Tech Mono', monospace; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                             <input type="checkbox" id="is-system-post" style="width: 20px; height: 20px; margin: 0; accent-color: var(--dr-pink);">
@@ -484,7 +480,7 @@
                     </div>
 
                     <button class="act-btn" onclick="submitPost()">
-                        <svg class="btn-soul"><use href="#red-soul"></use></svg>
+                        <img class="btn-soul" src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" alt="Soul">
                         [ ОТПРАВИТЬ ]
                     </button>
                     <button class="act-btn danger" onclick="logout()">[ ОТКЛЮЧИТЬСЯ ]</button>
@@ -493,7 +489,6 @@
             </aside>
 
             <section class="feed" id="feed-container">
-                <!-- Сюда подгружаются посты -->
             </section>
         </main>
     </div>
@@ -503,7 +498,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ключики мои родные идите сюда
         const firebaseConfig = {
             apiKey: "AIzaSyAlGXzpw-cDNH7BScmIO4rjumj4Q8_sQKQ",
             authDomain: "gwwraylitspotlight.firebaseapp.com",
@@ -525,13 +519,19 @@
         let unsubscribeSnapshot = null; 
         let currentImageBase64 = null; 
 
-        // Функция показа экрана загрузки в стиле Deltarune
-        function showLoadingUI(text) {
+        function showLoadingUI(text, isError = false) {
             const container = document.getElementById('feed-container');
+            if (isError) {
+                container.innerHTML = `
+                    <div class="dr-box" style="border-color: red;">
+                        <div class="post-content msg-error">* ${text}</div>
+                    </div>`;
+                return;
+            }
             container.innerHTML = `
                 <div class="dr-box" style="text-align: center; display:flex; flex-direction:column; gap:15px; align-items:center;">
-                    <svg class="loading-soul" viewBox="0 0 16 16" shape-rendering="crispEdges"><use href="#red-soul"></use></svg>
-                    <div style="font-family: 'Press Start 2P', cursive; font-size: 1.2rem; color: white;">* ${text}</div>
+                    <img src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" class="loading-soul" alt="Soul">
+                    <div style="font-family: 'Press Start 2P', cursive; font-size: 1.2rem; color: white; line-height: 1.5;">* ${text}</div>
                 </div>`;
         }
 
@@ -598,7 +598,7 @@
             container.innerHTML = '';
 
             if (posts.length === 0) {
-                container.innerHTML = '<div class="dr-box"><div class="post-content" style="color:#888;">* Здесь пусто...</div></div>';
+                container.innerHTML = '<div class="dr-box"><div class="post-content" style="color:#888;">* Здесь пока пусто...</div></div>';
                 return;
             }
 
@@ -617,7 +617,6 @@
                 card.className = `post-card ${cardClass}`;
                 
                 const safeText = post.text ? post.text.replace(/</g, "&lt;").replace(/>/g, "&gt;") : "";
-                // Звездочка в начале текста, как в диалогах Deltarune
                 const displayDesc = safeText.startsWith('*') ? safeText : `* ${safeText}`;
 
                 const imgHtml = post.image ? `<img src="${post.image}" class="post-img" alt="Attached file">` : '';
@@ -705,7 +704,7 @@
             if (branchName === 'raylit_posts') document.getElementById('btn-raylit').classList.add('active');
             if (branchName === 'solar_posts') document.getElementById('btn-solar').classList.add('active');
             
-            showLoadingUI("Загрузка файлов...");
+            showLoadingUI("Загрузка файлов Тёмного Мира...");
             listenToDatabase();
         }
 
@@ -851,6 +850,8 @@
 
             const postsCol = collection(db, currentBranch);
             
+            showLoadingUI("Загрузка постов...");
+            
             unsubscribeSnapshot = onSnapshot(postsCol, (snapshot) => {
                 posts = [];
                 snapshot.forEach((doc) => {
@@ -860,29 +861,20 @@
                 posts.sort((a, b) => b.timestamp - a.timestamp);
                 renderPosts();
             }, (error) => {
-                console.error("Сбой:", error);
-                document.getElementById('feed-container').innerHTML = `
-                    <div class="dr-box">
-                        <div class="post-content msg-error">
-                            * СБОЙ ЯДРА: ${error.message}
-                        </div>
-                    </div>`;
+                showLoadingUI(`СБОЙ: ${error.message}<br><br>Включи анонимный вход в Firebase!`, true);
             });
         }
 
-        showLoadingUI("Подключение к Тёмному Фонтану...");
-
-        signInAnonymously(auth).catch((error) => {
-            document.getElementById('feed-container').innerHTML = `
-                <div class="dr-box">
-                    <div class="post-content msg-error">
-                        * ОШИБКА: ${error.message}
-                    </div>
-                </div>`;
-        });
+        showLoadingUI("Установка защищенного соединения...");
 
         onAuthStateChanged(auth, (user) => {
-            if (user) listenToDatabase();
+            if (user) {
+                listenToDatabase();
+            } else {
+                signInAnonymously(auth).catch((error) => {
+                    showLoadingUI(`ОШИБКА АВТОРИЗАЦИИ: ${error.message}<br>Зайди в Firebase -> Authentication и включи Anonymous.`, true);
+                });
+            }
         });
 
         checkSession();
