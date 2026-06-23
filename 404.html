@@ -3,75 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Страница не найдена — 404</title>
+    <title>404 - VSKY_DEAD_END</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
     <style>
-        /* Общие стили для центрирования */
-        body {
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f5; /* Светло-серый фон */
-            color: #3f3f46; /* Темно-серый текст */
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Press Start 2P', cursive;
+            height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            overflow: hidden;
+            position: relative;
         }
 
-        .container {
-            max-width: 500px;
-            padding: 20px;
-        }
-
-        /* Стиль огромной ошибки 404 */
-        h1 {
+        .error-code {
             font-size: 6rem;
-            margin: 0;
-            font-weight: 700;
-            color: #71717a; /* Средне-серый цвет для цифр */
-            line-height: 1;
+            margin-bottom: 40px;
+            text-shadow: 4px 4px 0px rgba(255, 255, 255, 0.15);
+            letter-spacing: 5px;
         }
 
-        /* Описание ошибки */
-        h2 {
-            font-size: 1.5rem;
-            margin: 15px 0 10px 0;
-            font-weight: 600;
-        }
-
-        p {
-            font-size: 1rem;
-            color: #a1a1aa; /* Чуть более светлый текст для пояснения */
-            margin-bottom: 30px;
-        }
-
-        /* Серая минималистичная кнопка */
-        .btn {
+        .cooler-link {
             display: inline-block;
-            text-decoration: none;
-            background-color: #27272a; /* Темный графит */
-            color: #ffffff;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            transition: transform 0.2s ease-in-out, filter 0.2s ease;
+            cursor: pointer;
         }
 
-        /* Эффект при наведении на кнопку */
-        .btn:hover {
-            background-color: #52525b; /* Становится чуть светлее */
+        .cooler-link:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+        }
+
+        .cooler-sprite {
+            width: 120px;
+            height: auto;
+            image-rendering: pixelated; 
+        }
+
+        .error-text {
+            font-size: 1.2rem;
+            margin-top: 40px;
+            line-height: 1.5;
+            color: #dddddd;
+        }
+
+        .dead-end {
+            position: absolute;
+            bottom: 20px;
+            font-size: 0.8rem;
+            color: #444444;
+            letter-spacing: 2px;
+        }
+        
+        @media (max-width: 600px) {
+            .error-code { font-size: 4rem; }
+            .error-text { font-size: 0.9rem; margin-top: 30px; }
+            .cooler-sprite { width: 100px; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>404</h1>
-        <h2>ничегошеньки</h2>
-        <p>эта ссылка не работает</p>
-        <a href="https://gnusinrat.github.io/index" class="btn">На главную</a>
-    </div>
+    <div class="error-code">404</div>
+    
+    <a href="https://deltarune.com/rarecats" class="cooler-link" target="_blank" rel="noopener noreferrer">
+        <img class="cooler-sprite" src="https://deltarune.wiki/images/Watercooler_battle_idle.png?cb=9c6ywj&h=thumb.php&f=Watercooler_battle_idle.png" alt="Deltarune Watercooler">
+    </a>
+    
+    <div class="error-text">* Тут только кулер.</div>
+    
+    <div class="dead-end">VSKY_DEAD_END</div>
 
 </body>
 </html>
