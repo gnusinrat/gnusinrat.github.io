@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>0 очков</title>
+    <style>
+        body {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+            user-select: none;
+        }
+
+        .cat {
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        let score = 0;
+        const catImageUrl = 'https://deltarune.com/assets/images/cat-001.gif';
+        const soundUrl = 'https://deltarune.com/assets/audio/sprinkle.ogg';
+        
+        const cats = [];
+        const catSize = 80;
+
+        function playSprinkleSound() {
+            const audio = new Audio(soundUrl);
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Браузер заблокировал звук до первого клика."));
+        }
+
+        function spawnCat() {
+            const catEl = document.createElement('img');
+            catEl.src = catImageUrl;
+            catEl.className = 'cat';
+            catEl.style.width = catSize + 'px';
+            catEl.style.height = catSize + 'px';
+            
+            const edge = Math.floor(Math.random() * 4);
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            
+            let startX, startY, endX, endY;
+            
+            if (edge === 0) { 
+                startX = Math.random() * w; startY = -catSize;
+                endX = startX + (Math.random() * 400 - 200); endY = h + catSize;
+            } else if (edge === 1) { 
+                startX = w + catSize; startY = Math.random() * h;
+                endX = -catSize; endY = startY + (Math.random() * 400 - 200);
+            } else if (edge === 2) { 
+                startX = Math.random() * w; startY = h + catSize;
+                endX = startX + (Math.random() * 400 - 200); endY = -catSize;
+            } else { 
+                startX = -catSize; startY = Math.random() * h;
+                endX = w + catSize; endY = startY + (Math.random() * 400 - 200);
+            }
+            
+            document.body.appendChild(catEl);
+            
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const dist = Math.hypot(dx, dy);
+            const speed = 0.5 + Math.random() * 0.8; 
+            const vx = (dx / dist) * speed;
+            const vy = (dy / dist) * speed;
+
+            const catObj = { el: catEl, x: startX, y: startY, vx, vy, dead: false };
+            cats.push(catObj);
+            
+            catEl.onmousedown = () => {
+                if (catObj.dead) return;
+                catObj.dead = true;
+                
+                playSprinkleSound();
+                score++;
+                document.title = `Очки: ${score}`;
+                
+                catEl.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
+                catEl.style.opacity = '0';
+                catEl.style.transform = `translate(${catObj.x}px, ${catObj.y}px) scale(1.3)`;
+                
+                setTimeout(() => catEl.remove(), 300);
+            };
+        }
+
+        function gameLoop() {
+            for (let i = 0; i < cats.length; i++) {
+                const c = cats[i];
+                if (c.dead) continue;
+                c.x += c.vx;
+                c.y += c.vy;
+                c.el.style.transform = `translate(${c.x}px, ${c.y}px)`;
+            }
+
+            for (let i = 0; i < cats.length; i++) {
+                for (let j = i + 1; j < cats.length; j++) {
+                    const c1 = cats[i];
+                    const c2 = cats[j];
+                    if (c1.dead || c2.dead) continue;
+
+                    const dx = (c2.x + catSize/2) - (c1.x + catSize/2);
+                    const dy = (c2.y + catSize/2) - (c1.y + catSize/2);
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist < catSize) {
+                        const overlap = catSize - dist;
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+
+                        c1.x -= nx * overlap / 2;
+                        c1.y -= ny * overlap / 2;
+                        c2.x += nx * overlap / 2;
+                        c2.y += ny * overlap / 2;
+
+                        const p = c1.vx * nx + c1.vy * ny - c2.vx * nx - c2.vy * ny;
+                        c1.vx -= p * nx;
+                        c1.vy -= p * ny;
+                        c2.vx += p * nx;
+                        c2.vy += p * ny;
+                    }
+                }
+            }
+
+            for (let i = cats.length - 1; i >= 0; i--) {
+                const c = cats[i];
+                if (c.dead) {
+                    cats.splice(i, 1);
+                    continue;
+                }
+                if (c.x < -300 || c.x > window.innerWidth + 300 || c.y < -300 || c.y > window.innerHeight + 300) {
+                    c.el.remove();
+                    cats.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        setInterval(spawnCat, 2500);
+        requestAnimationFrame(gameLoop);
+
+    </script>
+</body>
+</html>
