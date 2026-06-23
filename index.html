@@ -222,6 +222,27 @@
         .card:hover .soul-icon { opacity: 1; }
         .card:hover .card-title { color: var(--dr-pink); }
 
+        /* Кулер в левом нижнем углу */
+        #corner-cooler {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            transition: transform 0.2s ease-in-out, filter 0.2s ease;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        #corner-cooler:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+        }
+
+        #corner-cooler img {
+            width: 90px;
+            height: auto;
+            image-rendering: pixelated;
+        }
+
         #loading-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -256,12 +277,17 @@
             }
             .container { margin-top: 60px; }
             #lang-switch-corner { top: 10px; right: 10px; }
+            #corner-cooler img { width: 70px; }
         }
     </style>
 </head>
 <body>
 
     <button id="lang-switch-corner">EN</button>
+
+    <a href="https://deltarune.com/rarecats" id="corner-cooler" target="_blank" rel="noopener noreferrer">
+        <img src="https://deltarune.wiki/images/Watercooler_battle_idle.png?cb=9c6ywj&h=thumb.php&f=Watercooler_battle_idle.png" alt="Deltarune Watercooler">
+    </a>
 
     <div id="loading-screen">
         <img src="https://deltarune.wiki/images/SOUL_battle.png?cb=kvtrdg&h=thumb.php&f=SOUL_battle.png" class="loading-soul" alt="Loading Soul">
