@@ -27,7 +27,9 @@
 <body>
 
     <script>
-        let score = 0;
+        let score = parseInt(localStorage.getItem('rareCatsScore')) || 0;
+        document.title = `${score} очков`;
+
         const catImageUrl = 'https://deltarune.com/assets/images/cat-001.gif';
         const soundUrl = 'https://deltarune.com/assets/audio/sprinkle.ogg';
         
@@ -37,7 +39,7 @@
         function playSprinkleSound() {
             const audio = new Audio(soundUrl);
             audio.volume = 0.5;
-            audio.play().catch(e => console.log("Браузер заблокировал звук до первого клика."));
+            audio.play().catch(e => {});
         }
 
         function spawnCat() {
@@ -84,8 +86,9 @@
                 catObj.dead = true;
                 
                 playSprinkleSound();
-                score++;
-                document.title = `Очки: ${score}`;
+                score += 10;
+                localStorage.setItem('rareCatsScore', score);
+                document.title = `${score} очков`;
                 
                 catEl.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out';
                 catEl.style.opacity = '0';
