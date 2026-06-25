@@ -268,6 +268,34 @@
             image-rendering: pixelated;
         }
 
+        .running-dog {
+            position: fixed;
+            top: 50%;
+            right: -100px;
+            transform: translateY(-50%);
+            width: 80px;
+            height: 80px;
+            background-image: url('https://gnusinrat.github.io/assets/dog.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            image-rendering: pixelated;
+            z-index: 9999;
+            pointer-events: none;
+            animation: dogMove 5s linear infinite, dogFrames 0.2s steps(1) infinite;
+        }
+
+        @keyframes dogMove {
+            0% { right: -100px; }
+            100% { right: 100vw; }
+        }
+
+        @keyframes dogFrames {
+            0% { background-image: url('https://gnusinrat.github.io/assets/dog.png'); }
+            50% { background-image: url('https://gnusinrat.github.io/assets/dog2.png'); }
+            100% { background-image: url('https://gnusinrat.github.io/assets/dog.png'); }
+        }
+
         @media (max-width: 600px) {
             .header-top {
                 flex-direction: column;
@@ -284,6 +312,8 @@
 <body>
 
     <button id="lang-switch-corner">EN</button>
+
+    <div class="running-dog"></div>
 
     <a href="https://gnusinrat.github.io/rarercats" id="corner-cooler" target="_blank" rel="noopener noreferrer">
         <img src="https://gnusinrat.github.io/assets/cooler.png" alt="Кулер">
