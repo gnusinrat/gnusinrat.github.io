@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VSKY Research Facility</title>
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dr-bg: #000000;
+            --dr-grid-front: rgba(180, 0, 255, 0.5);
+            --dr-grid-back: rgba(180, 0, 255, 0.15);
+            --dr-text: #ffffff;
+            --dr-border: #ffffff;
+            --dr-accent: #00ffff;
+            --dr-pink: #ff00ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes gridMoveFront {
+            0% { background-position: 0 0; }
+            100% { background-position: -40px -40px; }
+        }
+        
+        @keyframes gridMoveBack {
+            0% { background-position: 0 0; }
+            100% { background-position: 30px -30px; }
+        }
+
+        body {
+            background-color: var(--dr-bg);
+            background-image: 
+                linear-gradient(var(--dr-grid-front) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-front) 2px, transparent 2px);
+            background-size: 40px 40px;
+            animation: gridMoveFront 1.5s linear infinite;
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50px; left: -50px; right: -50px; bottom: -50px;
+            z-index: -1;
+            background-image: 
+                linear-gradient(var(--dr-grid-back) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-back) 2px, transparent 2px);
+            background-size: 30px 30px;
+            animation: gridMoveBack 2.5s linear infinite;
+            pointer-events: none;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+        }
+
+        .dr-box {
+            background-color: #000;
+            border: 4px solid var(--dr-border);
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            color: var(--dr-text);
+            line-height: 1.4;
+            text-shadow: 2px 2px 0px var(--dr-pink);
+        }
+
+        h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2rem;
+            color: var(--dr-cyan);
+            margin-bottom: 15px;
+        }
+
+        .act-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--dr-text);
+            background: #000;
+            border: 4px solid var(--dr-border);
+            padding: 10px 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.1s;
+        }
+
+        .act-btn:hover {
+            border-color: var(--dr-accent);
+            color: var(--dr-accent);
+            box-shadow: 0 0 15px var(--dr-accent);
+        }
+
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        .text-content {
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #111;
+            border: 2px solid var(--dr-border);
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem;
+            padding: 12px;
+            outline: none;
+            transition: 0.1s;
+        }
+
+        .search-input:focus {
+            border-color: var(--dr-cyan);
+            box-shadow: inset 0 0 5px rgba(0, 255, 255, 0.3);
+        }
+
+        .results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .anomaly-card {
+            background: #000;
+            border: 2px solid var(--dr-border);
+            padding: 15px;
+            color: var(--dr-text);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            transition: 0.1s;
+        }
+
+        .anomaly-card:hover {
+            border-color: var(--dr-pink);
+            transform: translateX(5px);
+            box-shadow: 0 0 10px rgba(255,0,255,0.4);
+        }
+
+        .anomaly-id {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.9rem;
+            color: var(--dr-cyan);
+        }
+
+        @media (max-width: 768px) {
+            .layout-grid { grid-template-columns: 1fr; }
+            .header-top { flex-direction: column; text-align: center; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="dr-box header-top">
+            <div>
+                <h1 style="font-family: 'Share Tech Mono', monospace; font-size: 1rem; color: var(--dr-cyan); text-shadow: none; margin-bottom: 5px;">[ СЕКРЕТНЫЕ АРХИВЫ ]</h1>
+                <h1>VSKY RESEARCH FACILITY</h1>
+            </div>
+            <a href="../../index.html" class="act-btn">&lt; НА ГЛАВНУЮ</a>
+        </header>
+
+        <div class="layout-grid">
+            <div class="dr-box">
+                <h2>Добро пожаловать!</h2>
+                <div class="text-content" id="format-zone">
+[жирный]дорбо пожлывать на круутой сай vsky да[жирный] 
+
+А если серьёзно... Привет! Я Ратибор, или же ratbar1999. Я делаю крутые штуки, и этот сайт существует для вымышленных записей о вымышленных аномалиях.
+                </div>
+            </div>
+
+            <div class="dr-box">
+                <h2>База Данных</h2>
+                <input type="text" id="search-box" class="search-input" placeholder="RAT-Код объекта или название">
+                
+                <div class="results" id="results-container">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const anomalies = [
+            { id: "RAT-001", name: "Собрание у кулера", file: "rat001.html" },
+            { id: "RAT-002", name: "Осторожно, сом!", file: "rat002.html" }
+        ];
+
+        function renderResults(filterText = "") {
+            const container = document.getElementById('results-container');
+            container.innerHTML = "";
+            
+            const lowerFilter = filterText.toLowerCase();
+            const filtered = anomalies.filter(a => 
+                a.id.toLowerCase().includes(lowerFilter) || 
+                a.name.toLowerCase().includes(lowerFilter)
+            );
+
+            filtered.forEach(a => {
+                const card = document.createElement('a');
+                card.href = a.file;
+                card.className = "anomaly-card";
+                card.innerHTML = `<span class="anomaly-id">${a.id}</span><span>${a.name}</span>`;
+                container.appendChild(card);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div style="color:#aaa; text-align:center; padding:10px;">* Записей не найдено.</div>';
+            }
+        }
+
+        document.getElementById('search-box').addEventListener('input', (e) => {
+            renderResults(e.target.value);
+        });
+
+        function applyFormatting() {
+            const zone = document.getElementById('format-zone');
+            let text = zone.innerHTML;
+            text = text.replace(/\[жирный\](.*?)\[жирный\]/gs, '<strong>$1</strong>');
+            zone.innerHTML = text;
+        }
+
+        window.onload = () => {
+            renderResults();
+            applyFormatting();
+        };
+    </script>
+</body>
+</html>

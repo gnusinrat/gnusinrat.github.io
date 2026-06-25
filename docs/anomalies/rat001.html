@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAT-001 - VSKYRF</title>
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --dr-bg: #000000;
+            --dr-grid-front: rgba(180, 0, 255, 0.5);
+            --dr-grid-back: rgba(180, 0, 255, 0.15);
+            --dr-text: #ffffff;
+            --dr-border: #ffffff;
+            --dr-accent: #00ffff;
+            --dr-pink: #ff00ff;
+            --dr-yellow: #ffff00;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        @keyframes gridMoveFront { 0% { background-position: 0 0; } 100% { background-position: -40px -40px; } }
+        @keyframes gridMoveBack { 0% { background-position: 0 0; } 100% { background-position: 30px -30px; } }
+
+        body {
+            background-color: var(--dr-bg);
+            background-image: 
+                linear-gradient(var(--dr-grid-front) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-front) 2px, transparent 2px);
+            background-size: 40px 40px;
+            animation: gridMoveFront 1.5s linear infinite;
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1.2rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50px; left: -50px; right: -50px; bottom: -50px;
+            z-index: -1;
+            background-image: 
+                linear-gradient(var(--dr-grid-back) 2px, transparent 2px),
+                linear-gradient(90deg, var(--dr-grid-back) 2px, transparent 2px);
+            background-size: 30px 30px;
+            animation: gridMoveBack 2.5s linear infinite;
+            pointer-events: none;
+        }
+
+        .container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
+
+        .dr-box {
+            background-color: #000; border: 4px solid var(--dr-border); padding: 25px;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2); position: relative;
+        }
+
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+
+        h1 { font-family: 'Press Start 2P', cursive; font-size: 1.4rem; color: var(--dr-yellow); line-height: 1.5; }
+
+        .act-btn {
+            font-family: 'Press Start 2P', cursive; font-size: 0.8rem; color: var(--dr-text);
+            background: #000; border: 4px solid var(--dr-border); padding: 10px 15px;
+            cursor: pointer; text-decoration: none; transition: 0.1s;
+        }
+        .act-btn:hover { border-color: var(--dr-accent); color: var(--dr-accent); box-shadow: 0 0 15px var(--dr-accent); }
+
+        .doc-content { font-size: 1.25rem; line-height: 1.6; white-space: pre-wrap; }
+
+        .doc-content strong { color: var(--dr-pink); font-weight: normal; }
+        .doc-content i { color: #aaa; font-style: italic; }
+        
+        .anomaly-img {
+            max-width: 100%; height: auto; border: 4px solid var(--dr-cyan);
+            margin: 20px 0; box-shadow: 0 0 15px rgba(0, 255, 255, 0.3); display: block;
+        }
+
+        .dr-code {
+            background: #111; border: 2px dashed #555; padding: 15px;
+            color: #0f0; margin: 15px 0; font-family: 'Share Tech Mono', monospace;
+        }
+
+        .footnote {
+            color: var(--dr-cyan); cursor: help; text-decoration: underline; text-decoration-style: dotted;
+            position: relative; display: inline-block; font-size: 1rem; vertical-align: super;
+        }
+
+        .footnote-popup {
+            visibility: hidden; opacity: 0; width: 250px; background-color: #000;
+            color: #fff; text-align: center; border: 2px solid var(--dr-cyan); padding: 10px;
+            position: absolute; z-index: 100; bottom: 125%; left: 50%; margin-left: -125px;
+            box-shadow: 0 0 10px rgba(0,255,255,0.5); font-family: 'Share Tech Mono', monospace;
+            font-size: 1.1rem; white-space: normal; transition: opacity 0.2s;
+        }
+
+        .footnote:hover .footnote-popup { visibility: visible; opacity: 1; }
+
+        @media (max-width: 600px) { .header-top { flex-direction: column; text-align: center; gap: 15px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="dr-box header-top">
+            <h1>RAT-001 - Собрание у кулера</h1>
+            <a href="index.html" class="act-btn">&lt; НАЗАД</a>
+        </header>
+
+        <div class="dr-box doc-content" id="doc-zone">
+[пикча:https://file.garden/aUk_YK3Gbmwc6_an/001]
+
+**Названия:** RAT-001, Собрание у кулера, Водяные Барахольщики[футноут]Альфиане RAT-001 на самом деле не пьют воду из контейнера под ними.[футноут]
+**Класс:** Non potest contineri (Не содержится)
+
+**Описание:** RAT-001 — это группа плюшевых игрушек бренда "Bunnycorn Surprise!". 
+RAT-001-01 — фиолетовый, 02 — розовый, а 03 — белый.
+
+**Поведение:** RAT-001 обитают на контейнерах с водой в кулерах. Если контейнер убрать, RAT-001 перестают существовать. Если в кулер вставить новый контейнер, RAT-001 материализуются на нём. Если альфиан RAT-001 стряхнуть с кулера, они телепортируются обратно через 30 минут, вызывая галлюцинации и боль в груди у субъекта, который их потревожил. Других форм агрессии замечено не было.
+
+**Содержание:** RAT-001, очевидно, не могут содержаться, так как могут телепортироваться обратно к своей точке интереса с любого расстояния[футноут]Это было подтверждено другом д-ра gRat'а, ██████[футноут].
+        </div>
+    </div>
+
+    <script>
+        window.onload = () => {
+            const zone = document.getElementById('doc-zone');
+            let text = zone.innerHTML;
+            
+            text = text.replace(/\[жирный\](.*?)\[жирный\]/gs, '<strong>$1</strong>');
+            text = text.replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>');
+            text = text.replace(/\/\/(.*?)\/\//gs, '<i>$1</i>');
+            text = text.replace(/\[пикча:(.*?)\]/g, '<img src="$1" class="anomaly-img">');
+            text = text.replace(/\[\[code\]\]([\s\S]*?)\[\[\/code\]\]/gs, '<div class="dr-code">$1</div>');
+            text = text.replace(/\[футноут\](.*?)\[футноут\]/gs, '<span class="footnote">[?]<span class="footnote-popup">$1</span></span>');
+            
+            zone.innerHTML = text;
+        };
+    </script>
+</body>
+</html>
