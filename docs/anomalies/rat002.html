@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RAT-002 - VSKYRF</title>
-        <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -139,7 +139,7 @@
             
             text = text.replace(/\[жирный\](.*?)\[жирный\]/gs, '<strong>$1</strong>');
             text = text.replace(/\*\*(.*?)\*\*/gs, '<strong>$1</strong>');
-            text = text.replace(/\/\/(.*?)\/\//gs, '<i>$1</i>');
+            text = text.replace(/(?<!:)\/\/(.*?)\/\//gs, '<i>$1</i>');
             text = text.replace(/\[пикча:(.*?)\]/g, '<img src="$1" class="anomaly-img">');
             text = text.replace(/\[\[code\]\]([\s\S]*?)\[\[\/code\]\]/gs, '<div class="dr-code">$1</div>');
             text = text.replace(/\[футноут\](.*?)\[футноут\]/gs, '<span class="footnote">[?]<span class="footnote-popup">$1</span></span>');
