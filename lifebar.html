@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lifebar</title>
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(23, min(3.5vw, 30px));
+            gap: min(0.5vw, 4px);
+            margin-bottom: 60px;
+            justify-content: center;
+        }
+        .cell {
+            aspect-ratio: 1 / 1;
+            background-color: #111111;
+            transition: background-color 0.1s, box-shadow 0.1s;
+            cursor: pointer;
+        }
+        .cell.alive {
+            background-color: #ffffff;
+            box-shadow: 0 0 8px #ffffff;
+        }
+        .cell:hover {
+            background-color: #333333;
+        }
+        .cell.alive:hover {
+            background-color: #dddddd;
+        }
+        .content-wrap {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            max-width: 1000px;
+            width: 100%;
+            background: #050505;
+            border: 2px solid #333333;
+            padding: 30px;
+        }
+        .text-section {
+            flex: 1;
+            font-size: 1.2rem;
+            line-height: 1.6;
+        }
+        .text-section p {
+            margin-bottom: 20px;
+        }
+        .text-section ul {
+            list-style-type: none;
+        }
+        .text-section li {
+            margin-bottom: 10px;
+        }
+        .text-section li::before {
+            content: "- ";
+            color: #ffffff;
+        }
+        .image-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        .image-section img {
+            max-width: 100%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+        .nav-link {
+            margin-top: 40px;
+            font-family: 'Press Start 2P', cursive;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 2px solid #ffffff;
+            padding: 12px 20px;
+            transition: 0.1s;
+        }
+        .nav-link:hover {
+            color: #00ffff;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+        }
+        @media (max-width: 768px) {
+            .content-wrap {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-grid" id="lifebar-logo"></div>
+
+    <div class="content-wrap">
+        <div class="text-section">
+            <p>Программа для симуляций Игры в Жизнь Джона Конвея на Python<br>
+            Используется на моих 24/7 стримах.</p>
+            <ul>
+                <li>Простой интерфейс</li>
+                <li>Несколько встроенных рулстрингов</li>
+                <li>Статистика</li>
+                <li>Редактор паттернов + система паттернов .pat</li>
+            </ul>
+        </div>
+        <div class="image-section">
+            <img src="gnusinrat.github.io/assets/lifebar_ui.png" alt="Lifebar Interface">
+        </div>
+    </div>
+
+    <a href="index.html" class="nav-link">&lt; НА ГЛАВНУЮ</a>
+
+    <script>
+        const map = [
+            "10100110000010000000000",
+            "10001000000010000000000",
+            "10101110010011000110101",
+            "10101000101010101010110",
+            "10101000111010101110100",
+            "10101000100010101010100",
+            "10101000011011000110100"
+        ];
+        const grid = document.getElementById('lifebar-logo');
+        
+        map.forEach(row => {
+            for (let char of row) {
+                const cell = document.createElement('div');
+                cell.className = char === '1' ? 'cell alive' : 'cell';
+                cell.onclick = () => cell.classList.toggle('alive');
+                grid.appendChild(cell);
+            }
+        });
+    </script>
+</body>
+</html>
