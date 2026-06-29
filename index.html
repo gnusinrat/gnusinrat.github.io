@@ -5,48 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>VSKY</title>
-    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link class="icon-link" rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    
     <style>
         :root {
             --dr-bg: #000000;
-            --dr-grid-front: rgba(180, 0, 255, 0.5); /* Яркая передняя сетка */
-            --dr-grid-back: rgba(180, 0, 255, 0.15); /* Тусклая задняя сетка */
+            --dr-grid-front: rgba(180, 0, 255, 0.5);
+            --dr-grid-back: rgba(180, 0, 255, 0.15);
             --dr-text: #ffffff;
             --dr-border: #ffffff;
             --dr-accent: #00ffff;
             --dr-pink: #ff00ff;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-
-        /* Анимации для двойного фона битвы */
         @keyframes gridMoveFront {
             0% { background-position: 0 0; }
             100% { background-position: -40px -40px; }
         }
-        
         @keyframes gridMoveBack {
             0% { background-position: 0 0; }
-            100% { background-position: 30px -30px; } /* Движется в другую сторону */
+            100% { background-position: 30px -30px; }
         }
-
         body {
             background-color: var(--dr-bg);
-            /* Передняя сетка */
             background-image: 
                 linear-gradient(var(--dr-grid-front) 2px, transparent 2px),
                 linear-gradient(90deg, var(--dr-grid-front) 2px, transparent 2px);
             background-size: 40px 40px;
             animation: gridMoveFront 1.5s linear infinite;
-            
             color: var(--dr-text);
             font-family: 'Share Tech Mono', monospace;
             font-size: 1.2rem;
@@ -57,8 +49,6 @@
             overflow-x: hidden;
             position: relative;
         }
-
-        /* Задняя тусклая сетка */
         body::before {
             content: "";
             position: fixed;
@@ -67,12 +57,10 @@
             background-image: 
                 linear-gradient(var(--dr-grid-back) 2px, transparent 2px),
                 linear-gradient(90deg, var(--dr-grid-back) 2px, transparent 2px);
-            background-size: 30px 30px; /* Чуть мельче для эффекта перспективы */
+            background-size: 30px 30px;
             animation: gridMoveBack 2.5s linear infinite;
             pointer-events: none;
         }
-
-        /* Кнопка смены языка в углу */
         #lang-switch-corner {
             position: absolute;
             top: 20px;
@@ -87,23 +75,20 @@
             z-index: 100;
             transition: 0.1s;
         }
-
         #lang-switch-corner:hover {
             border-color: var(--dr-accent);
             color: var(--dr-accent);
             box-shadow: 0 0 10px var(--dr-accent);
         }
-
         .container {
             width: 100%;
             max-width: 900px;
             display: flex;
             flex-direction: column;
             gap: 20px;
-            margin-top: 40px; /* Сдвиг вниз из-за кнопки языка */
+            margin-top: 40px;
             z-index: 10;
         }
-
         .dr-box {
             background-color: #000;
             border: 4px solid var(--dr-border);
@@ -111,13 +96,11 @@
             box-shadow: 0 0 10px rgba(255,255,255,0.2);
             position: relative;
         }
-
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         h1 {
             font-family: 'Press Start 2P', cursive;
             font-size: 2rem;
@@ -125,7 +108,6 @@
             line-height: 1.4;
             text-shadow: 2px 2px 0px #ff00ff;
         }
-
         .act-btn {
             font-family: 'Press Start 2P', cursive;
             font-size: 1rem;
@@ -140,13 +122,11 @@
             gap: 10px;
             transition: 0.1s;
         }
-
         .act-btn:hover {
             border-color: var(--dr-accent);
             color: var(--dr-accent);
             box-shadow: 0 0 15px var(--dr-accent);
         }
-
         .dialogue-box {
             font-size: 1.3rem;
             line-height: 1.6;
@@ -155,23 +135,19 @@
             align-items: flex-start;
             gap: 15px;
         }
-
         @keyframes starBop {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
-        
         .dialogue-star {
             font-family: 'Press Start 2P', cursive;
             animation: starBop 1s steps(2, end) infinite;
         }
-
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 15px;
         }
-
         .card {
             background: #000;
             border: 4px solid var(--dr-border);
@@ -184,45 +160,36 @@
             transition: 0.1s;
             position: relative;
         }
-
         .card-content {
             display: flex;
             flex-direction: column;
             gap: 5px;
         }
-
         .card-title {
             font-family: 'Press Start 2P', cursive;
             font-size: 1.1rem;
             line-height: 1.3;
         }
-
         .card-desc {
             color: #aaa;
             font-size: 1rem;
         }
-
-        /* Новая иконка души */
         .soul-icon {
             width: 18px;
             height: auto;
             opacity: 0; 
             transition: opacity 0.1s;
             flex-shrink: 0;
-            image-rendering: pixelated; /* Сохраняет четкость пикселей */
+            image-rendering: pixelated;
         }
-
         .card:hover {
             border-color: var(--dr-pink);
             box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
             transform: scale(1.02);
             z-index: 5;
         }
-
         .card:hover .soul-icon { opacity: 1; }
         .card:hover .card-title { color: var(--dr-pink); }
-
-        /* Кулер в левом нижнем углу */
         #corner-cooler {
             position: fixed;
             bottom: 20px;
@@ -231,18 +198,15 @@
             cursor: pointer;
             z-index: 100;
         }
-
         #corner-cooler:hover {
             transform: scale(1.1);
             filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
         }
-
         #corner-cooler img {
             width: 90px;
             height: auto;
             image-rendering: pixelated;
         }
-
         #loading-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -255,19 +219,16 @@
             gap: 20px;
             transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
-
         @keyframes pulseSoul {
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
-
         .loading-soul {
             width: 30px;
             animation: pulseSoul 1s infinite;
             image-rendering: pixelated;
         }
-
         .running-dog {
             position: fixed;
             top: 50%;
@@ -284,18 +245,15 @@
             pointer-events: none;
             animation: dogMove 5s linear infinite, dogFrames 0.2s steps(1) infinite;
         }
-
         @keyframes dogMove {
             0% { right: -100px; }
             100% { right: 100vw; }
         }
-
         @keyframes dogFrames {
             0% { background-image: url('https://gnusinrat.github.io/assets/dog.png'); }
             50% { background-image: url('https://gnusinrat.github.io/assets/dog2.png'); }
             100% { background-image: url('https://gnusinrat.github.io/assets/dog.png'); }
         }
-
         @media (max-width: 600px) {
             .header-top {
                 flex-direction: column;
@@ -328,6 +286,9 @@
         <div class="dr-box">
             <div class="header-top">
                 <h1 id="t-title">чё как?</h1>
+                <a href="spotlight.html" class="act-btn" title="VSKY Spotlight">
+                    <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" style="opacity: 1;" alt="Soul">
+                    <span id="t-spotlight">[ РАДАР ]</span>
                 </a>
             </div>
         </div>
@@ -399,6 +360,14 @@
                 <div class="card-content">
                     <span class="card-title">Вики VSKY</span>
                     <span class="card-desc">Секретные архивы</span>
+                </div>
+            </a>
+
+            <a href="weather.html" class="card" id="card-weather">
+                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
+                <div class="card-content">
+                    <span class="card-title">ветеркомм</span>
+                    <span class="card-desc">Погода (WIP)</span>
                 </div>
             </a>
         </div>
@@ -498,7 +467,9 @@
             document.getElementById('t-map-title').innerText = dict[currentLang].mapTitle;
             document.getElementById('t-map-desc').innerText = dict[currentLang].mapDesc;
 
-            document.getElementById('card-wiki').style.display = currentLang === 'ru' ? 'flex' : 'none';
+            const isRu = currentLang === 'ru';
+            document.getElementById('card-wiki').style.display = isRu ? 'flex' : 'none';
+            document.getElementById('card-weather').style.display = isRu ? 'flex' : 'none';
         });
     </script>
 </body>
