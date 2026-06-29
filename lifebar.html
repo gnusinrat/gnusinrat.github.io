@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lifebar</title>
+    <title>lifebar</title>
     <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
@@ -99,6 +99,29 @@
             border-color: #00ffff;
             box-shadow: 0 0 10px #00ffff;
         }
+        .download-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        .dl-btn {
+            font-family: 'Press Start 2P', cursive;
+            color: #ffffff;
+            background-color: transparent;
+            text-decoration: none;
+            font-size: 0.7rem;
+            border: 2px solid #ffffff;
+            padding: 12px 15px;
+            transition: 0.1s;
+            text-align: center;
+            line-height: 1.5;
+        }
+        .dl-btn:hover {
+            color: #00ffff;
+            border-color: #00ffff;
+            box-shadow: 0 0 10px #00ffff;
+        }
         @media (max-width: 768px) {
             .content-wrap {
                 flex-direction: column;
@@ -119,6 +142,11 @@
                 <li>Статистика</li>
                 <li>Редактор паттернов + система паттернов .pat</li>
             </ul>
+            <div class="download-links">
+                <a href="https://github.com/gnusinrat/lifebar/releases/download/public1.0/lifebar.py" class="dl-btn">скачать 1.0</a>
+                <a href="https://github.com/gnusinrat/lifebar/releases/download/converter1.0/lifebar_lif_converter.py" class="dl-btn">скачать lif-2-pat</a>
+                <a href="https://github.com/gnusinrat/lifebar/releases/download/patternspack1/patternpack1.zip" class="dl-btn">скачать пак паттернов</a>
+            </div>
         </div>
         <div class="image-section">
             <img src="https://gnusinrat.github.io/assets/lifebar_ui.png" alt="Lifebar Interface">
