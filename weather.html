@@ -10,16 +10,29 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            text-transform: lowercase;
         }
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px;
-            color: #333;
+            color: #fff;
+            overflow: hidden;
+        }
+        .parallax-bg {
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background-size: cover;
+            background-position: center;
+            z-index: -1;
+            transition: background-image 0.5s ease;
+            pointer-events: none;
         }
         .header {
             margin-bottom: 30px;
@@ -29,51 +42,88 @@
             max-width: 250px;
             height: auto;
             display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
         .weather-app {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
+            background: transparent;
+            border: none;
             padding: 40px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .search-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 30px;
         }
         .search-box {
             display: flex;
             gap: 10px;
-            margin-bottom: 30px;
         }
         .search-box input {
             flex: 1;
             padding: 15px 20px;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 12px;
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
             font-size: 1.1rem;
             outline: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             transition: 0.2s;
+            backdrop-filter: blur(5px);
+        }
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
         }
         .search-box input:focus {
-            box-shadow: 0 4px 12px rgba(102, 166, 255, 0.3);
+            border-color: #fff;
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
         }
         .search-box button {
-            background: #66a6ff;
+            background: rgba(0, 0, 0, 0.5);
             color: #fff;
-            border: none;
+            border: 1px solid rgba(255, 255, 255, 0.4);
             border-radius: 12px;
             padding: 0 25px;
             font-size: 1.1rem;
             cursor: pointer;
-            font-weight: bold;
             transition: 0.2s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(5px);
         }
         .search-box button:hover {
-            background: #5596e6;
-            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .suggestions {
+            position: absolute;
+            top: 110%;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            list-style: none;
+            overflow: hidden;
+            z-index: 10;
+            text-align: left;
+            display: none;
+        }
+        .suggestions li {
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: 0.2s;
+        }
+        .suggestions li:last-child {
+            border-bottom: none;
+        }
+        .suggestions li:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
         .weather-info {
             display: none;
@@ -81,28 +131,33 @@
             align-items: center;
         }
         .weather-icon {
-            width: 150px;
-            height: auto;
+            width: 160px;
+            height: 160px;
             margin-bottom: 20px;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,0.1));
+            border: 2px solid #fff;
+            border-radius: 50%;
+            padding: 30px;
+            background: transparent;
+            object-fit: contain;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         .temp {
             font-size: 4rem;
             font-weight: 800;
             margin-bottom: 5px;
-            color: #2c3e50;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
         .city-name {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 600;
             margin-bottom: 5px;
-            color: #34495e;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
         .description {
             font-size: 1.2rem;
-            color: #7f8c8d;
-            text-transform: capitalize;
+            color: #fff;
             margin-bottom: 20px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
         .details {
             display: flex;
@@ -110,7 +165,7 @@
             width: 100%;
             margin-top: 20px;
             padding-top: 20px;
-            border-top: 2px solid rgba(0,0,0,0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
         .detail-item {
             display: flex;
@@ -120,50 +175,60 @@
         .detail-value {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #2c3e50;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
         .detail-label {
             font-size: 0.9rem;
-            color: #7f8c8d;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 2px 5px rgba(0,0,0,0.6);
         }
         .error-message {
             display: none;
-            color: #e74c3c;
+            color: #ff6b6b;
             font-size: 1.2rem;
             margin-top: 20px;
-            font-weight: 500;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
         .back-link {
             margin-top: 40px;
             text-decoration: none;
-            color: #ffffff;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 600;
             font-size: 1.1rem;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             padding: 10px 20px;
             border-radius: 20px;
             transition: 0.2s;
+            z-index: 1;
+            backdrop-filter: blur(5px);
         }
         .back-link:hover {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
         }
     </style>
 </head>
 <body>
+    <div class="parallax-bg" id="bg-layer"></div>
+
     <div class="header">
         <img src="https://gnusinrat.github.io/assets/weather/WeatherCommLogo.png" alt="ветеркомм" class="logo" onerror="this.style.display='none'">
     </div>
 
     <div class="weather-app">
-        <div class="search-box">
-            <input type="text" id="city-input" placeholder="Введите город...">
-            <button id="search-btn">Поиск</button>
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="city-input" placeholder="введите город...">
+                <button id="search-btn">поиск</button>
+            </div>
+            <ul class="suggestions" id="suggestions"></ul>
         </div>
 
-        <div class="error-message" id="error-msg">Город не найден</div>
+        <div class="error-message" id="error-msg">город не найден</div>
 
         <div class="weather-info" id="weather-info">
-            <img src="" alt="Weather Icon" class="weather-icon" id="w-icon">
+            <img src="" alt="icon" class="weather-icon" id="w-icon">
             <div class="temp" id="w-temp"></div>
             <div class="city-name" id="w-city"></div>
             <div class="description" id="w-desc"></div>
@@ -171,17 +236,17 @@
             <div class="details">
                 <div class="detail-item">
                     <span class="detail-value" id="w-humidity"></span>
-                    <span class="detail-label">Влажность</span>
+                    <span class="detail-label">влажность</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-value" id="w-wind"></span>
-                    <span class="detail-label">Ветер</span>
+                    <span class="detail-label">ветер</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <a href="index.html" class="back-link">&larr; Назад на VSKY</a>
+    <a href="index.html" class="back-link">&larr; назад на vsky</a>
 
     <script>
         const apiKey = 'f31822fd4360a93c9570a7a71aec0739';
@@ -189,6 +254,8 @@
         const btn = document.getElementById('search-btn');
         const info = document.getElementById('weather-info');
         const errorMsg = document.getElementById('error-msg');
+        const suggestionsBox = document.getElementById('suggestions');
+        const bgLayer = document.getElementById('bg-layer');
         
         const wIcon = document.getElementById('w-icon');
         const wTemp = document.getElementById('w-temp');
@@ -197,45 +264,113 @@
         const wHumidity = document.getElementById('w-humidity');
         const wWind = document.getElementById('w-wind');
 
-        function getCustomIcon(code) {
-            if (code >= 200 && code < 300) return 'weather/WeatherRaining.png';
-            if (code >= 300 && code < 600) {
-                if (code === 500 || code === 501) return 'weather/WeatherRainingSun.png';
-                return 'weather/WeatherRaining.png';
+        let timeoutId;
+
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth / 2 - e.clientX) / 40;
+            const y = (window.innerHeight / 2 - e.clientY) / 40;
+            bgLayer.style.transform = `translate(${x}px, ${y}px)`;
+        });
+
+        function getCustomIconAndBg(code) {
+            let icon = 'WeatherCloudy.png';
+            let bg = 'WeatherBGcloudy.jpg';
+
+            if (code >= 200 && code < 600) {
+                if (code === 500 || code === 501) icon = 'WeatherRainingSun.png';
+                else icon = 'WeatherRaining.png';
+                bg = 'WeatherBGraining.jpg';
+            } else if (code >= 600 && code < 700) {
+                icon = 'WeatherSnowing.png';
+                bg = 'WeatherBGcloudy.jpg';
+            } else if (code >= 700 && code < 800) {
+                icon = 'WeatherCloudy.png';
+                bg = 'WeatherBGcloudy.jpg';
+            } else if (code === 800) {
+                icon = 'WeatherSunny.png';
+                bg = 'WeatherBGsunny.jpg';
+            } else if (code === 801 || code === 802) {
+                icon = 'WeatherCloudySun.png';
+                bg = 'WeatherBGcloudy.jpg';
+            } else if (code > 802) {
+                icon = 'WeatherCloudy.png';
+                bg = 'WeatherBGcloudy.jpg';
             }
-            if (code >= 600 && code < 700) return 'weather/WeatherSnowing.png';
-            if (code >= 700 && code < 800) return 'weather/WeatherCloudy.png';
-            if (code === 800) return 'weather/WeatherCloudySun.png';
-            if (code === 801 || code === 802) return 'weather/WeatherCloudySun.png';
-            if (code === 803 || code === 804) return 'weather/WeatherCloudy.png';
-            return 'weather/WeatherCloudy.png';
+
+            return { icon, bg };
         }
 
-        async function fetchWeather(city) {
+        async function fetchWeather(query, isCoords = false) {
             try {
-                const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=ru`);
-                if (!response.ok) {
-                    throw new Error();
+                let url = '';
+                if (isCoords) {
+                    url = `https://api.openweathermap.org/data/2.5/weather?lat=${query.lat}&lon=${query.lon}&appid=${apiKey}&units=metric&lang=ru`;
+                } else {
+                    url = `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${apiKey}&units=metric&lang=ru`;
                 }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error();
                 const data = await response.json();
                 
                 errorMsg.style.display = 'none';
                 info.style.display = 'flex';
+                suggestionsBox.style.display = 'none';
+                input.value = '';
 
-                wCity.innerText = data.name;
-                wTemp.innerHTML = Math.round(data.main.temp) + '&deg;C';
+                wCity.innerText = `${data.name}, ${data.sys.country}`;
+                wTemp.innerHTML = Math.round(data.main.temp) + '&deg;c';
                 wDesc.innerText = data.weather[0].description;
                 wHumidity.innerText = data.main.humidity + '%';
                 wWind.innerText = data.wind.speed + ' м/с';
 
-                const iconName = getCustomIcon(data.weather[0].id);
-                wIcon.src = `https://gnusinrat.github.io/assets/weather/${iconName}`;
+                const media = getCustomIconAndBg(data.weather[0].id);
+                wIcon.src = `https://gnusinrat.github.io/assets/weather/${media.icon}`;
+                bgLayer.style.backgroundImage = `url('https://gnusinrat.github.io/assets/weather/${media.bg}')`;
+
+                const locString = `${data.name.toLowerCase()}_${data.sys.country.toLowerCase()}`;
+                history.pushState(null, '', `?loc=${locString}`);
 
             } catch (err) {
                 info.style.display = 'none';
                 errorMsg.style.display = 'block';
+                suggestionsBox.style.display = 'none';
             }
         }
+
+        async function fetchSuggestions(query) {
+            if (!query) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+            try {
+                const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${apiKey}`);
+                const data = await response.json();
+                
+                suggestionsBox.innerHTML = '';
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        const localName = (item.local_names && item.local_names.ru) ? item.local_names.ru : item.name;
+                        li.innerText = `${localName}, ${item.country}`;
+                        li.onclick = () => fetchWeather({ lat: item.lat, lon: item.lon }, true);
+                        suggestionsBox.appendChild(li);
+                    });
+                    suggestionsBox.style.display = 'block';
+                } else {
+                    suggestionsBox.style.display = 'none';
+                }
+            } catch (err) {
+                suggestionsBox.style.display = 'none';
+            }
+        }
+
+        input.addEventListener('input', (e) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                fetchSuggestions(e.target.value.trim());
+            }, 300);
+        });
 
         btn.addEventListener('click', () => {
             if (input.value.trim() !== '') {
@@ -249,8 +384,32 @@
             }
         });
 
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-container')) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
+
         window.onload = () => {
-            fetchWeather('Тюмень');
+            const urlParams = new URLSearchParams(window.location.search);
+            const locParam = urlParams.get('loc');
+
+            if (locParam) {
+                fetchWeather(locParam.replace('_', ','));
+            } else {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            fetchWeather({ lat: position.coords.latitude, lon: position.coords.longitude }, true);
+                        },
+                        () => {
+                            fetchWeather('тюмень');
+                        }
+                    );
+                } else {
+                    fetchWeather('тюмень');
+                }
+            }
         };
     </script>
 </body>
