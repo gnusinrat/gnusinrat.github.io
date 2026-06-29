@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/weather/WeatherSunny.png">
     <title>ветеркомм</title>
     <style>
         * {
@@ -150,7 +151,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="https://gnusinrat.github.io/assets/WeatherCommLogo.png" alt="ветеркомм" class="logo" onerror="this.style.display='none'">
+        <img src="https://gnusinrat.github.io/assets/weather/WeatherCommLogo.png" alt="ветеркомм" class="logo" onerror="this.style.display='none'">
     </div>
 
     <div class="weather-app">
@@ -197,17 +198,17 @@
         const wWind = document.getElementById('w-wind');
 
         function getCustomIcon(code) {
-            if (code >= 200 && code < 300) return 'WeatherRaining.png';
+            if (code >= 200 && code < 300) return 'weather/WeatherRaining.png';
             if (code >= 300 && code < 600) {
-                if (code === 500 || code === 501) return 'WeatherRainingSun.png';
-                return 'WeatherRaining.png';
+                if (code === 500 || code === 501) return 'weather/WeatherRainingSun.png';
+                return 'weather/WeatherRaining.png';
             }
-            if (code >= 600 && code < 700) return 'WeatherSnowing.png';
-            if (code >= 700 && code < 800) return 'WeatherCloudy.png';
-            if (code === 800) return 'WeatherCloudySun.png';
-            if (code === 801 || code === 802) return 'WeatherCloudySun.png';
-            if (code === 803 || code === 804) return 'WeatherCloudy.png';
-            return 'WeatherCloudy.png';
+            if (code >= 600 && code < 700) return 'weather/WeatherSnowing.png';
+            if (code >= 700 && code < 800) return 'weather/WeatherCloudy.png';
+            if (code === 800) return 'weather/WeatherCloudySun.png';
+            if (code === 801 || code === 802) return 'weather/WeatherCloudySun.png';
+            if (code === 803 || code === 804) return 'weather/WeatherCloudy.png';
+            return 'weather/WeatherCloudy.png';
         }
 
         async function fetchWeather(city) {
@@ -228,7 +229,7 @@
                 wWind.innerText = data.wind.speed + ' м/с';
 
                 const iconName = getCustomIcon(data.weather[0].id);
-                wIcon.src = `https://gnusinrat.github.io/assets/${iconName}`;
+                wIcon.src = `https://gnusinrat.github.io/assets/weather/${iconName}`;
 
             } catch (err) {
                 info.style.display = 'none';
