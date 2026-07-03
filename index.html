@@ -207,6 +207,23 @@
             height: auto;
             image-rendering: pixelated;
         }
+        #museum-door {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            transition: transform 0.2s ease-in-out, filter 0.2s ease;
+            cursor: pointer;
+            z-index: 100;
+        }
+        #museum-door:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+        }
+        #museum-door img {
+            width: 90px;
+            height: auto;
+            image-rendering: pixelated;
+        }
         #loading-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -277,6 +294,10 @@
         <img src="https://gnusinrat.github.io/assets/cooler.png" alt="Кулер">
     </a>
 
+    <a href="museum.html" id="museum-door">
+        <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" alt="Музей">
+    </a>
+
     <div id="loading-screen">
         <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="loading-soul" alt="Loading Soul">
         <div style="font-family: 'Press Start 2P', cursive; color: white;">ЗАГРУЗКА...</div>
@@ -307,38 +328,6 @@
                 </div>
             </a>
             
-            <a href="https://gnusinrat.github.io/maxclicker" class="card">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title">MaxClicker</span>
-                    <span class="card-desc" id="t-clicker">Кликер</span>
-                </div>
-            </a>
-            
-            <a href="https://badgester.neocities.org" class="card">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title" id="t-old-title">Старый сайт</span>
-                    <span class="card-desc" id="t-old-desc">Архив на Neocities</span>
-                </div>
-            </a>
-            
-            <a href="https://gnusinrat.github.io/rabbits" class="card">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title" id="t-rab-title">Кролики</span>
-                    <span class="card-desc" id="t-rab-desc">кролики</span>
-                </div>
-            </a>
-
-            <a href="https://gnusinrat.github.io/procedural" class="card">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title" id="t-zen-title">дзен</span>
-                    <span class="card-desc">💖☮️⚛️</span>
-                </div>
-            </a>
-            
             <a href="docs/anomalies/index.html" class="card" id="card-wiki">
                 <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
                 <div class="card-content">
@@ -365,14 +354,6 @@
                 desc: "новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
                 htm: "HTMPen",
                 htmDesc: "Рисовалка с Gemini API",
-                clicker: "Кликер",
-                oldTitle: "Старый сайт",
-                oldDesc: "Архив на Neocities",
-                rabTitle: "Кролики",
-                rabDesc: "кролики",
-                zenTitle: "дзен",
-                mapTitle: "Карта сайта",
-                mapDesc: "Визуальная карта всех страниц",
                 toggleBtn: "EN"
             },
             en: {
@@ -381,14 +362,6 @@
                 desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
                 htm: "HTMPen",
                 htmDesc: "Drawing thing made with Gemini [RU]",
-                clicker: "Clicker game",
-                oldTitle: "Old Website",
-                oldDesc: "Archived on Neocities",
-                rabTitle: "Rabbits",
-                rabDesc: "rabbits",
-                zenTitle: "zen",
-                mapTitle: "Sitemap",
-                mapDesc: "Visual map of all pages",
                 toggleBtn: "RU"
             }
         };
@@ -436,16 +409,6 @@
 
             document.getElementById('t-htm').innerText = dict[currentLang].htm;
             document.getElementById('t-htm-desc').innerText = dict[currentLang].htmDesc;
-            document.getElementById('t-clicker').innerText = dict[currentLang].clicker;
-            document.getElementById('t-old-title').innerText = dict[currentLang].oldTitle;
-            document.getElementById('t-old-desc').innerText = dict[currentLang].oldDesc;
-            document.getElementById('t-top-title').innerText = dict[currentLang].topTitle;
-            document.getElementById('t-top-desc').innerText = dict[currentLang].topDesc;
-            document.getElementById('t-rab-title').innerText = dict[currentLang].rabTitle;
-            document.getElementById('t-rab-desc').innerText = dict[currentLang].rabDesc;
-            document.getElementById('t-zen-title').innerText = dict[currentLang].zenTitle;
-            document.getElementById('t-map-title').innerText = dict[currentLang].mapTitle;
-            document.getElementById('t-map-desc').innerText = dict[currentLang].mapDesc;
 
             const isRu = currentLang === 'ru';
             document.getElementById('card-wiki').style.display = isRu ? 'flex' : 'none';
