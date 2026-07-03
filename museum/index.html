@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Музей VSKY</title>
+    <link rel="icon" type="image/png" href="https://gnusinrat.github.io/assets/catbar_head_big.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dr-bg: #000000;
+            --dr-text: #ffffff;
+            --dr-border: #ffffff;
+            --dr-cyan: #00ffff;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: var(--dr-bg);
+            background-image: 
+                linear-gradient(rgba(180, 0, 255, 0.05) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(180, 0, 255, 0.05) 2px, transparent 2px);
+            background-size: 40px 40px;
+            color: var(--dr-text);
+            font-family: 'Share Tech Mono', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #000;
+            border: 2px solid var(--dr-border);
+            color: var(--dr-text);
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            padding: 10px 15px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.1s;
+            z-index: 100;
+        }
+        .back-btn:hover {
+            border-color: var(--dr-cyan);
+            color: var(--dr-cyan);
+            box-shadow: 0 0 10px var(--dr-cyan);
+        }
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-top: 60px;
+        }
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--dr-text);
+            text-shadow: 2px 2px 0px #555;
+        }
+        .desc {
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 60px;
+        }
+        h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 30px;
+            color: #ff5555;
+        }
+        .doors-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+        .door-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: var(--dr-text);
+            transition: 0.2s;
+            width: 150px;
+        }
+        .door-item:hover:not(.disabled) {
+            transform: scale(1.05);
+            filter: drop-shadow(0 0 10px var(--dr-cyan));
+        }
+        .door-item:hover:not(.disabled) span {
+            color: var(--dr-cyan);
+        }
+        .door-img {
+            width: 70px;
+            height: auto;
+            image-rendering: pixelated;
+        }
+        .door-item span {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            transition: 0.2s;
+        }
+        .disabled {
+            cursor: default;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-btn">&lt; НАЗАД</a>
+
+    <div class="container">
+        <h1>музей vsky</h1>
+        <p class="desc">архив почти всех убитых и заброшенных проектов/экспериментов</p>
+
+        <div class="doors-grid">
+            <a href="procedural.html" class="door-item">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" class="door-img">
+                <span>дзен</span>
+            </a>
+            <a href="rabbits.html" class="door-item">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" class="door-img">
+                <span>кролики</span>
+            </a>
+            <a href="maxclicker.html" class="door-item">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" class="door-img">
+                <span>максвелл кликер v3r</span>
+            </a>
+            <a href="https://badgester.neocities.org" class="door-item">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" class="door-img">
+                <span>старый сайт</span>
+            </a>
+            <a href="index_old.html" class="door-item">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" class="door-img">
+                <span>индекс v2</span>
+            </a>
+        </div>
+
+        <h2>удалённые страницы</h2>
+        
+        <div class="doors-grid">
+            <div class="door-item disabled">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoorOff.png" class="door-img">
+                <span>вебмап</span>
+            </div>
+            <div class="door-item disabled">
+                <img src="https://gnusinrat.github.io/assets/ShortcutDoorOff.png" class="door-img">
+                <span>мои топы</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
