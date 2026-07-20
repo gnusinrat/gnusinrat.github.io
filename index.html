@@ -11,34 +11,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dr-bg: #000000;
-            --dr-grid-front: rgba(180, 0, 255, 0.5);
-            --dr-grid-back: rgba(180, 0, 255, 0.15);
-            --dr-text: #ffffff;
-            --dr-border: #ffffff;
-            --dr-accent: #00ffff;
-            --dr-pink: #ff00ff;
+            --dr-bg: #111111;
+            --dr-text: #dddddd;
+            --dr-border: #555555;
+            --dr-accent: #888888;
+            --btn-osu: #ff66aa;
+            --btn-bsky: #0088ff;
+            --btn-steam: #222222;
         }
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        @keyframes gridMoveFront {
-            0% { background-position: 0 0; }
-            100% { background-position: -40px -40px; }
-        }
-        @keyframes gridMoveBack {
-            0% { background-position: 0 0; }
-            100% { background-position: 30px -30px; }
-        }
         body {
             background-color: var(--dr-bg);
-            background-image: 
-                linear-gradient(var(--dr-grid-front) 2px, transparent 2px),
-                linear-gradient(90deg, var(--dr-grid-front) 2px, transparent 2px);
-            background-size: 40px 40px;
-            animation: gridMoveFront 1.5s linear infinite;
             color: var(--dr-text);
             font-family: 'Share Tech Mono', monospace;
             font-size: 1.2rem;
@@ -48,37 +35,6 @@
             padding: 20px;
             overflow-x: hidden;
             position: relative;
-        }
-        body::before {
-            content: "";
-            position: fixed;
-            top: -50px; left: -50px; right: -50px; bottom: -50px;
-            z-index: -1;
-            background-image: 
-                linear-gradient(var(--dr-grid-back) 2px, transparent 2px),
-                linear-gradient(90deg, var(--dr-grid-back) 2px, transparent 2px);
-            background-size: 30px 30px;
-            animation: gridMoveBack 2.5s linear infinite;
-            pointer-events: none;
-        }
-        #lang-switch-corner {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #000;
-            border: 2px solid var(--dr-border);
-            color: var(--dr-text);
-            font-family: 'Press Start 2P', cursive;
-            font-size: 0.8rem;
-            padding: 10px 15px;
-            cursor: pointer;
-            z-index: 100;
-            transition: 0.1s;
-        }
-        #lang-switch-corner:hover {
-            border-color: var(--dr-accent);
-            color: var(--dr-accent);
-            box-shadow: 0 0 10px var(--dr-accent);
         }
         .container {
             width: 100%;
@@ -90,117 +46,120 @@
             z-index: 10;
         }
         .dr-box {
-            background-color: #000;
+            background-color: #1a1a1a;
             border: 4px solid var(--dr-border);
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+            padding: 30px;
             position: relative;
+            text-align: center;
         }
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        h1 {
+        .header-text {
             font-family: 'Press Start 2P', cursive;
-            font-size: 2rem;
+            font-size: 1.2rem;
             color: var(--dr-text);
-            line-height: 1.4;
-            text-shadow: 2px 2px 0px #ff00ff;
-        }
-        .act-btn {
-            font-family: 'Press Start 2P', cursive;
-            font-size: 1rem;
-            color: var(--dr-text);
-            background: #000;
-            border: 4px solid var(--dr-border);
-            padding: 10px 15px;
-            cursor: pointer;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.1s;
-        }
-        .act-btn:hover {
-            border-color: var(--dr-accent);
-            color: var(--dr-accent);
-            box-shadow: 0 0 15px var(--dr-accent);
-        }
-        .dialogue-box {
-            font-size: 1.3rem;
             line-height: 1.6;
-            min-height: 100px;
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
+            margin-bottom: 30px;
         }
-        @keyframes starBop {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: #000;
+            border: 2px solid var(--dr-border);
+            padding: 10px 0;
+            margin-bottom: 30px;
         }
-        .dialogue-star {
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
             font-family: 'Press Start 2P', cursive;
-            animation: starBop 1s steps(2, end) infinite;
+            font-size: 0.9rem;
+            color: #00ff00;
+            animation: scroll-left 15s linear infinite;
         }
+        @keyframes scroll-left {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+        .soc-btn {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 0.8rem;
+            color: #fff;
+            padding: 12px 20px;
+            text-decoration: none;
+            border: 2px solid transparent;
+            transition: 0.2s;
+            border-radius: 8px;
+        }
+        .soc-btn.osu { background-color: var(--btn-osu); }
+        .soc-btn.bsky { background-color: var(--btn-bsky); }
+        .soc-btn.steam { background-color: var(--btn-steam); border-color: #555; }
+        
+        .soc-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.1);
+        }
+        
+        .divider {
+            width: 100%;
+            height: 2px;
+            background-color: var(--dr-border);
+            margin: 30px 0;
+        }
+
         .cards {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
         }
         .card {
             background: #000;
-            border: 4px solid var(--dr-border);
+            border: 2px solid var(--dr-border);
             color: var(--dr-text);
             text-decoration: none;
             padding: 15px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 15px;
             transition: 0.1s;
-            position: relative;
         }
         .card-content {
             display: flex;
             flex-direction: column;
             gap: 5px;
+            text-align: center;
         }
         .card-title {
             font-family: 'Press Start 2P', cursive;
-            font-size: 1.1rem;
-            line-height: 1.3;
-        }
-        .card-desc {
-            color: #aaa;
             font-size: 1rem;
         }
-        .soul-icon {
-            width: 18px;
-            height: auto;
-            opacity: 0; 
-            transition: opacity 0.1s;
-            flex-shrink: 0;
-            image-rendering: pixelated;
+        .card-desc {
+            color: #888;
+            font-size: 0.9rem;
         }
         .card:hover {
-            border-color: var(--dr-pink);
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
-            transform: scale(1.02);
-            z-index: 5;
+            border-color: #fff;
+            background: #222;
         }
-        .card:hover .soul-icon { opacity: 1; }
-        .card:hover .card-title { color: var(--dr-pink); }
+
         #corner-cooler {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            transition: transform 0.2s ease-in-out, filter 0.2s ease;
+            transition: transform 0.2s ease-in-out;
             cursor: pointer;
             z-index: 100;
+            opacity: 0.5;
         }
         #corner-cooler:hover {
             transform: scale(1.1);
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+            opacity: 1;
         }
         #corner-cooler img {
             width: 90px;
@@ -211,84 +170,29 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            transition: transform 0.2s ease-in-out, filter 0.2s ease;
+            transition: transform 0.2s ease-in-out;
             cursor: pointer;
             z-index: 100;
+            opacity: 0.5;
         }
         #museum-door:hover {
             transform: scale(1.1);
-            filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.3));
+            opacity: 1;
         }
         #museum-door img {
             width: 90px;
             height: auto;
             image-rendering: pixelated;
         }
-        #loading-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--dr-bg);
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
-        }
-        @keyframes pulseSoul {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .loading-soul {
-            width: 30px;
-            animation: pulseSoul 1s infinite;
-            image-rendering: pixelated;
-        }
-        .running-dog {
-            position: fixed;
-            top: 50%;
-            right: -100px;
-            transform: translateY(-50%);
-            width: 80px;
-            height: 80px;
-            background-image: url('https://gnusinrat.github.io/assets/Annoying_Winnie_overworld_car1.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            image-rendering: pixelated;
-            z-index: 9999;
-            pointer-events: none;
-            animation: dogMove 5s linear infinite, dogFrames 0.2s steps(1) infinite;
-        }
-        @keyframes dogMove {
-            0% { right: -100px; }
-            100% { right: 100vw; }
-        }
-        @keyframes dogFrames {
-            0% { background-image: url('https://gnusinrat.github.io/assets/Annoying_Winnie_overworld_car1.png'); }
-            50% { background-image: url('https://gnusinrat.github.io/assets/Annoying_Winnie_overworld_car2.png'); }
-            100% { background-image: url('https://gnusinrat.github.io/assets/Annoying_Winnie_overworld_car1.png'); }
-        }
+        
         @media (max-width: 600px) {
-            .header-top {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-                gap: 20px;
-            }
-            .container { margin-top: 60px; }
-            #lang-switch-corner { top: 10px; right: 10px; }
-            #corner-cooler img { width: 70px; }
+            #corner-cooler img, #museum-door img { width: 60px; }
+            .header-text { font-size: 1rem; }
+            .soc-btn { width: 100%; text-align: center; }
         }
     </style>
 </head>
 <body>
-
-    <button id="lang-switch-corner">EN</button>
-
-    <div class="running-dog"></div>
 
     <a href="https://gnusinrat.github.io/rarercats" id="corner-cooler" target="_blank" rel="noopener noreferrer">
         <img src="https://gnusinrat.github.io/assets/cooler.png" alt="Кулер">
@@ -298,122 +202,49 @@
         <img src="https://gnusinrat.github.io/assets/ShortcutDoor.gif" alt="Музей">
     </a>
 
-    <div id="loading-screen">
-        <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="loading-soul" alt="Loading Soul">
-        <div style="font-family: 'Press Start 2P', cursive; color: white;">ЗАГРУЗКА...</div>
-    </div>
-
     <div class="container">
-        <div class="dr-box">
-            <div class="header-top">
-                <h1 id="t-title">чё как?</h1>
-                <a href="spotlight.html" class="act-btn" title="VSKY Spotlight">
-                    <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" style="opacity: 1;" alt="Soul">
-                    <span id="t-spotlight">[ РАДАР ]</span>
+            
+            <div class="header-text">
+                переделываю сайт.<br><br>
+                работы идут с 20 июля 2026 года
+            </div>
+
+            <div class="marquee-container">
+                <div class="marquee-text">помойся с сыром v3. версия v4 завершена на 10.00%</div>
+            </div>
+
+            <div class="social-buttons">
+                <a href="https://osu.ppy.sh/users/32021404" class="soc-btn osu" target="_blank">ПРОФИЛЬ OSU</a>
+                <a href="https://bsky.app/profile/xn--80avikb.art" class="soc-btn bsky" target="_blank">БЛЮСКАЙ</a>
+                <a href="https://steamcommunity.com/id/vskyofficial" class="soc-btn steam" target="_blank">СТИМ</a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="cards">
+                <a href="https://gnusinrat.github.io/paint" class="card">
+                    <div class="card-content">
+                        <span class="card-title">HTMPen</span>
+                        <span class="card-desc">Рисовалка с Gemini API</span>
+                    </div>
+                </a>
+                
+                <a href="docs/anomalies/index.html" class="card">
+                    <div class="card-content">
+                        <span class="card-title">awesomium вики</span>
+                        <span class="card-desc">Секретные архивы</span>
+                    </div>
+                </a>
+
+                <a href="weather.html" class="card">
+                    <div class="card-content">
+                        <span class="card-title">ветеркомм</span>
+                        <span class="card-desc">Погода (WIP)</span>
+                    </div>
                 </a>
             </div>
-        </div>
 
-        <div class="dr-box dialogue-box">
-            <div class="dialogue-star">*</div>
-            <span id="t-desc"></span>
-        </div>
-
-        <div class="cards">
-            <a href="https://gnusinrat.github.io/paint" class="card">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title" id="t-htm">HTMPen</span>
-                    <span class="card-desc" id="t-htm-desc">Рисовалка с Gemini API</span>
-                </div>
-            </a>
-            
-            <a href="docs/anomalies/index.html" class="card" id="card-wiki">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title">Вики VSKY</span>
-                    <span class="card-desc">Секретные архивы</span>
-                </div>
-            </a>
-
-            <a href="weather.html" class="card" id="card-weather">
-                <img src="https://gnusinrat.github.io/assets/SOUL_battle.png" class="soul-icon" alt="Soul">
-                <div class="card-content">
-                    <span class="card-title">ветеркомм</span>
-                    <span class="card-desc">Погода (WIP)</span>
-                </div>
-            </a>
-        </div>
     </div>
 
-    <script>
-        const dict = {
-            ru: {
-                title: "чё как?",
-                spotlight: "[ РАДАР ]",
-                desc: "новый сайт значкестера/mostlyengineer/пилота. я не буду тратить много времени на эту страницу, так что чекай другие:",
-                htm: "HTMPen",
-                htmDesc: "Рисовалка с Gemini API",
-                toggleBtn: "EN"
-            },
-            en: {
-                title: "what's up?",
-                spotlight: "[ RADAR ]",
-                desc: "this is badgester/mostlyengineer/pilot/pilotgc's new website. i'm not going to spend too much time on this page so check out the other pages:",
-                htm: "HTMPen",
-                htmDesc: "Drawing thing made with Gemini [RU]",
-                toggleBtn: "RU"
-            }
-        };
-
-        let currentLang = 'ru'; 
-        let typingTimeout;
-
-        function typeWriterEffect(text) {
-            const descElement = document.getElementById('t-desc');
-            descElement.innerHTML = "";
-            clearTimeout(typingTimeout);
-            
-            let i = 0;
-            function typeNext() {
-                if (i < text.length) {
-                    descElement.innerHTML += text.charAt(i);
-                    i++;
-                    typingTimeout = setTimeout(typeNext, 30);
-                }
-            }
-            typeNext();
-        }
-
-        window.onload = () => {
-            const loader = document.getElementById('loading-screen');
-            setTimeout(() => {
-                loader.style.opacity = '0';
-                loader.style.visibility = 'hidden';
-                typeWriterEffect(dict[currentLang].desc);
-            }, 600); 
-        };
-
-        const langBtn = document.getElementById('lang-switch-corner');
-
-        langBtn.addEventListener('click', () => {
-            currentLang = currentLang === 'ru' ? 'en' : 'ru';
-            
-            document.documentElement.lang = currentLang;
-            
-            langBtn.innerText = dict[currentLang].toggleBtn;
-            
-            document.getElementById('t-title').innerText = dict[currentLang].title;
-            document.getElementById('t-spotlight').innerText = dict[currentLang].spotlight;
-            typeWriterEffect(dict[currentLang].desc);
-
-            document.getElementById('t-htm').innerText = dict[currentLang].htm;
-            document.getElementById('t-htm-desc').innerText = dict[currentLang].htmDesc;
-
-            const isRu = currentLang === 'ru';
-            document.getElementById('card-wiki').style.display = isRu ? 'flex' : 'none';
-            document.getElementById('card-weather').style.display = isRu ? 'flex' : 'none';
-        });
-    </script>
 </body>
 </html>
